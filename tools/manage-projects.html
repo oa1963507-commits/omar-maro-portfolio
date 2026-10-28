@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101114">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' https://mir-s3-cdn-cf.behance.net https://mir-cdn.behance.net https://mir-s3-cdn.behance.net https: data:; connect-src 'self' https://api.github.com; form-action 'none'; base-uri 'none'; object-src 'none'">
+<title>إدارة المشاريع — OMAR MARO</title>
+<link rel="stylesheet" href="manage-projects.css">
+</head>
+<body>
+<header class="top"><a class="wordmark" href="../#work"><span class="mark">OM.</span><span>OMAR MARO <small>PORTFOLIO MANAGER</small></span></a><a class="subtle" href="../#work">← الرجوع للموقع</a></header>
+<main>
+<section class="intro"><p class="eyebrow">PROJECT CONTROL CENTER</p><h1>إدارة <span>المشاريع.</span></h1><p>رتّب أعمالك بالطريقة اللي تعجبك، أخفِ أو احذف أي مشروع من الموقع، وأضف أعمال جديدة مباشرة من لوحة التحكم.</p></section>
+<section class="panel" id="loginPanel" aria-labelledby="connectTitle">
+ <div class="panel-heading"><div><h2 id="connectTitle">اتصال آمن بحساب GitHub</h2><p>التعديل متاح لصاحب المستودع فقط. استخدم مفتاحًا محدود الصلاحيات لهذا الموقع.</p></div><span class="lock">🔒</span></div>
+ <form id="loginForm"><label for="adminToken">GitHub Fine-grained Personal Access Token</label><div class="connect-row"><input id="adminToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_..." required><button class="primary" id="connectBtn" type="submit">دخول الإدارة</button></div></form>
+ <p class="hint">اعمل مفتاحًا بصلاحية <b>Contents: Read and write</b> لمستودع <b>omar-maro-portfolio</b> فقط. المفتاح بيستخدم داخل المتصفح وقت الجلسة ومش بيتحفظ أو بيتضاف لكود الموقع. ما تبعتوش في المحادثة.</p>
+ <a class="simple-link" href="https://github.com/settings/personal-access-tokens/new?name=Omar-Maro-Site-Manager&target_name=oa1963507-commits&description=Update+only+Omar+Maro+portfolio+controls&expires_in=30&contents=write" rel="noopener noreferrer" target="_blank">إنشاء مفتاح GitHub محدود الصلاحيات ↗</a>
+</section>
+<section id="editor" hidden>
+ <div class="toolbar panel"><div><span class="success-dot"></span><b>متصل بحسابك</b> <span id="accountName" class="muted"></span><p class="hint">التعديلات مش هتظهر للزوار إلا لما تضغط «نشر التعديلات».</p></div><div class="toolbar-actions"><button type="button" class="outline" id="disconnect">تسجيل خروج</button><button type="button" class="primary" id="publishBtn">نشر التعديلات</button></div></div>
+ <div class="stats"><article><small>جميع المشاريع</small><b id="countAll">—</b></article><article><small>الظاهرة</small><b id="countVisible">—</b></article><article><small>المخفية</small><b id="countHidden">—</b></article><article><small>المحذوفة من الموقع</small><b id="countExcluded">—</b></article></div>
+ <section class="panel"><div class="panel-heading"><div><h2>ترتيب وعرض المشاريع</h2><p>اسحب بطاقة المشروع أو استخدم الأسهم لتغيير الترتيب؛ المشاريع الجديدة من Behance بتفضل متاحة تلقائيًا.</p></div><button type="button" class="primary" id="addButton">+ أضف مشروعًا</button></div>
+ <div class="filters"><input id="projectSearch" type="search" placeholder="ابحث باسم المشروع..." aria-label="بحث في المشاريع"><select id="viewFilter" aria-label="فلترة العرض"><option value="active">المشاريع الحالية</option><option value="all">كل المشاريع</option><option value="hidden">المخفية</option><option value="excluded">المحذوفة</option></select></div>
+ <p class="hint" id="dragNote">اسحب البطاقة من الرمز ⋮⋮ لترتيبها. أزرار الأسهم مناسبة للموبايل أيضًا.</p><div id="projectList" class="project-list" aria-live="polite"></div></section>
+ <section class="panel"><h2>مهم قبل الحذف</h2><p class="hint">«إخفاء» يخفي المشروع مؤقتًا ويمكن إظهاره في أي وقت. «حذف من الموقع» يمنع ظهوره حتى لو أضافته مزامنة Behance مرة تانية، مع إمكانية الاستعادة. <b>الحذف مش بيمسح مشروعك من Behance.</b></p></section>
+</section>
+<div id="message" class="message" role="status" aria-live="polite" hidden></div>
+</main>
+<dialog id="projectDialog" aria-labelledby="dialogTitle"><form id="projectForm" method="dialog" novalidate><div class="dialog-top"><h2 id="dialogTitle">إضافة مشروع جديد</h2><button type="button" class="icon-button" id="closeDialog" aria-label="إغلاق">✕</button></div>
+ <p class="hint">تقدر تضيف مشروع من جهازك مع صوره مباشرة، أو تستخدم روابط صور HTTPS. لو المشروع على Behance، ضيف رابطه الأصلي.</p>
+ <div class="form-grid">
+ <label>عنوان المشروع *<input name="title" maxlength="160" required></label>
+ <label>التصنيف<select name="category"><option value="social">سوشيال ميديا</option><option value="branding">هوية بصرية</option><option value="covers">أغلفة كتب</option><option value="print">مطبوعات وتغليف</option><option value="ai">تصميمات AI</option></select></label>
+ <label>سنة التنفيذ<input name="year" maxlength="12" placeholder="2026"></label>
+ <label>رابط المشروع الأصلي<input name="url" type="url" placeholder="https://www.behance.net/gallery/..."></label>
+ <label class="full">رابط صورة الغلاف (اختياري)<input name="cover" placeholder="https://... أو سيُستخدم أول تصميم"></label>
+ <label class="full">وصف المشروع<textarea name="description" rows="3" maxlength="1500"></textarea></label>
+ <div class="full manual-only" id="galleryFields"><label>روابط صور المشروع، رابط في كل سطر<textarea name="images" rows="4" dir="ltr" placeholder="https://.../image1.jpg&#10;https://.../image2.jpg"></textarea></label>
+ <label>أو ارفع صور المشروع من الكمبيوتر (PNG / JPG / WebP / GIF، بحد أقصى 8MB للصورة)<input name="galleryFiles" id="galleryFiles" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple></label>
+ <label>صورة غلاف من الجهاز (اختياري)<input name="coverFile" id="coverFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+ <p class="hint">رفع الصور يحتاج مفتاح GitHub اللي دخلته. الملفات بتترفع لمستودع الموقع مباشرة، ومش لأي خدمة خارجية.</p></div></div>
+ <div class="dialog-actions"><button class="outline" type="button" id="cancelForm">إلغاء</button><button class="primary" type="submit" id="saveProject">حفظ المشروع في اللوحة</button></div></form></dialog>
+<script src="../controls.js"></script><script src="manage-projects.js" defer></script>
+</body></html>
