@@ -7,8 +7,10 @@ on:
       - 'index.html'
       - 'styles.css'
       - 'app.js'
+      - 'controls.js'
       - 'assets/**'
       - 'data/projects.json'
+      - 'data/site-controls.json'
       - 'tools/**'
       - '.github/workflows/deploy-pages.yml'
 permissions:
