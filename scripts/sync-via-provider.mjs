@@ -118,11 +118,12 @@ function newProject(entry){
   return {id:`behance-${entry.id}`,title:entry.title||`Behance project ${entry.id}`,title_en:'',category,category_label:LABELS[category],year:'',cover:entry.cover,images:[],description:'',story:'',source:'behance',url:entry.url,behance_id:entry.id};
 }
 export function mergeDetail(existing,entry,detail,now){
-  const isPlaceholder=title=>{const value=String(title||'').trim();return !value || [...value].every(ch=>ch==='?') || value.toLowerCase().startsWith('behance project ');};
+  const isPlaceholder=title=>{const value=String(title||'').trim();return !value || [...value].every(ch=>ch==='?') || value.toLowerCase().startsWith('behance project ') || value.startsWith('مشروع Behance ');};
   const title=detail.title && !isPlaceholder(detail.title)?detail.title:existing.title;
   return {
     ...existing,
-    title: isPlaceholder(existing.title)||!existing.title ? title : existing.title,
+    title: isPlaceholder(existing.title)||existing.title_source==='url-slug' ? title : existing.title,
+    title_source: detail.title && !isPlaceholder(detail.title) ? 'behance' : (existing.title_source||''),
     cover:detail.cover||entry.cover||existing.cover,
     url:detail.url||entry.url||existing.url,
     description:detail.description||existing.description||'',
@@ -158,7 +159,9 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
   const raw=await fs.readFile(catalogPath,'utf8');
   const catalog=JSON.parse(raw);
   if(!Array.isArray(catalog))throw Error('Invalid project catalog');
-  const initial=parseProfile(await getJSON(`/user?username=${encodeURIComponent(USERNAME)}`,key,fetchImpl));
+  let initial=[],profileError='';
+  try {initial=parseProfile(await getJSON(`/user?username=${encodeURIComponent(USERNAME)}`,key,fetchImpl));}
+  catch(e){profileError=String(e?.message||e).slice(0,200);}
   const byId=new Map(catalog.map(p=>[p.id,p]));
   const profileMap=new Map(initial.map(p=>[p.id,p]));
   // Free one-time supplement: links exported from the owner's Behance profile.
@@ -182,6 +185,7 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
     addedFromKnown++;
   }
   const profile=[...profileMap.values()];
+  if(!profile.length && profileError)throw Error('No public project URLs available: '+profileError);
   const events=[];
   let requested=1,imported=0,skipped=0,failed=0;
   for(const entry of profile){
@@ -232,6 +236,7 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
     checked_at:now.toISOString(),
     provider:'scrappa-free-with-owner-public-links',
     profile:USERNAME,primary_projects:initial.length,
+    ...(profileError ? {primary_profile_error:profileError} : {}),
     profile_projects:profile.length,catalog_projects:catalogProjects.length,
     known_project_links:sourceEntries.length,added_from_known:addedFromKnown,
     expected_minimum_from_owner:USER_REPORTED_MINIMUM,
