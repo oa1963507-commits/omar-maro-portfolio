@@ -125,7 +125,7 @@ export function mergeDetail(existing,entry,detail,now){
   const incomingCount=detail.images.length;
   // The owner's public-browser export may have recovered more of a project than
   // the upstream provider. Never replace that gallery with a truncated response.
-  const preserveBetterGallery=priorCount>incomingCount;
+  const preserveBetterGallery=priorCount>incomingCount || (existing.browser_public_scan===true && priorCount>=incomingCount);
   return {
     ...existing,
     title: isPlaceholder(existing.title)||existing.title_source==='url-slug' ? title : existing.title,
@@ -138,6 +138,8 @@ export function mergeDetail(existing,entry,detail,now){
     full_project_synced:true,
     image_quality:preserveBetterGallery?(existing.image_quality||'existing-better-gallery'):'provider-original-CDN-variants',
     provider_checked_at:now.toISOString(),
+    browser_public_scan:preserveBetterGallery?existing.browser_public_scan:false,
+    browser_checked_at:preserveBetterGallery?existing.browser_checked_at:null,
     provider_retry_at:null,
     provider_last_error:null,
   };
@@ -199,8 +201,8 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
   for(const entry of profile){
     const catalogID=`behance-${entry.id}`;
     const old=byId.get(catalogID)||newProject(entry);
-    const freshAt=getDate(old.provider_checked_at);
-    const complete=old.full_project_synced && Array.isArray(old.modules) && old.modules.length>0;
+    const freshAt=getDate(old.browser_public_scan ? (old.browser_checked_at||old.provider_checked_at) : old.provider_checked_at);
+    const complete=(old.full_project_synced || old.browser_public_scan) && Array.isArray(old.modules) && old.modules.length>0;
     const retryAt=getDate(old.provider_retry_at);
     if(!complete && retryAt && retryAt.getTime()>now.getTime()){
       byId.set(catalogID,old);
