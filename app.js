@@ -20,6 +20,37 @@
     if (!p || typeof p !== 'object' || !/^[a-z0-9-]{2,120}$/.test(String(p.id||''))) return null;
     return {id:p.id,title:String(p.title||'بدون عنوان'),title_en:String(p.title_en||p.title||''),category:['branding','social','covers','print','ai'].includes(p.category)?p.category:'social',category_label:String(p.category_label||'مشروع إبداعي'),year:String(p.year||''),cover:safeMediaUrl(p.cover),images:Array.isArray(p.images)?p.images.map(safeMediaUrl).filter(Boolean).slice(0,30):[],description:String(p.description||''),story:String(p.story||''),source:String(p.source||''),url:safeExternal(p.url||'')};
   }
+  // Prefer Behance's larger public CDN variants; retain lower-res URLs as fallbacks.
+  function imageSources(raw, kind='module') {
+    const src=safeMediaUrl(raw);
+    if(!src)return [];
+    const candidates=[];
+    const add=s=>{if(s && !candidates.includes(s))candidates.push(s);};
+    if (/\/projects\/(?:404|max_808|original)\//i.test(src)) {
+      add(src.replace(/\/projects\/(?:404|max_808|original)\//i, kind==='card'?'/projects/max_808/':'/projects/original/'));
+      add(src.replace(/\/projects\/(?:404|max_808|original)\//i,'/projects/max_808/'));
+    } else if (/\/project_modules\/[a-z0-9_-]+\//i.test(src)) {
+      add(src.replace(/\/project_modules\/[a-z0-9_-]+\//i,'/project_modules/source/'));
+      add(src.replace(/\/project_modules\/[a-z0-9_-]+\//i,'/project_modules/fs/'));
+      add(src.replace(/\/project_modules\/[a-z0-9_-]+\//i,'/project_modules/max_1200/'));
+    }
+    add(src);
+    return candidates;
+  }
+  function qualityImage(raw, className, alt, kind='module', loading='lazy') {
+    const choices=imageSources(raw,kind);
+    if(!choices.length)return '';
+    return `<img class="${className}" loading="${loading}" decoding="async" src="${escapeHTML(choices[0])}" data-fallbacks="${escapeHTML(choices.slice(1).join('|'))}" alt="${escapeHTML(alt)}">`;
+  }
+  function attachImageFallbacks(scope=document) {
+    scope.querySelectorAll('img[data-fallbacks]').forEach(img=>{
+      let choices=img.dataset.fallbacks.split('|').filter(Boolean);
+      img.addEventListener('error',()=>{
+        if(choices.length)img.src=choices.shift();
+        else img.classList.add('image-unavailable');
+      });
+    });
+  }
   const watch = (root=document) => {
     const els = root.querySelectorAll('.reveal:not(.show)');
     if(!('IntersectionObserver' in window)){els.forEach(el=>el.classList.add('show'));return;}
@@ -27,13 +58,14 @@
     els.forEach(el=>ob.observe(el));
   };
   function projectCard(p){
-    const im=p.cover?`<img loading="lazy" src="${escapeHTML(p.cover)}" alt="${escapeHTML(p.title)}">`:`<div class="project-image-fallback">OM / ${escapeHTML(p.category_label)}</div>`;
+    const im=p.cover?qualityImage(p.cover, 'project-card-image', p.title, 'card'):`<div class="project-image-fallback">OM / ${escapeHTML(p.category_label)}</div>`;
     return `<a href="#project/${encodeURIComponent(p.id)}" class="project-card reveal"><div class="project-image">${im}<span class="project-view-link">عرض دراسة الحالة ↗</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(p.category_label)} · ${escapeHTML(p.year)}</span><h3>${escapeHTML(p.title)}</h3></div><span class="project-arrow">↗</span></div></a>`;
   }
   function renderProjects(){
     const shown = projects.filter(p=>activeFilter === 'all' || p.category === activeFilter);
     $('#total-projects').textContent=String(projects.length).padStart(2,'0');
     $('#projects-grid').innerHTML=shown.length? shown.map(projectCard).join('') : `<div class="empty-state"><strong>قريبًا في القسم ده.</strong><p>مشاريع التصنيف ده هتظهر لما نضيفها لمصدر الموقع. لحد وقتها تقدر تشوف باقي الأعمال على Behance.</p><a href="${BEHANCE}" class="underlink" target="_blank" rel="noopener noreferrer">افتح Behance ↗</a></div>`;
+    attachImageFallbacks($('#projects-grid'));
     watch($('#projects-grid'));
   }
   $$('.filter').forEach(btn=>btn.addEventListener('click',()=>{
@@ -42,17 +74,23 @@
     renderProjects();
   }));
   function renderDetail(p){
-    const gallery = (p.images||[]).map(im=>`<img src="${escapeHTML(im)}" alt="صور مشروع ${escapeHTML(p.title)}" loading="lazy">`).join('');
+    const images=(p.images||[]).filter(Boolean);
+    const gallery=images.map((im,index)=>{
+      const full=imageSources(im,'module')[0];
+      return `<figure class="case-media"><a href="${escapeHTML(full)}" target="_blank" rel="noopener noreferrer" title="فتح الصورة بدقتها الأصلية">${qualityImage(im,'case-full-image',`${p.title} — صورة ${index+1}`,'module')}</a><figcaption>${String(index+1).padStart(2,'0')} / ${String(images.length).padStart(2,'0')} · افتح الصورة بدقتها الأصلية ↗</figcaption></figure>`;
+    }).join('');
     const behanceID=(p.source==='behance'&&p.url?.startsWith('https://')) ? p.url.match(/^https:\/\/(?:www\.)?behance\.net\/gallery\/(\d{3,18})(?:\/|$)/)?.[1] : null;
-    const behanceEmbed=behanceID?`<div class="case-behance"><div class="case-embed-heading"><span>FULL PROJECT / المشروع الكامل</span><p>عرض المشروع الأصلي من Behance داخل صفحة خاصة به على الموقع.</p></div><iframe loading="lazy" title="مشروع ${escapeHTML(p.title)} على Behance" src="https://www.behance.net/embed/project/${behanceID}?ilo0=1" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><p class="case-embed-note">إذا لم يظهر العرض المدمج، افتح المشروع من الزر بالأسفل.</p></div>`:'';
-    const url=p.url?`<a href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer" class="case-cta">المشروع على Behance <span>↗</span></a>`:`<a href="${BEHANCE}" target="_blank" rel="noopener noreferrer" class="case-cta">شوف باقي أعمالي <span>↗</span></a>`;
-    return `<div class="case-container"><p class="case-eyebrow">${escapeHTML(p.category_label)} / ${escapeHTML(p.year)}</p><h2 class="case-title">${escapeHTML(p.title)}</h2><p class="case-desc">${escapeHTML(p.description)}</p>${p.cover?`<img class="case-hero-img" src="${escapeHTML(p.cover)}" alt="غلاف مشروع ${escapeHTML(p.title)}">`:''}<div class="case-section"><span>THE IDEA / الفكرة</span><p>${escapeHTML(p.story || p.description || 'كل مشروع له قصته وطريقته في العرض.')}</p></div>${gallery?`<div class="case-gallery">${gallery}</div>`:''}${behanceEmbed}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING ✳</span>${url}</div></div>`;
+    const url=p.url?`<a href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer" class="case-cta">المشروع الأصلي على Behance <span>↗</span></a>`:`<a href="${BEHANCE}" target="_blank" rel="noopener noreferrer" class="case-cta">شوف باقي أعمالي <span>↗</span></a>`;
+    const summary=images.length?`<div class="case-quality-note">${images.length} صورة من المشروع · عرض رأسي كامل · افتح أي صورة لمشاهدتها بالحجم الكامل</div>`:p.source==='behance'?`<div class="case-quality-note case-quality-pending">صور المشروع الداخلية غير متاحة للموقع حاليًا؛ المعروض أدناه غلاف المشروع فقط. تقدر تشوف المشروع كاملًا على Behance من الرابط.</div>`:'';
+    // Do not pretend that an embedded Behance preview is a complete project import.
+    const hero=p.cover?qualityImage(p.cover,'case-hero-img',`غلاف ${p.title}`,'detail','eager'):'';
+    return `<div class="case-container"><p class="case-eyebrow">${escapeHTML(p.category_label)} / ${escapeHTML(p.year)}</p><h2 class="case-title">${escapeHTML(p.title)}</h2>${p.description?`<p class="case-desc">${escapeHTML(p.description)}</p>`:''}${summary}${images.length===0?hero:''}${p.story?`<div class="case-section"><span>THE IDEA / الفكرة</span><p>${escapeHTML(p.story)}</p></div>`:''}${gallery?`<div class="case-gallery">${gallery}</div>`:''}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING ✳</span>${url}</div></div>`;
   }
   function openProject(id){
     const p=projects.find(x=>x.id===id);
     if(!p){window.location.hash='#work';return;}
     const layer=$('#project-view'); focusBeforeDialog=document.activeElement;
-    $('#project-view-content').innerHTML=renderDetail(p);layer.hidden=false;
+    $('#project-view-content').innerHTML=renderDetail(p);attachImageFallbacks($('#project-view-content'));layer.hidden=false;
     document.body.classList.add('locked');layer.scrollTop=0;
     layer.querySelector('.close-project').focus();
     document.title=`${p.title} — OMAR MARO`;
