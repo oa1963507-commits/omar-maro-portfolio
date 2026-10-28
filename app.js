@@ -79,14 +79,35 @@
     const ob = new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');ob.unobserve(e.target);}})},{threshold:.1,rootMargin:'0px 0px 35px 0px'});
     els.forEach(el=>ob.observe(el));
   };
-  function projectCard(p){
-    const im=p.cover?qualityImage(p.cover, 'project-card-image', p.title, 'card'):`<div class="project-image-fallback">OM / ${escapeHTML(p.category_label)}</div>`;
-    return `<a href="#project/${encodeURIComponent(p.id)}" class="project-card reveal"><div class="project-image">${im}<span class="project-view-link">عرض دراسة الحالة ↗</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(p.category_label)} · ${escapeHTML(p.year)}</span><h3>${escapeHTML(p.title)}</h3></div><span class="project-arrow">↗</span></div></a>`;
+
+  function projectCard(p,index){
+    const thumbnail=p.cover||p.images?.[0]||'';
+    const im=thumbnail?qualityImage(thumbnail,'project-card-image',p.title,'card'):`<div class="project-image-fallback">OM / ${escapeHTML(p.category_label)}</div>`;
+    const number=String(index+1).padStart(2,'0');
+    return `<a href="#project/${encodeURIComponent(p.id)}" class="project-card reveal" aria-label="شاهد مشروع ${escapeHTML(p.title)}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">عرض المشروع ↗</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(p.category_label)}${p.year?' · '+escapeHTML(p.year):''}</span><h3>${escapeHTML(p.title)}</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>`;
+  }
+  function renderFeaturedProjects(){
+    const grid=$('#hero-featured');
+    if(!grid)return;
+    const selected=projects.filter(p=>p.cover||p.images?.length).slice(0,3);
+    if(!selected.length){
+      grid.innerHTML='<a href="#work" class="showcase-fallback"><img src="assets/omar-cover.jpg" alt="هوية OMAR MARO"></a>';
+    } else {
+      grid.innerHTML=selected.map((p,i)=>{
+        const cover=p.cover||p.images?.[0]||'';
+        const image=qualityImage(cover,'showcase-img',p.title,'card',i===0?'eager':'lazy');
+        return `<a href="#project/${encodeURIComponent(p.id)}" class="showcase-card" aria-label="مشروع ${escapeHTML(p.title)}">${image}${i===0?'<span class="showcase-label">FEATURED</span>':''}<span class="showcase-caption">${escapeHTML(p.title)}</span></a>`;
+      }).join('');
+    }
+    attachImageFallbacks(grid);
+    const count=$('#metric-projects'), images=$('#metric-images');
+    if(count)count.textContent=String(projects.length).padStart(2,'0');
+    if(images)images.textContent=String(projects.reduce((n,p)=>n+(p.images?.length||0),0)).padStart(2,'0');
   }
   function renderProjects(){
     const shown = projects.filter(p=>activeFilter === 'all' || p.category === activeFilter);
     $('#total-projects').textContent=String(projects.length).padStart(2,'0');
-    $('#projects-grid').innerHTML=shown.length? shown.map(projectCard).join('') : `<div class="empty-state"><strong>قريبًا في القسم ده.</strong><p>مشاريع التصنيف ده هتظهر لما نضيفها لمصدر الموقع. لحد وقتها تقدر تشوف باقي الأعمال على Behance.</p><a href="${BEHANCE}" class="underlink" target="_blank" rel="noopener noreferrer">افتح Behance ↗</a></div>`;
+    $('#projects-grid').innerHTML=shown.length?shown.map((p,i)=>projectCard(p,i)).join(''):`<div class="empty-state"><strong>مفيش مشاريع في القسم ده حاليًا.</strong><p>شوف باقي الأعمال أو تصفّح صفحة Behance.</p><a href="${BEHANCE}" class="underlink" target="_blank" rel="noopener noreferrer">افتح Behance ↗</a></div>`;
     attachImageFallbacks($('#projects-grid'));
     watch($('#projects-grid'));
   }
@@ -157,7 +178,7 @@
         projects=visible.map(normalize).filter(Boolean);
       }
     }catch(e){ /* Local offline preview retains original seed. */ }
-    renderProjects();route();
+    renderFeaturedProjects();renderProjects();route();
   }
   updateProgress();watch();loadProjects();
 })();
