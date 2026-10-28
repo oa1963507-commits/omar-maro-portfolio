@@ -134,17 +134,17 @@ test('brand palette is blue across portfolio, logo outline, admin and sync tools
  assert.ok(!sync.includes('#77d6a5'));
 });
 
-test('English typography uses Syne display and Manrope UI without replacing Arabic Cairo',async()=>{
+test('English typography uses Plus Jakarta Sans display and Inter UI without replacing Arabic Cairo',async()=>{
  const editorHTML=await fs.readFile(new URL('../tools/manage-projects.html',import.meta.url),'utf8');
  const editorCSS=await fs.readFile(new URL('../tools/manage-projects.css',import.meta.url),'utf8');
  const syncHTML=await fs.readFile(new URL('../tools/auto-sync.html',import.meta.url),'utf8');
  assert.ok(html.includes('family=Cairo:wght@'));
- assert.ok(html.includes('family=Manrope:wght@'));
- assert.ok(html.includes('family=Syne:wght@'));
+ assert.ok(html.includes('family=Inter:wght@'));
+ assert.ok(html.includes('family=Plus+Jakarta+Sans:wght@'));
  assert.ok(!html.includes('Space+Grotesk'));
  assert.ok(css.includes("--font-ar:'Cairo'"));
- assert.ok(css.includes("--font-en:'Manrope'"));
- assert.ok(css.includes("--font-display:'Syne'"));
+ assert.ok(css.includes("--font-en:'Inter'"));
+ assert.ok(css.includes("--font-display:'Plus Jakarta Sans'"));
  assert.ok(css.includes('.brand>span{font-family:var(--font-display)'));
  assert.ok(css.includes('.project-info h3.is-latin,.case-title.is-latin,.showcase-caption.is-latin'));
  assert.ok(script.includes('const isLatinTitle'));
