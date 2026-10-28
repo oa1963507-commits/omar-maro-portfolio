@@ -9,6 +9,7 @@ on:
       - 'scripts/sync-via-provider.mjs'
       - 'data/known-projects.json'
       - 'tests/provider-sync.test.mjs'
+      - 'tests/controls.test.mjs'
       - '.github/workflows/sync-projects.yml'
   schedule:
     - cron: '17 1,7,13,19 * * *' # UTC: every six hours; ~120 profile requests/month
