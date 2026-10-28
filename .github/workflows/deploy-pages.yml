@@ -7,6 +7,7 @@ on:
       - 'index.html'
       - 'styles.css'
       - 'app.js'
+      - 'i18n.js'
       - 'controls.js'
       - 'assets/**'
       - 'data/projects.json'
@@ -32,6 +33,7 @@ jobs:
       - name: Validate redesigned site and owner project settings
         run: |
           node --check app.js
+          node --check i18n.js
           node --check controls.js
           node --test tests/portfolio-ui.test.mjs
       - uses: actions/configure-pages@v5
