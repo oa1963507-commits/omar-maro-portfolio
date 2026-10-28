@@ -1,8 +1,40 @@
 {
   "version": 1,
-  "order": [],
+  "order": [
+    "omar-maro-identity",
+    "behance-229201617",
+    "behance-254951187",
+    "behance-254950911",
+    "behance-254950791",
+    "behance-254950629",
+    "behance-254950265",
+    "behance-248355233",
+    "behance-246374445",
+    "behance-246373273",
+    "behance-239948007",
+    "behance-239434969",
+    "behance-230910139",
+    "behance-230185763",
+    "behance-230756783",
+    "behance-230558910",
+    "behance-230308711",
+    "behance-229727361",
+    "behance-229118811",
+    "behance-226842327",
+    "behance-229201679",
+    "behance-229169997",
+    "behance-229169841",
+    "behance-229114233",
+    "behance-229113721",
+    "behance-229112765",
+    "behance-162581937",
+    "behance-160746221",
+    "behance-124761559"
+  ],
   "hidden": [],
-  "excluded": [],
+  "excluded": [
+    "omar-maro-identity"
+  ],
   "overrides": {},
   "customProjects": []
 }
