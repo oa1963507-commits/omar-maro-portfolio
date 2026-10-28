@@ -1,0 +1,16 @@
+[
+  {
+    "id": "omar-maro-identity",
+    "title": "OMAR MARO — الهوية الشخصية",
+    "title_en": "OMAR MARO — PERSONAL BRAND",
+    "category": "branding",
+    "category_label": "الهوية البصرية",
+    "year": "2026",
+    "cover": "assets/omar-cover.jpg",
+    "images": ["assets/omar-profile.jpg", "assets/omar-cover.jpg"],
+    "description": "الهوية الشخصية لمصمم الجرافيك عمر مارو: شعار أحادي اللون قائم على حرف M، ومعالجة بصرية داكنة تستحضر أجواء استوديو التصميم. الصور أصلية ومقدمة من صاحب الهوية.",
+    "story": "علامة بسيطة ومميزة تجمع بين الحرف الأول من الاسم والتكوين الهندسي الدائري. الفكرة هي حضور بصري واضح، أبيض وأسود، يبرز وسط التفاصيل بدون ازدحام.",
+    "source": "original",
+    "url": ""
+  }
+]

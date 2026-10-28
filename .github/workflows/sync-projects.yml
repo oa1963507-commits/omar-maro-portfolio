@@ -1,0 +1,36 @@
+name: Sync Omar Maro Behance projects
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */6 * * *' # UTC, approximate; GitHub may delay scheduled jobs
+permissions:
+  contents: write
+concurrency:
+  group: portfolio-behance-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify importer with local fixtures
+        run: node --test tests/*.test.mjs
+      - name: Import publicly visible Behance projects
+        env:
+          BEHANCE_FEED_URL: ${{ vars.BEHANCE_FEED_URL }}
+        run: node scripts/sync-behance.mjs
+      - name: Commit only when projects change
+        run: |
+          git config user.name 'omar-maro-portfolio[bot]'
+          git config user.email 'omar-maro-portfolio[bot]@users.noreply.github.com'
+          git add data/projects.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Refresh Behance portfolio projects'
+            git push
+          fi
