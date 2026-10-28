@@ -140,9 +140,23 @@
   window.addEventListener('scroll',updateProgress,{passive:true});
   $('#year').textContent=new Date().getFullYear();
   async function loadProjects(){
-    // Static site: data/projects.json is the authoritative catalog. Updated automatically by your configured sync pipeline.
-    try{ const r=await fetch('data/projects.json',{cache:'no-store'});if(!r.ok)throw Error('catalog request failed');const j=await r.json();if(Array.isArray(j)){const clean=j.map(normalize).filter(Boolean);if(clean.length)projects=clean;}}
-    catch(e){ /* Local file:// preview keeps bundled seed without network dependency. */ }
+    // Behance catalog and owner-authored presentation settings are separate.
+    // Visibility/order/deletion survive all future automatic Behance imports.
+    try{
+      const [catalogResponse,settingsResponse]=await Promise.all([
+        fetch('data/projects.json',{cache:'no-store'}),
+        fetch('data/site-controls.json',{cache:'no-store'})
+      ]);
+      if(!catalogResponse.ok)throw Error('catalog request failed');
+      const records=await catalogResponse.json();
+      const settings=settingsResponse.ok?await settingsResponse.json():{};
+      if(Array.isArray(records)){
+        const cleaned=records.map(normalize).filter(Boolean);
+        const controls=window.OMPortfolioControls;
+        const visible=controls?controls.applyControls(cleaned,settings):cleaned;
+        projects=visible.map(normalize).filter(Boolean);
+      }
+    }catch(e){ /* Local offline preview retains original seed. */ }
     renderProjects();route();
   }
   updateProgress();watch();loadProjects();
