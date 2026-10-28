@@ -160,6 +160,7 @@ test('English typography uses Syne display and Manrope UI without replacing Arab
 test('Arabic and English are selectable from a persistent, accessible header control',async()=>{
  const locale=await fs.readFile(new URL('../i18n.js',import.meta.url),'utf8');
  assert.ok(html.includes('id="language-toggle"'));
+ assert.ok(html.includes('id="language-toggle-project"'));
  assert.ok(html.includes('class="lang-ar"'));
  assert.ok(html.includes('class="lang-en"'));
  assert.ok(html.indexOf('src="i18n.js"')<html.indexOf('src="app.js"'));
@@ -168,6 +169,8 @@ test('Arabic and English are selectable from a persistent, accessible header con
  assert.ok(locale.includes("localStorage.setItem(storageKey,next)"));
  assert.ok(locale.includes("window.dispatchEvent(new CustomEvent('om-language-change'"));
  assert.ok(css.includes('.language-toggle{'));
+ assert.ok(css.includes('.project-language-toggle{'));
+ assert.ok(locale.includes("'#language-toggle,#language-toggle-project'"));
  assert.ok(css.includes('html[lang="en"] .hero h1'));
  assert.ok(css.includes('@media(max-width:920px){.language-toggle'));
 });
