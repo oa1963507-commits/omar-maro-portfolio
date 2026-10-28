@@ -31,3 +31,10 @@ test('rejects unrelated projects and exported text as executable content',()=>{
  assert.equal(r.catalog[0].images.length,1);
  assert.ok(!r.catalog[0].title.includes('<'));
 });
+
+test('preserves existing text module position between images',()=>{
+ const prior={...original,images:[image(1),image(2)],modules:[{type:'image',url:image(1)},{type:'text',text:'Design process'},{type:'image',url:image(2)}]};
+ const r=mergeBrowserExport([prior],data([{id,url,images:[image(3),image(4),image(5)]}]));
+ assert.deepEqual(r.catalog[0].modules.map(x=>x.type),['image','text','image','image']);
+ assert.equal(r.catalog[0].modules[1].text,'Design process');
+});
