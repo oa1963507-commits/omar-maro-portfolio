@@ -90,6 +90,33 @@ test('original Omar Maro logo replaces all standalone decorative OM letters',asy
  assert.ok(adminStyle.includes('.mark img{'));
 });
 
+test('CV-based About profile contains five real career entries and verified accomplishments',()=>{
+ assert.ok(html.includes('id="about-heading"'));
+ assert.equal((html.match(/class="career-card reveal"/g)||[]).length,5);
+ for(const name of ['Infinity Marketing Agency','Coffee Moca','Print Alwan','موقع حصري الإخباري','شركة ارنج لماكينات الطباعة']){
+   assert.ok(html.includes(name),'missing CV organization '+name);
+ }
+ for(const date of ['2021-08','2023-02','2023-11','2025-02','2025-06','2025-09','2025-10','2025-12']){
+   assert.ok(html.includes('datetime="'+date+'"'),'missing CV month '+date);
+ }
+ assert.ok(html.includes('أكثر من 20 مشروعًا لأكثر من 8 أطباء'));
+ assert.ok(html.includes('خبرة تتجاوز 6 سنوات'));
+});
+test('About section lists education, five CV skills and public professional links without publishing DOB',()=>{
+ for(const skill of ['Adobe Photoshop','Adobe Illustrator','Branding Design','AI-powered design tools','Dayline design'])
+   assert.ok(html.includes(skill));
+ assert.ok(html.includes('جامعة عين شمس'));
+ assert.ok(html.includes('Adoby ex'));
+ assert.ok(html.includes('linkedin.com/in/omar-adel-63a729213'));
+ assert.ok(html.includes('www.behance.net/oa19635079ead'));
+ assert.ok(html.includes('mailto:oa456aa@gmail.com'));
+ assert.ok(!html.includes('22/3/2001'),'date of birth must not be published');
+ assert.ok(css.includes('.career-timeline{'));
+ assert.ok(css.includes('.resume-columns{'));
+ assert.ok(css.includes('.about-highlights{'));
+ assert.ok(css.includes('@media(max-width:690px)'));
+});
+
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
