@@ -167,9 +167,9 @@
   window.addEventListener('hashchange',route);
   window.addEventListener('keydown',(e)=>{const layer=$('#project-view');if(e.key==='Escape' && !layer.hidden)location.hash='#work';if(e.key==='Tab' && !layer.hidden){const links=[...layer.querySelectorAll('a,button,[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled);if(!links.length)return;const first=links[0],last=links[links.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
   const menuBtn=$('#menu-toggle'), menu=$('#mobile-nav');
-  menuBtn.addEventListener('click',()=>{const open=menu.hidden; menu.hidden=!open;menuBtn.setAttribute('aria-expanded',String(open));menuBtn.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة');});
+  menuBtn.addEventListener('click',()=>{const open=menu.hidden; menu.hidden=!open;menuBtn.setAttribute('aria-expanded',String(open));menuBtn.setAttribute('aria-label',open?t('إغلاق القائمة','Close menu'):t('فتح القائمة','Open menu'));});
   $$('#mobile-nav a').forEach(a=>a.addEventListener('click',()=>{menu.hidden=true;menuBtn.setAttribute('aria-expanded','false');}));
-  $('#brief-form').addEventListener('submit',e=>{e.preventDefault();const name=$('#client-name').value.trim(),type=$('#project-type').value,idea=$('#project-description').value.trim();if(!name||!type||!idea)return;const msg=`أهلًا عمر، أنا ${name}.\n\nنوع المشروع: ${type}\n\nتفاصيل الفكرة:\n${idea}\n\n(تم إرسال التفاصيل من موقع Omar Maro)`;window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank','noopener,noreferrer');});
+  $('#brief-form').addEventListener('submit',e=>{e.preventDefault();const name=$('#client-name').value.trim(),type=$('#project-type').value,idea=$('#project-description').value.trim();if(!name||!type||!idea)return;const msg=isEnglish()?`Hi Omar, my name is ${name}.\n\nProject type: ${type}\n\nProject brief:\n${idea}\n\n(Sent via Omar Maro's portfolio website)`:`أهلًا عمر، أنا ${name}.\n\nنوع المشروع: ${type}\n\nتفاصيل الفكرة:\n${idea}\n\n(تم إرسال التفاصيل من موقع Omar Maro)`;window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank','noopener,noreferrer');});
   function updateProgress(){const d=document.documentElement;let x=(d.scrollTop/(d.scrollHeight-d.clientHeight))*100;$('#progress').style.width=`${Math.max(0,Math.min(100,x||0))}%`;}
   window.addEventListener('scroll',updateProgress,{passive:true});
   $('#year').textContent=new Date().getFullYear();
@@ -193,5 +193,21 @@
     }catch(e){ /* Local offline preview retains original seed. */ }
     renderFeaturedProjects();renderProjects();route();
   }
+  window.addEventListener('om-language-change',()=>{
+    renderFeaturedProjects();
+    renderProjects();
+    const layer=$('#project-view');
+    if(layer && !layer.hidden){
+      const id=decodeURIComponent(location.hash.replace(/^#project\//,''));
+      const p=projects.find(v=>v.id===id);
+      if(p){
+        const y=layer.scrollTop;
+        $('#project-view-content').innerHTML=renderDetail(p);
+        attachImageFallbacks($('#project-view-content'));
+        layer.scrollTop=y;
+      }
+    }
+    menuBtn.setAttribute('aria-label',menu.hidden?t('فتح القائمة','Open menu'):t('إغلاق القائمة','Close menu'));
+  });
   updateProgress();watch();loadProjects();
 })();
