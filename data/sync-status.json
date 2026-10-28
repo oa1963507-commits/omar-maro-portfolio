@@ -1,85 +1,85 @@
 {
-  "checked_at": "2026-10-28T20:41:13.198Z",
+  "checked_at": "2026-10-28T20:43:01.293Z",
   "provider": "scrappa-independent-third-party",
   "profile": "oa19635079ead",
   "profile_projects": 12,
-  "requests_attempted": 13,
-  "imported": 10,
-  "skipped": 0,
+  "requests_attempted": 3,
+  "imported": 0,
+  "skipped": 10,
   "failed": 2,
   "with_modules": 10,
   "projects": [
     {
       "id": "behance-229201617",
-      "status": "imported",
+      "status": "cached",
       "module_count": 1,
       "image_count": 1
     },
     {
       "id": "behance-254951187",
-      "status": "imported",
+      "status": "cached",
       "module_count": 1,
       "image_count": 1
     },
     {
       "id": "behance-254950911",
-      "status": "imported",
+      "status": "cached",
       "module_count": 4,
       "image_count": 4
     },
     {
       "id": "behance-254950791",
       "status": "unavailable",
-      "error": "Provider returned unexpected project details",
+      "error": "Provider project has no modules array; media_fields=id",
       "module_count": 0,
       "image_count": 0
     },
     {
       "id": "behance-254950629",
       "status": "unavailable",
-      "error": "Provider returned unexpected project details",
+      "error": "Provider project has no modules array; media_fields=id",
       "module_count": 0,
       "image_count": 0
     },
     {
       "id": "behance-254950265",
-      "status": "imported",
+      "status": "cached",
       "module_count": 4,
       "image_count": 3
     },
     {
       "id": "behance-248355233",
-      "status": "imported",
+      "status": "cached",
       "module_count": 3,
       "image_count": 3
     },
     {
       "id": "behance-246374445",
-      "status": "imported",
+      "status": "cached",
       "module_count": 2,
       "image_count": 2
     },
     {
       "id": "behance-246373273",
-      "status": "imported",
+      "status": "cached",
       "module_count": 4,
       "image_count": 4
     },
     {
       "id": "behance-239948007",
-      "status": "imported",
+      "status": "cached",
       "module_count": 1,
       "image_count": 1
     },
     {
       "id": "behance-239434969",
-      "status": "imported",
+      "status": "cached",
       "module_count": 15,
       "image_count": 15
     },
     {
       "id": "behance-230910139",
-      "status": "imported",
+      "status": "cached",
       "module_count": 5,
       "image_count": 5
     }
