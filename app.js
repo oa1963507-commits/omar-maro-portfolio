@@ -9,6 +9,8 @@
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => [...document.querySelectorAll(s)];
   const escapeHTML = (s) => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  // Only pure Latin titles get the display face; mixed/Arabic titles retain Cairo.
+  const isLatinTitle = value => /[A-Za-z]/.test(String(value ?? '')) && !/[\u0600-\u06FF]/.test(String(value ?? ''));
   function safeMediaUrl(s) {
     if (typeof s !== 'string') return '';
     const value = s.trim();
@@ -84,7 +86,7 @@
     const thumbnail=p.cover||p.images?.[0]||'';
     const im=thumbnail?qualityImage(thumbnail,'project-card-image',p.title,'card'):`<div class="project-image-fallback"><img src="assets/omar-mark.png" alt="" loading="lazy"><span>${escapeHTML(p.category_label)}</span></div>`;
     const number=String(index+1).padStart(2,'0');
-    return `<a href="#project/${encodeURIComponent(p.id)}" class="project-card reveal" aria-label="شاهد مشروع ${escapeHTML(p.title)}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">عرض المشروع ↗</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(p.category_label)}${p.year?' · '+escapeHTML(p.year):''}</span><h3>${escapeHTML(p.title)}</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>`;
+    return `<a href="#project/${encodeURIComponent(p.id)}" class="project-card reveal" aria-label="شاهد مشروع ${escapeHTML(p.title)}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">عرض المشروع ↗</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(p.category_label)}${p.year?' · '+escapeHTML(p.year):''}</span><h3 class="${isLatinTitle(p.title)?'is-latin':''}">${escapeHTML(p.title)}</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>`;
   }
   function renderFeaturedProjects(){
     const grid=$('#hero-featured');
@@ -96,7 +98,7 @@
       grid.innerHTML=selected.map((p,i)=>{
         const cover=p.cover||p.images?.[0]||'';
         const image=qualityImage(cover,'showcase-img',p.title,'card',i===0?'eager':'lazy');
-        return `<a href="#project/${encodeURIComponent(p.id)}" class="showcase-card" aria-label="مشروع ${escapeHTML(p.title)}">${image}${i===0?'<span class="showcase-label">FEATURED</span>':''}<span class="showcase-caption">${escapeHTML(p.title)}</span></a>`;
+        return `<a href="#project/${encodeURIComponent(p.id)}" class="showcase-card" aria-label="مشروع ${escapeHTML(p.title)}">${image}${i===0?'<span class="showcase-label">FEATURED</span>':''}<span class="showcase-caption${isLatinTitle(p.title)?' is-latin':''}">${escapeHTML(p.title)}</span></a>`;
       }).join('');
     }
     attachImageFallbacks(grid);
@@ -138,7 +140,7 @@
     const preview=!ordered.length && behanceID?`<div class="case-official-preview"><p>معاينة Behance الرسمية</p><iframe loading="lazy" title="معاينة مشروع ${escapeHTML(p.title)}" src="https://www.behance.net/embed/project/${behanceID}?ilo0=1" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><small>قد تكون المعاينة مختصرة؛ لعرض كل المحتوى افتح المشروع الأصلي.</small></div>`:'';
     const originalLink=p.source==='behance' && p.url ? `<a class="case-cta case-origin-link" href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer">شاهد المشروع الأصلي كاملًا على Behance ↗</a>` : '';
     const hero=p.cover?qualityImage(p.cover,'case-hero-img',`غلاف ${p.title}`,'detail','eager'):'';
-    return `<div class="case-container"><header class="case-overview"><p class="case-eyebrow">${escapeHTML(p.category_label)}${p.year?' / '+escapeHTML(p.year):''}</p><h2 class="case-title">${escapeHTML(p.title)}</h2>${p.description?`<p class="case-desc">${escapeHTML(p.description)}</p>`:''}${summary}${originalLink}</header>${!ordered.length?hero:''}${preview}${p.story?`<div class="case-section"><span>THE IDEA / الفكرة</span><p>${escapeHTML(p.story)}</p></div>`:''}${gallery?`<div class="case-gallery">${gallery}</div>`:''}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING ✳</span>${url}</div></div>`;
+    return `<div class="case-container"><header class="case-overview"><p class="case-eyebrow">${escapeHTML(p.category_label)}${p.year?' / '+escapeHTML(p.year):''}</p><h2 class="case-title${isLatinTitle(p.title)?' is-latin':''}">${escapeHTML(p.title)}</h2>${p.description?`<p class="case-desc">${escapeHTML(p.description)}</p>`:''}${summary}${originalLink}</header>${!ordered.length?hero:''}${preview}${p.story?`<div class="case-section"><span>THE IDEA / الفكرة</span><p>${escapeHTML(p.story)}</p></div>`:''}${gallery?`<div class="case-gallery">${gallery}</div>`:''}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING ✳</span>${url}</div></div>`;
   }
   function openProject(id){
     const p=projects.find(x=>x.id===id);
