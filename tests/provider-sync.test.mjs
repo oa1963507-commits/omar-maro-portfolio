@@ -33,7 +33,7 @@ test('sync caches complete project modules to save API credits and preserves old
   await fs.writeFile(catalog,JSON.stringify([{id:'omar-maro-identity',source:'original',title:'Original'}])+'\n');
   let calls=[];
   const fetchImpl=async(u)=>{calls.push(u);return {ok:true,json:async()=>u.includes('/user?')?profile:detail};};
-  const args={key:'abcdefghijk',catalogPath:catalog,reportPath:report,fetchImpl,now:new Date('2026-10-28T10:00:00Z')};
+  const args={key:'abcdefghijk',knownProjects:[],catalogPath:catalog,reportPath:report,fetchImpl,now:new Date('2026-10-28T10:00:00Z')};
   const first=await synchronizeProvider(args);
   assert.equal(first.imported,1);assert.equal(calls.length,2);
   assert.equal(first.with_modules,1);
@@ -65,7 +65,7 @@ test('retries an incomplete ID-only response with the public project slug',async
       {success:true,data:{id:Number(id),title:'طبيب أحمد'}};
    return {ok:true,json:async()=>response};
   };
-  const outcome=await synchronizeProvider({key:'abcdefghijk',fetchImpl,catalogPath:catalog,reportPath:report});
+  const outcome=await synchronizeProvider({key:'abcdefghijk',knownProjects:[],fetchImpl,catalogPath:catalog,reportPath:report});
   assert.equal(outcome.imported,1);
   assert.equal(outcome.with_modules,1);
   assert.equal(paths.length,3);
