@@ -1,3 +1,4 @@
+# Manual verification run requested after adding SCRAPPA_API_KEY secret; no secret value is logged.
 name: Sync Omar Maro Behance projects
 on:
   workflow_dispatch:
