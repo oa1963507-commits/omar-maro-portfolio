@@ -36,13 +36,23 @@ jobs:
         run: |
           node scripts/sync-behance.mjs || echo "Public project feed unavailable; keeping existing catalog."
       - name: Read full public project galleries
+        id: hydrate
+        continue-on-error: true
+        env:
+          SCRAPPA_API_KEY: ${{ secrets.SCRAPPA_API_KEY }}
         run: node scripts/import-project-details.mjs
       - name: Commit only when projects change
         run: |
           git config user.name 'omar-maro-portfolio[bot]'
           git config user.email 'omar-maro-portfolio[bot]@users.noreply.github.com'
-          git add data/projects.json
+          git add data/projects.json data/sync-status.json
           if ! git diff --cached --quiet; then
             git commit -m 'Refresh Behance portfolio projects'
             git push
           fi
+
+      - name: Report unavailable project source clearly
+        if: steps.hydrate.outcome == 'failure'
+        run: |
+          echo 'Public Behance project pages could not be imported. Existing project data has been preserved; see data/sync-status.json for detailed diagnosis.'
+          exit 1
