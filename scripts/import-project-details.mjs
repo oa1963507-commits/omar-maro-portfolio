@@ -86,6 +86,17 @@ async function readPage(url){
   const s=await r.text();if(s.length>12_000_000)throw Error('HTML response too large');return s;
 }
 
+// Launch must be awaited: chromium.launch() resolves to Browser, not a Browser immediately.
+export async function createPublicBrowser({browserFactory, playwrightLoader = () => import('playwright')} = {}) {
+  const browser = browserFactory
+    ? await browserFactory()
+    : await (await playwrightLoader()).chromium.launch({headless:true});
+  if (!browser || typeof browser.newContext !== 'function' || typeof browser.close !== 'function') {
+    throw new Error('Playwright did not return a Browser instance');
+  }
+  return browser;
+}
+
 async function browserProject(browser,url,projectId){
   const context=await browser.newContext({viewport:{width:1440,height:920},deviceScaleFactor:1,locale:'en-US'});
   const page=await context.newPage();
@@ -95,11 +106,14 @@ async function browserProject(browser,url,projectId){
     if(u.includes('/project_modules/') && response.status()<400)network.push(u);
   });
   try{
-    await page.goto(url,{waitUntil:'domcontentloaded',timeout:26000});
+    const pageResponse = await page.goto(url,{waitUntil:'domcontentloaded',timeout:18000});
+    if (pageResponse && pageResponse.status() >= 400) {
+      throw Error('Browser page HTTP ' + pageResponse.status());
+    }
     await page.waitForTimeout(900);
     // Scroll through every lazy-loaded module, preserving its DOM order.
     let lastHeight=0,stalled=0;
-    for(let n=0;n<90;n++){
+    for(let n=0;n<45;n++){
       const state=await page.evaluate(()=>({top:window.scrollY,height:document.documentElement.scrollHeight,viewport:window.innerHeight}));
       const atEnd=state.top+state.viewport >= state.height-40;
       if(atEnd&&state.height===lastHeight)stalled++;else stalled=0;
@@ -172,7 +186,7 @@ export async function hydrateCatalog({catalogPath=CATALOG,reportPath=REPORT,load
       }catch(e){errors.push('public HTML: '+e.message);}
       try{
         if(!browser){
-          browser=browserFactory?await browserFactory():(await import('playwright')).chromium.launch({headless:true});
+          browser=await createPublicBrowser({browserFactory});
         }
         const viewed=await browserProject(browser,url,id);
         if(viewed.images.length>=extracted.images.length)extracted={...extracted,...viewed,title:viewed.title||extracted.title};
