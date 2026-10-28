@@ -602,3 +602,7 @@ html[lang="en"] .contact-form input,html[lang="en"] .contact-form textarea{direc
   html[lang="en"] .project-card-no{left:9px}
 }
 @media(max-width:390px){.language-toggle{min-width:75px;font-size:10px}}
+
+/* Keep the bilingual switch accessible in fullscreen project case studies. */
+.project-language-toggle{min-width:88px;min-height:37px;padding:5px 8px;margin-inline:auto;font-size:11px}
+@media(max-width:690px){.project-language-toggle{min-width:80px;min-height:34px;margin-inline-start:auto;margin-inline-end:0}}
