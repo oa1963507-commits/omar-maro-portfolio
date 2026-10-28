@@ -99,3 +99,26 @@ test('catalog merges 28 verified public URLs without repeating the initial first
   assert.equal(new Set(saved.map(x=>x.id)).size,28);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+test('preserves owner browser images against truncated provider refresh',()=>{
+ const originalImages=Array.from({length:12},(_,i)=>`https://mir-s3-cdn-cf.behance.net/project_modules/disp/module${i}254950791.png`);
+ const old={title:'Project',images:originalImages,modules:originalImages.map(url=>({type:'image',url})),image_quality:'browser-visible-module-cdn'};
+ const parsed=parseProject(detail,id);
+ const merged=mergeDetail(old,parseProfile(profile)[0],parsed,new Date('2026-10-29T00:00:00Z'));
+ assert.equal(merged.images.length,12);
+ assert.equal(merged.modules.length,12);
+ assert.equal(merged.image_quality,'browser-visible-module-cdn');
+});
+test('backs off failed project details to avoid consuming monthly free API credits',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'omar-free-backoff-'));
+ try{
+  const catalog=path.join(dir,'projects.json'),report=path.join(dir,'report.json');
+  await fs.writeFile(catalog,JSON.stringify([{id:'behance-'+id,behance_id:id,source:'behance',title:'Example',url,images:[],modules:[],provider_retry_at:'2026-11-15T00:00:00Z'}])+'\\n');
+  let calls=0;
+  const fetchImpl=async(u)=>{calls++;return {ok:true,json:async()=>profile};};
+  const result=await synchronizeProvider({key:'test-key-valid',knownProjects:[],fetchImpl,catalogPath:catalog,reportPath:report,now:new Date('2026-10-29T00:00:00Z')});
+  assert.equal(result.skipped,1);
+  assert.equal(result.failed,0);
+  assert.equal(calls,1);
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
