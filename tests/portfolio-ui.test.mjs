@@ -148,7 +148,8 @@ test('English typography uses Syne display and Manrope UI without replacing Arab
  assert.ok(css.includes('.brand>span{font-family:var(--font-display)'));
  assert.ok(css.includes('.project-info h3.is-latin,.case-title.is-latin,.showcase-caption.is-latin'));
  assert.ok(script.includes('const isLatinTitle'));
- assert.ok(script.includes('isLatinTitle(p.title)'));
+ assert.ok(script.includes('isLatinTitle(title)'));
+ assert.ok(script.includes('const displayTitle ='));
  assert.ok(editorHTML.includes("font-src https://fonts.gstatic.com"));
  assert.ok(editorHTML.includes("style-src 'self' https://fonts.googleapis.com"));
  assert.ok(editorCSS.includes("--font-display:'Syne'"));
