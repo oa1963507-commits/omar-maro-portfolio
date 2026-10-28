@@ -32,3 +32,12 @@
 .case-media figcaption{font-size:11px;color:#a7a7a7;padding:12px 2px;letter-spacing:.2px}
 .case-media img.image-unavailable{min-height:160px;object-fit:contain}
 .project-card img{image-rendering:auto}
+
+/* Project integrity: original aspect ratios, no thumbnail upscaling/cropping. */
+.case-full-image{display:block;width:100%;height:auto;max-width:100%;object-fit:contain;border:0}
+.case-media a{display:block;cursor:zoom-in;max-width:100%}
+.case-media a:not([href]){cursor:default}
+.case-official-preview{margin:35px 0;border:1px solid #343437;padding:18px;background:#17171a}
+.case-official-preview p{font-size:14px;font-weight:700;margin:0 0 16px}
+.case-official-preview iframe{width:100%;height:min(78vh,850px);border:0;background:#121212}
+.case-official-preview small{display:block;font-size:11px;line-height:2;color:#aaa;margin-top:12px}
