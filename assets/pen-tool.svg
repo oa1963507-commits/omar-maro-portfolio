@@ -1,10 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#6aafff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <title>Pen Tool</title>
-  <!-- A pen nib and its editable Bezier handles, a familiar vector-design symbol. -->
-  <path d="M32 9 11 31l21 24 21-24L32 9Z"/>
-  <path d="M32 9v29"/>
-  <circle cx="32" cy="41" r="3.5"/>
-  <path d="M11 31H4M53 31h7"/>
-  <rect x="1.5" y="28.5" width="5" height="5" rx="0.65" stroke-width="2"/>
-  <rect x="57.5" y="28.5" width="5" height="5" rx="0.65" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="68 76 516 460" fill="none" aria-hidden="true">
+  <title>Pen Tool — Bezier Curve</title>
+  <path fill="#6aafff" fill-rule="evenodd" d="M286,204 L277,208 L277,211 L329,342 L340,345 L346,351 L348,359 L345,367 L335,374 L327,373 L319,367 L317,354 L323,344 L271,213 L269,211 L259,215 L261,394 L271,416 L327,478 L332,480 L418,445 L415,353 L411,340 L402,328Z M430,88 L417,87 L410,92 L406,105 L281,155 L275,156 L270,145 L230,161 L235,172 L233,174 L109,223 L100,216 L92,216 L84,221 L81,228 L83,239 L90,245 L102,245 L109,239 L112,227 L225,182 L228,183 L195,205 L170,229 L143,267 L123,314 L115,353 L114,391 L118,422 L126,450 L113,456 L128,497 L169,481 L153,441 L139,446 L136,444 L129,417 L126,395 L126,360 L130,334 L137,309 L150,279 L175,242 L202,215 L240,190 L243,192 L246,201 L286,186 L283,173 L321,166 L364,167 L410,178 L439,191 L463,206 L480,220 L506,248 L530,287 L529,291 L518,295 L534,336 L574,320 L558,280 L542,285 L529,260 L506,229 L486,209 L451,184 L417,168 L377,157 L325,154 L285,159 L407,110 L418,116 L427,116 L435,110 L437,105 L436,94Z M424,458 L418,458 L333,492 L345,522 L435,487Z"/>
 </svg>
