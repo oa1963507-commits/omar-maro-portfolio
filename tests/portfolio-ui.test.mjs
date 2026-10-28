@@ -203,14 +203,19 @@ test('Arabic and English headings use solid, readable text with no hollow outlin
 });
 test('every ornamental star is replaced with the blue Pen Tool icon across public sections and case studies',async()=>{
  const icon=await fs.readFile(new URL('../assets/pen-tool.svg',import.meta.url),'utf8');
- assert.ok(icon.includes('viewBox="0 0 64 64"'));
- assert.ok(icon.includes('stroke="#6aafff"'));
+ assert.ok(icon.includes('viewBox="68 76 516 460"'));
+ assert.ok(icon.includes('fill="#6aafff"'));
  assert.ok(icon.includes('<path'));
- assert.ok(html.includes('src="assets/pen-tool.svg"'));
- assert.equal(html.split('src="assets/pen-tool.svg"').length-1,16);
+ assert.ok(icon.includes('M430,88'),'Bezier handle and top node missing');
+ assert.ok(icon.includes('M286,204'),'nib silhouette missing');
+ assert.ok(icon.includes('M424,458'),'nib base missing');
+ assert.ok(!icon.includes('M32 9 11 31'),'old generic glyph must not return');
+
+ assert.ok(html.includes('src="assets/pen-tool.svg?v=bezier-1"'));
+ assert.equal(html.split('src="assets/pen-tool.svg?v=bezier-1"').length-1,16);
  assert.ok(css.includes(".statement-section::before{content:''"));
  assert.ok(css.includes(".contact-shell::before{content:''"));
- assert.ok(css.includes("mask:url('assets/pen-tool.svg')"));
+ assert.ok(css.includes("mask:url('assets/pen-tool.svg?v=bezier-1')"));
  assert.ok(css.includes(".pen-tool-icon{"));
  assert.ok(script.includes('THANKS FOR WATCHING <img class="pen-tool-icon"'));
  assert.ok(!html.includes('✳'));
