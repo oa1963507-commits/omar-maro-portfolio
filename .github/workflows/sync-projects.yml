@@ -6,6 +6,7 @@ on:
     branches: [ main ]
     paths:
       - 'scripts/sync-via-provider.mjs'
+      - 'scripts/discover-apify.mjs'
       - 'tests/provider-sync.test.mjs'
       - '.github/workflows/sync-projects.yml'
   schedule:
@@ -19,7 +20,7 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,6 +33,7 @@ jobs:
       - name: Import complete public Behance projects via JSON provider
         env:
           SCRAPPA_API_KEY: ${{ secrets.SCRAPPA_API_KEY }}
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: node scripts/sync-via-provider.mjs
       - name: Commit changes only if catalog or diagnostics changed
         run: |
