@@ -41,3 +41,11 @@
 .case-official-preview p{font-size:14px;font-weight:700;margin:0 0 16px}
 .case-official-preview iframe{width:100%;height:min(78vh,850px);border:0;background:#121212}
 .case-official-preview small{display:block;font-size:11px;line-height:2;color:#aaa;margin-top:12px}
+
+/* Preserve the exact sequence and proportions of Behance's mixed-media modules. */
+.case-text-module{font-size:clamp(15px,1.35vw,19px);line-height:2.15;white-space:pre-line;overflow-wrap:anywhere;color:#eee;padding:35px min(5vw,65px);border-inline-start:2px solid #454548;background:#161619}
+.case-embedded-video{width:100%;aspect-ratio:16/9;background:#111}
+.case-embedded-video iframe{display:block;width:100%;height:100%;border:0}
+.case-gallery{display:flex;flex-direction:column;gap:14px}
+.case-media img{width:100%;height:auto;object-fit:contain}
+@media(max-width:650px){.case-text-module{padding:21px 15px;line-height:2}}
