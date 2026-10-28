@@ -196,6 +196,9 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
   }
   const profile=[...profileMap.values()];
   if(!profile.length && profileError)throw Error('No public project URLs available: '+profileError);
+  const newlyDiscovered=profile.filter(e=>!byId.has('behance-'+e.id)).map(e=>({id:e.id,title:e.title||'New Behance project',url:e.url}));
+  let previousReport={};
+  try{previousReport=JSON.parse(await fs.readFile(reportPath,'utf8'));}catch{}
   const events=[];
   let requested=1,imported=0,skipped=0,failed=0;
   for(const entry of profile){
@@ -256,6 +259,10 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
     ...(profileError ? {primary_profile_error:profileError} : {}),
     profile_projects:profile.length,catalog_projects:catalogProjects.length,
     known_project_links:sourceEntries.length,added_from_known:addedFromKnown,
+    new_projects_detected:newlyDiscovered.length,
+    new_project_ids:newlyDiscovered.map(p=>p.id),
+    last_discovered_projects:newlyDiscovered.length?newlyDiscovered:(previousReport.last_discovered_projects||[]),
+    last_new_project_at:newlyDiscovered.length?now.toISOString():(previousReport.last_new_project_at||null),
     expected_minimum_from_owner:USER_REPORTED_MINIMUM,
     missing_from_minimum:Math.max(0,USER_REPORTED_MINIMUM-catalogProjects.length),
     discovery_incomplete:catalogProjects.length<USER_REPORTED_MINIMUM,
