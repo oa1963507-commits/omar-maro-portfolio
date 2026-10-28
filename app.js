@@ -11,6 +11,14 @@
   const escapeHTML = (s) => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   // Only pure Latin titles get the display face; mixed/Arabic titles retain Cairo.
   const isLatinTitle = value => /[A-Za-z]/.test(String(value ?? '')) && !/[\u0600-\u06FF]/.test(String(value ?? ''));
+  const isEnglish = () => window.OMI18N?.lang === 'en';
+  const t = (ar,en) => isEnglish()?en:ar;
+  const displayTitle = p => (isEnglish() && p.title_en && p.title_en.trim() ? p.title_en : p.title);
+  const displayCategory = p => isEnglish()?({branding:'Brand identity',social:'Social media & design',covers:'Book covers',print:'Print design',ai:'Creative AI visuals'}[p.category]||p.category_label):p.category_label;
+  const originalIdentityDescription='The personal identity of graphic designer Omar Maro: a monochrome M-based mark and a dark creative-studio aesthetic. All visuals are original work provided by the designer.';
+  const originalIdentityStory='A simple, recognizable symbol inspired by the first letter of the name and a circular geometric composition. Its goal is a clear black-and-white visual presence without clutter.';
+  const displayDescription = p => isEnglish()?(p.description_en|| (p.id==='omar-maro-identity'?originalIdentityDescription:p.description)) : p.description;
+  const displayStory = p => isEnglish()?(p.story_en||(p.id==='omar-maro-identity'?originalIdentityStory:p.story)) : p.story;
   function safeMediaUrl(s) {
     if (typeof s !== 'string') return '';
     const value = s.trim();
@@ -33,7 +41,7 @@
   }
   function normalize(p) {
     if (!p || typeof p !== 'object' || !/^[a-z0-9-]{2,120}$/.test(String(p.id||''))) return null;
-    return {id:p.id,title:String(p.title||'بدون عنوان'),title_en:String(p.title_en||p.title||''),category:['branding','social','covers','print','ai'].includes(p.category)?p.category:'social',category_label:String(p.category_label||'مشروع إبداعي'),year:String(p.year||''),cover:safeMediaUrl(p.cover),images:Array.isArray(p.images)?p.images.map(safeMediaUrl).filter(Boolean).slice(0,120):[],modules:Array.isArray(p.modules)?p.modules.map(normalizeModule).filter(Boolean).slice(0,120):[],description:String(p.description||''),story:String(p.story||''),source:String(p.source||''),url:safeExternal(p.url||'')};
+    return {id:p.id,title:String(p.title||'بدون عنوان'),title_en:String(p.title_en||p.title||''),category:['branding','social','covers','print','ai'].includes(p.category)?p.category:'social',category_label:String(p.category_label||'مشروع إبداعي'),year:String(p.year||''),cover:safeMediaUrl(p.cover),images:Array.isArray(p.images)?p.images.map(safeMediaUrl).filter(Boolean).slice(0,120):[],modules:Array.isArray(p.modules)?p.modules.map(normalizeModule).filter(Boolean).slice(0,120):[],description:String(p.description||''),description_en:String(p.description_en||''),story:String(p.story||''),story_en:String(p.story_en||''),source:String(p.source||''),url:safeExternal(p.url||'')};
   }
   // Prefer Behance's larger public CDN variants; retain lower-res URLs as fallbacks.
   function imageSources(raw, kind='module') {
