@@ -260,7 +260,10 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
     missing_from_minimum:Math.max(0,USER_REPORTED_MINIMUM-catalogProjects.length),
     discovery_incomplete:catalogProjects.length<USER_REPORTED_MINIMUM,
     requests_attempted:requested+failed,imported,skipped,failed,
-    with_modules:catalogProjects.filter(x=>x.modules?.length).length,projects:events
+    with_modules:catalogProjects.filter(x=>x.modules?.length).length,
+    browser_public_gallery_projects:catalogProjects.filter(x=>x.browser_public_scan && x.images?.length).length,
+    browser_public_gallery_images:catalogProjects.filter(x=>x.browser_public_scan).reduce((n,x)=>n+(x.images?.length||0),0),
+    projects:events
   };
   await fs.writeFile(reportPath,JSON.stringify(report,null,2)+'\n');
   console.log(`Behance free provider: primary ${initial.length}, known ${sourceEntries.length} (${addedFromKnown} added), total ${catalogProjects.length}; ${report.missing_from_minimum} missing; ${imported} imported, ${failed} detail failures.`);
