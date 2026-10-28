@@ -134,6 +134,28 @@ test('brand palette is blue across portfolio, logo outline, admin and sync tools
  assert.ok(!sync.includes('#77d6a5'));
 });
 
+test('English typography uses Syne display and Manrope UI without replacing Arabic Cairo',async()=>{
+ const editorHTML=await fs.readFile(new URL('../tools/manage-projects.html',import.meta.url),'utf8');
+ const editorCSS=await fs.readFile(new URL('../tools/manage-projects.css',import.meta.url),'utf8');
+ const syncHTML=await fs.readFile(new URL('../tools/auto-sync.html',import.meta.url),'utf8');
+ assert.ok(html.includes('family=Cairo:wght@'));
+ assert.ok(html.includes('family=Manrope:wght@'));
+ assert.ok(html.includes('family=Syne:wght@'));
+ assert.ok(!html.includes('Space+Grotesk'));
+ assert.ok(css.includes("--font-ar:'Cairo'"));
+ assert.ok(css.includes("--font-en:'Manrope'"));
+ assert.ok(css.includes("--font-display:'Syne'"));
+ assert.ok(css.includes('.brand>span{font-family:var(--font-display)'));
+ assert.ok(css.includes('.project-info h3.is-latin,.case-title.is-latin,.showcase-caption.is-latin'));
+ assert.ok(script.includes('const isLatinTitle'));
+ assert.ok(script.includes('isLatinTitle(p.title)'));
+ assert.ok(editorHTML.includes("font-src https://fonts.gstatic.com"));
+ assert.ok(editorHTML.includes("style-src 'self' https://fonts.googleapis.com"));
+ assert.ok(editorCSS.includes("--font-display:'Syne'"));
+ assert.ok(syncHTML.includes('family=Manrope:wght@'));
+ assert.ok(syncHTML.includes('family=Syne:wght@'));
+});
+
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
