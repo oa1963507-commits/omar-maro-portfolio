@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import {parseProfile,parseProject,mergeDetail,validImageUrl,synchronizeProvider} from '../scripts/sync-via-provider.mjs';
+import {parseProfile,parseProject,mergeDetail,validImageUrl,synchronizeProvider,projectSlug} from '../scripts/sync-via-provider.mjs';
 const id='254950791',user='oa19635079ead';
 const url=`https://www.behance.net/gallery/${id}/drahmed-zakaria`;
 const cdn='https://mir-s3-cdn-cf.behance.net/project_modules/disp/image254950791.png';
@@ -44,5 +44,33 @@ test('sync caches complete project modules to save API credits and preserves old
   assert.equal(saved.length,2);
   assert.equal(saved[0].title,'Original');
   assert.equal(saved[1].modules.length,3);
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
+test('extracts only the verified slug for the expected Behance project',()=>{
+ assert.equal(projectSlug(url,id),'drahmed-zakaria');
+ assert.equal(projectSlug('https://www.behance.net/gallery/254950629/drsara',id),'');
+ assert.equal(projectSlug('https://fake.test/gallery/254950791/unsafe',id),'');
+});
+test('retries an incomplete ID-only response with the public project slug',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'omar-provider-retry-'));
+ try {
+  const catalog=path.join(dir,'projects.json'),report=path.join(dir,'status.json');
+  await fs.writeFile(catalog,'[]\n');
+  const paths=[];
+  const fetchImpl=async(request)=>{
+   const pathName=new URL(request).pathname+new URL(request).search;
+   paths.push(pathName);
+   const response=pathName.includes('/user?')?profile:
+      pathName.includes('&slug=')?detail:
+      {success:true,data:{id:Number(id),title:'طبيب أحمد'}};
+   return {ok:true,json:async()=>response};
+  };
+  const outcome=await synchronizeProvider({key:'abcdefghijk',fetchImpl,catalogPath:catalog,reportPath:report});
+  assert.equal(outcome.imported,1);
+  assert.equal(outcome.with_modules,1);
+  assert.equal(paths.length,3);
+  assert.match(paths[2],/slug=drahmed-zakaria/);
+  const saved=JSON.parse(await fs.readFile(catalog,'utf8'));
+  assert.equal(saved[0].modules.length,3);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
