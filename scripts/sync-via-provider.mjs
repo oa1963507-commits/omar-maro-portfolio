@@ -72,8 +72,14 @@ export function parseProfile(payload, expectedUsername=USERNAME){
 }
 export function parseProject(payload,expectedID,profileUsername=USERNAME){
   const d=payload?.data;
-  if(payload?.success!==true||!d||String(d.id)!==String(expectedID)||!Array.isArray(d.modules)){
-    throw Error('Provider returned unexpected project details');
+  if(payload?.success!==true) {
+    throw Error('Provider project response failed: '+String(payload?.error?.code||'unknown').slice(0,80));
+  }
+  if(!d || typeof d!=='object')throw Error('Provider project response has no data object');
+  if(String(d.id)!==String(expectedID))throw Error('Provider project ID mismatch; returned='+String(d.id).slice(0,24));
+  if(!Array.isArray(d.modules)){
+    const keys=Object.keys(d).filter(k=>/^(modules|images|blocks|assets|sections|gallery|id)$/i.test(k)).join(',');
+    throw Error('Provider project has no modules array; media_fields='+String(keys||'none'));
   }
   const owners=Array.isArray(d.owners)?d.owners:[];
   if(owners.length && !owners.some(o=>String(o.username||'').toLowerCase()===profileUsername.toLowerCase())){
@@ -110,10 +116,10 @@ function newProject(entry){
   return {id:`behance-${entry.id}`,title:entry.title||`Behance project ${entry.id}`,title_en:'',category,category_label:LABELS[category],year:'',cover:entry.cover,images:[],description:'',story:'',source:'behance',url:entry.url,behance_id:entry.id};
 }
 export function mergeDetail(existing,entry,detail,now){
-  const title=detail.title && !/^\?+$/.test(detail.title)?detail.title:existing.title;
+  const title=detail.title && !/^[?\s]+$/.test(detail.title)?detail.title:existing.title;
   return {
     ...existing,
-    title: /^\?+$/.test(existing.title||'')||!existing.title ? title : existing.title,
+    title: /^[?\s]+$/.test(String(existing.title||'').trim())||!existing.title ? title : existing.title,
     cover:detail.cover||entry.cover||existing.cover,
     url:detail.url||entry.url||existing.url,
     description:detail.description||existing.description||'',
@@ -148,7 +154,8 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,fetch
     const complete=old.full_project_synced && Array.isArray(old.modules) && old.modules.length>0;
     if(complete && freshAt && now.getTime()-freshAt.getTime()<refreshMillis){
       // Still update metadata if the profile changed without charging for details.
-      byId.set(catalogID,{...old,url:entry.url,cover:entry.cover||old.cover});
+      const damaged=/^[?\s]+$/.test(String(old.title||'').trim());
+      byId.set(catalogID,{...old,title:damaged && entry.title && !/^[?\s]+$/.test(entry.title)?entry.title:old.title,url:entry.url,cover:entry.cover||old.cover});
       events.push({id:catalogID,status:'cached',module_count:old.modules.length,image_count:old.images?.length||0});
       skipped++;continue;
     }
@@ -161,7 +168,8 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,fetch
       imported++;
     }catch(err){
       // Only old verified data is used; no placeholder or invented image content.
-      byId.set(catalogID,{...old,cover:entry.cover||old.cover});
+      const damaged=/^[?\s]+$/.test(String(old.title||'').trim());
+      byId.set(catalogID,{...old,title:damaged && entry.title && !/^[?\s]+$/.test(entry.title)?entry.title:old.title,cover:entry.cover||old.cover});
       events.push({id:catalogID,status:'unavailable',error:err.message,module_count:old.modules?.length||0,image_count:old.images?.length||0});
       failed++;
     }
