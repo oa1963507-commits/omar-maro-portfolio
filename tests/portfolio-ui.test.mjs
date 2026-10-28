@@ -74,6 +74,22 @@ test('all project details share the same case overview and preserve full modules
  assert.ok(css.includes('max-height:none;object-fit:contain'));
 });
 
+test('original Omar Maro logo replaces all standalone decorative OM letters',async()=>{
+ const manager=await fs.readFile(new URL('../tools/manage-projects.html',import.meta.url),'utf8');
+ const adminStyle=await fs.readFile(new URL('../tools/manage-projects.css',import.meta.url),'utf8');
+ assert.ok(html.includes('class="service-logo-outline"'));
+ assert.ok(html.includes('href="assets/omar-mark.png"'));
+ assert.ok(html.includes('filter="url(#omar-real-logo-outline)"'));
+ assert.ok(!html.includes('<span>OM</span>'));
+ assert.ok(!css.includes('.service-art-brand span{'));
+ assert.ok(css.includes('.service-logo-outline{'));
+ assert.ok(script.includes('project-image-fallback"><img src="assets/omar-mark.png"'));
+ assert.ok(!script.includes('>OM /'));
+ assert.ok(manager.includes('<span class="mark"><img src="../assets/omar-mark.png"'));
+ assert.ok(!manager.includes('>OM.</span>'));
+ assert.ok(adminStyle.includes('.mark img{'));
+});
+
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
