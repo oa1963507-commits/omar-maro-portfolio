@@ -117,6 +117,23 @@ test('About section lists education, five CV skills and public professional link
  assert.ok(css.includes('@media(max-width:690px)'));
 });
 
+test('brand palette is blue across portfolio, logo outline, admin and sync tools',async()=>{
+ const admin=await fs.readFile(new URL('../tools/manage-projects.css',import.meta.url),'utf8');
+ const sync=await fs.readFile(new URL('../tools/auto-sync.html',import.meta.url),'utf8');
+ assert.ok(css.includes('--accent:#6aafff'));
+ assert.ok(css.includes('--azure:#3ac7ff'));
+ assert.ok(css.includes('--bg:#070c16'));
+ assert.ok(css.includes('linear-gradient(90deg,var(--azure),var(--accent))'));
+ assert.ok(html.includes('flood-color="#82c0ff"'));
+ assert.ok(admin.includes('background:#67abff'));
+ assert.ok(sync.includes('#70b5ff'));
+ assert.ok(!css.includes('#b8ff62'));
+ assert.ok(!css.includes('#3af4a8'));
+ assert.ok(!html.includes('flood-color="#9aecad"'));
+ assert.ok(!admin.includes('#73cda1'));
+ assert.ok(!sync.includes('#77d6a5'));
+});
+
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
