@@ -129,6 +129,7 @@
     renderProjects();
   }));
   function renderDetail(p){
+    const title=displayTitle(p),category=displayCategory(p),description=displayDescription(p),story=displayStory(p);
     const images=(p.images||[]).filter(Boolean);
     const hasModules=Array.isArray(p.modules)&&p.modules.length>0;
     const ordered=hasModules?p.modules:images.map(url=>({type:'image',url}));
@@ -138,19 +139,19 @@
       if(m.type==='image'){
         imageNo++;
         const full=imageSources(m.url,'module')[0];
-        return `<figure class="case-media"><a data-full-image href="${escapeHTML(full)}" target="_blank" rel="noopener noreferrer" title="فتح الصورة بدقتها الأصلية">${qualityImage(m.url,'case-full-image',`${p.title} — صورة ${imageNo}`,'module')}</a><figcaption>${String(imageNo).padStart(2,'0')} / ${String(imageTotal).padStart(2,'0')} · افتح الصورة بأعلى دقة متاحة ↗</figcaption></figure>`;
+        return `<figure class="case-media"><a data-full-image href="${escapeHTML(full)}" target="_blank" rel="noopener noreferrer" title="${escapeHTML(t('فتح الصورة بدقتها الأصلية','Open full-resolution image'))}">${qualityImage(m.url,'case-full-image',`${title} — ${t('صورة','Image')} ${imageNo}`,'module')}</a><figcaption>${String(imageNo).padStart(2,'0')} / ${String(imageTotal).padStart(2,'0')} · ${escapeHTML(t('افتح الصورة بأعلى دقة متاحة ↗','Open highest available resolution ↗'))}</figcaption></figure>`;
       }
       if(m.type==='text')return `<div class="case-text-module">${escapeHTML(m.text)}</div>`;
-      if(m.type==='embed')return `<div class="case-embedded-video"><iframe loading="lazy" src="${escapeHTML(m.url)}" title="فيديو من مشروع ${escapeHTML(p.title)}" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
+      if(m.type==='embed')return `<div class="case-embedded-video"><iframe loading="lazy" src="${escapeHTML(m.url)}" title="${escapeHTML(t('فيديو من مشروع ','Video from project '))}${escapeHTML(title)}" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
       return '';
     }).join('');
     const behanceID=(p.source==='behance'&&p.url?.startsWith('https://')) ? p.url.match(/^https:\/\/(?:www\.)?behance\.net\/gallery\/(\d{3,18})(?:\/|$)/)?.[1] : null;
-    const url=p.url?`<a href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer" class="case-cta">المشروع الأصلي على Behance <span>↗</span></a>`:`<a href="${BEHANCE}" target="_blank" rel="noopener noreferrer" class="case-cta">شوف باقي أعمالي <span>↗</span></a>`;
-    const summary=ordered.length?`<div class="case-quality-note">${imageTotal} صورة مستوردة${hasModules?' + محتوى المشروع المتاح':''} · بدون قص · لو فيه أجزاء ناقصة راجع المشروع الأصلي</div>`:p.source==='behance'?`<div class="case-quality-note case-quality-pending">صور هذا المشروع الداخلية لم تُستورد بعد. المعروض غلاف فقط، وتقدر تفتح المشروع الأصلي من الزر أدناه.</div>`:'';
-    const preview=!ordered.length && behanceID?`<div class="case-official-preview"><p>معاينة Behance الرسمية</p><iframe loading="lazy" title="معاينة مشروع ${escapeHTML(p.title)}" src="https://www.behance.net/embed/project/${behanceID}?ilo0=1" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><small>قد تكون المعاينة مختصرة؛ لعرض كل المحتوى افتح المشروع الأصلي.</small></div>`:'';
-    const originalLink=p.source==='behance' && p.url ? `<a class="case-cta case-origin-link" href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer">شاهد المشروع الأصلي كاملًا على Behance ↗</a>` : '';
-    const hero=p.cover?qualityImage(p.cover,'case-hero-img',`غلاف ${p.title}`,'detail','eager'):'';
-    return `<div class="case-container"><header class="case-overview"><p class="case-eyebrow">${escapeHTML(p.category_label)}${p.year?' / '+escapeHTML(p.year):''}</p><h2 class="case-title${isLatinTitle(p.title)?' is-latin':''}">${escapeHTML(p.title)}</h2>${p.description?`<p class="case-desc">${escapeHTML(p.description)}</p>`:''}${summary}${originalLink}</header>${!ordered.length?hero:''}${preview}${p.story?`<div class="case-section"><span>THE IDEA / الفكرة</span><p>${escapeHTML(p.story)}</p></div>`:''}${gallery?`<div class="case-gallery">${gallery}</div>`:''}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING ✳</span>${url}</div></div>`;
+    const url=p.url?`<a href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer" class="case-cta">${escapeHTML(t('المشروع الأصلي على Behance','Original project on Behance'))} <span>↗</span></a>`:`<a href="${BEHANCE}" target="_blank" rel="noopener noreferrer" class="case-cta">${escapeHTML(t('شوف باقي أعمالي','Explore more of my work'))} <span>↗</span></a>`;
+    const summary=ordered.length?`<div class="case-quality-note">${imageTotal} ${t('صورة مستوردة','imported images')}${hasModules?t(' + محتوى المشروع المتاح',' + available project content'):''} · ${t('بدون قص · لو فيه أجزاء ناقصة راجع المشروع الأصلي','uncropped · see the original project for any missing content')}</div>`:p.source==='behance'?`<div class="case-quality-note case-quality-pending">${t('صور هذا المشروع الداخلية لم تُستورد بعد. المعروض غلاف فقط، وتقدر تفتح المشروع الأصلي من الزر أدناه.','The full project images are not imported yet. Only the cover is shown; view the original project below.')}</div>`:'';
+    const preview=!ordered.length && behanceID?`<div class="case-official-preview"><p>${t('معاينة Behance الرسمية','Official Behance preview')}</p><iframe loading="lazy" title="${t('معاينة مشروع ','Project preview: ')}${escapeHTML(title)}" src="https://www.behance.net/embed/project/${behanceID}?ilo0=1" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><small>${t('قد تكون المعاينة مختصرة؛ لعرض كل المحتوى افتح المشروع الأصلي.','This preview may be limited; visit Behance for the full project.')}</small></div>`:'';
+    const originalLink=p.source==='behance' && p.url ? `<a class="case-cta case-origin-link" href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer">${t('شاهد المشروع الأصلي كاملًا على Behance ↗','View complete original project on Behance ↗')}</a>` : '';
+    const hero=p.cover?qualityImage(p.cover,'case-hero-img',`${t('غلاف','Cover')} ${title}`,'detail','eager'):'';
+    return `<div class="case-container"><header class="case-overview"><p class="case-eyebrow">${escapeHTML(category)}${p.year?' / '+escapeHTML(p.year):''}</p><h2 class="case-title${isLatinTitle(title)?' is-latin':''}">${escapeHTML(title)}</h2>${description?`<p class="case-desc">${escapeHTML(description)}</p>`:''}${summary}${originalLink}</header>${!ordered.length?hero:''}${preview}${story?`<div class="case-section"><span>${t('THE IDEA / الفكرة','THE IDEA')}</span><p>${escapeHTML(story)}</p></div>`:''}${gallery?`<div class="case-gallery">${gallery}</div>`:''}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING ✳</span>${url}</div></div>`;
   }
   function openProject(id){
     const p=projects.find(x=>x.id===id);
