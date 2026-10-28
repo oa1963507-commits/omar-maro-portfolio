@@ -80,7 +80,7 @@ test('catalog adds all 28 owner projects from alternate public index without rep
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'omar-profile28-'));
  try{
   const catalog=path.join(dir,'projects.json'),report=path.join(dir,'report.json');
-  await fs.writeFile(catalog,'[]\\n');
+  await fs.writeFile(catalog,'[]\n');
   const ids=[id,...Array.from({length:27},(_,i)=>String(300000000+i))];
   const discovery=ids.map(i=>({id:i,url:`https://www.behance.net/gallery/${i}/My-Design`,title:`Design ${i}`,cover:cdn}));
   let detailCalls=0;
