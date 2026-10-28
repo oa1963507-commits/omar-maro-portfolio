@@ -74,3 +74,28 @@ test('retries an incomplete ID-only response with the public project slug',async
   assert.equal(saved[0].modules.length,3);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+
+test('catalog adds all 28 owner projects from alternate public index without repeating the first 12',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'omar-profile28-'));
+ try{
+  const catalog=path.join(dir,'projects.json'),report=path.join(dir,'report.json');
+  await fs.writeFile(catalog,'[]\\n');
+  const ids=[id,...Array.from({length:27},(_,i)=>String(300000000+i))];
+  const discovery=ids.map(i=>({id:i,url:`https://www.behance.net/gallery/${i}/My-Design`,title:`Design ${i}`,cover:cdn}));
+  let detailCalls=0;
+  const fetchImpl=async (url)=>{
+   if(url.includes('/user?'))return {ok:true,json:async()=>profile};
+   detailCalls++;
+   const projectID=new URL(url).searchParams.get('id');
+   return {ok:true,json:async()=>({success:true,data:{id:Number(projectID),title:'Project',url:`https://www.behance.net/gallery/${projectID}/My-Design`,owners:[{username:user}],modules:[{position:1,type:'image',url:cdn}]}})};
+  };
+  const result=await synchronizeProvider({key:'scrappa-test-key',apifyToken:'apify-test-token',discoverExtra:async()=>discovery,fetchImpl,catalogPath:catalog,reportPath:report,now:new Date('2026-10-28T20:00:00Z')});
+  assert.equal(result.catalog_projects,28);
+  assert.equal(result.missing_from_minimum,0);
+  assert.equal(result.apify_added_this_run,27);
+  assert.equal(detailCalls,28);
+  const saved=JSON.parse(await fs.readFile(catalog,'utf8'));
+  assert.equal(new Set(saved.map(x=>x.id)).size,28);
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
