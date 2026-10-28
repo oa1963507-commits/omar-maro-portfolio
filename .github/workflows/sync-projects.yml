@@ -10,7 +10,7 @@ on:
       - 'tests/provider-sync.test.mjs'
       - '.github/workflows/sync-projects.yml'
   schedule:
-    - cron: '23 */6 * * *' # UTC; GitHub can delay scheduled runs
+    - cron: '23 4 * * *' # UTC; GitHub can delay scheduled runs
 permissions:
   contents: write
   actions: write
