@@ -212,6 +212,73 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .about-tags{display:flex;gap:8px;flex-wrap:wrap;margin:23px 0 30px}
 .about-tags span{font:700 10px/1.5 var(--font-en);direction:ltr;letter-spacing:.5px;padding:9px 12px;border:1px solid #304a34;border-radius:30px;color:#afc5b0}
 
+/* CV-grounded About section — premium editorial résumé */
+.about-copy .about-persona{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 20px;color:#e8f6e8;font-size:16px;font-weight:800}
+.about-persona .mono{direction:ltr;color:var(--accent);font-size:11px;letter-spacing:1.5px}
+.about-copy>p strong{color:#e7f8e7;font-weight:800}
+.about-profile-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.about-link{display:inline-flex;align-items:center;gap:15px;justify-content:space-between;padding:11px 16px;border-radius:99px;border:1px solid rgba(161,241,178,.29);background:rgba(22,47,31,.4);font:600 12px/1.5 var(--font-en);direction:ltr;transition:border-color .2s,background .2s,transform .2s}
+.about-link:hover,.about-link:focus-visible{border-color:var(--accent);background:rgba(124,238,151,.11);transform:translateY(-2px)}
+.about-link span{color:var(--accent);font-size:17px}
+.about-copy .about-location{color:#86a18c;font-size:11px;margin:20px 0 0}
+.about-location .mono{display:inline-block;direction:ltr;letter-spacing:1px;font-size:10px}
+.about-highlights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-top:55px;margin-bottom:110px}
+.about-highlight{position:relative;overflow:hidden;min-height:166px;display:flex;flex-direction:column;justify-content:space-between;gap:18px;padding:26px 27px;border:1px solid rgba(175,238,181,.16);border-radius:20px;background:linear-gradient(135deg,rgba(20,40,27,.88),rgba(10,18,12,.93))}
+.about-highlight::after{content:'';position:absolute;top:-45px;left:-45px;width:145px;height:145px;border-radius:50%;background:radial-gradient(circle,rgba(123,252,158,.1),transparent 70%);pointer-events:none}
+.about-highlight strong{font:600 clamp(39px,4.5vw,65px)/1 var(--font-en);color:var(--accent);letter-spacing:-3px}
+.about-highlight span{max-width:240px;color:#bdd0be;line-height:1.8;font-size:12px}
+.resume-block{margin-bottom:54px}
+.resume-heading{display:flex;justify-content:space-between;align-items:end;gap:35px;margin-bottom:29px}
+.resume-heading h3,.resume-panel h3{font-size:clamp(32px,4vw,54px);font-weight:900;letter-spacing:-1px;line-height:1.35;margin:12px 0}
+.resume-heading h3 span,.resume-panel h3 span{color:var(--accent)}
+.resume-heading>p:last-child{color:#9fb5a3;font-size:13px;line-height:2;max-width:380px;margin:0}
+.career-timeline{border:1px solid rgba(174,232,180,.17);border-radius:22px;background:linear-gradient(150deg,#111d15,#0c140f);overflow:hidden}
+.career-card{display:grid;grid-template-columns:minmax(180px,.36fr) minmax(0,1fr);gap:36px;position:relative;min-height:155px;padding:27px 32px;border-bottom:1px solid rgba(174,232,180,.13);transition:background .24s}
+.career-card:last-child{border-bottom:0}
+.career-card:hover{background:rgba(106,215,126,.045)}
+.career-card::before{content:'';position:absolute;top:34px;right:13px;width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px rgba(153,247,164,.06)}
+.career-date{display:flex;flex-direction:column;align-items:flex-start;gap:6px;color:#a8c7b0;font-size:12px;font-weight:700;line-height:1.65}
+.career-date small{display:block;font-size:11px;color:#788f7e;font-weight:500}
+.career-role h4{color:#f1f7f1;font-size:20px;font-weight:800;line-height:1.5;margin:0 0 7px;overflow-wrap:anywhere}
+.career-role .mono{display:block;color:var(--accent);font-size:10px;letter-spacing:1.3px;font-weight:700;margin-bottom:10px}
+.career-role p{margin:0;color:#b1c3b2;font-size:13px;line-height:2.15;max-width:760px}
+.resume-columns{display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:stretch}
+.resume-panel{border:1px solid rgba(174,232,180,.17);border-radius:22px;padding:34px;background:radial-gradient(ellipse at 20% 0%,rgba(72,163,85,.1),transparent 62%),#0f1912}
+.resume-panel h3{font-size:clamp(27px,3vw,38px);margin:15px 0 24px}
+.resume-skill-list{display:flex;flex-wrap:wrap;gap:11px}
+.resume-skill-list span{display:inline-flex;align-items:center;padding:11px 14px;border:1px solid rgba(171,246,176,.22);background:rgba(8,20,10,.65);border-radius:10px;color:#d7e9d8;font:600 13px/1.5 var(--font-en);direction:ltr}
+.resume-note{font-size:11px;color:#839c88;line-height:1.85;margin:23px 0 0}
+.education-item{padding:0 0 20px;margin:0 0 20px;border-bottom:1px solid rgba(173,235,184,.13)}
+.education-item:last-child{padding-bottom:0;margin-bottom:0;border-bottom:0}
+.education-period{display:block;color:var(--accent);font-size:12px;font-weight:700;margin-bottom:8px}
+.education-item h4{font-size:17px;margin:0 0 5px;color:#edf6ec}
+.education-item p{font-size:13px;line-height:2;color:#b2c3b5;margin:0}
+.education-item p small{font-size:11px;color:#8da38e}
+@media(max-width:920px){
+  .about-highlights{margin:38px 0 75px}
+  .career-card{grid-template-columns:minmax(150px,.34fr) 1fr;gap:25px;padding:25px 22px}
+  .resume-panel{padding:25px}
+}
+@media(max-width:690px){
+  .about-section{padding-block:65px}
+  .about-profile-links{gap:8px}
+  .about-link{font-size:11px;padding:10px 13px;gap:10px}
+  .about-highlights{grid-template-columns:1fr;gap:11px;margin:34px 0 68px}
+  .about-highlight{min-height:114px;display:grid;grid-template-columns:110px 1fr;align-items:center;gap:15px;padding:20px}
+  .about-highlight strong{font-size:42px}
+  .about-highlight span{max-width:none;font-size:11px}
+  .resume-heading{display:block}
+  .resume-heading>p:last-child{max-width:none;margin-top:12px}
+  .career-timeline{border-radius:17px}
+  .career-card{grid-template-columns:1fr;gap:12px;padding:23px 18px 23px 25px}
+  .career-date{font-size:12px}
+  .career-role h4{font-size:18px}
+  .career-role p{font-size:12px}
+  .resume-columns{grid-template-columns:1fr}
+  .resume-panel{padding:23px 18px;border-radius:17px}
+  .resume-skill-list span{font-size:11px}
+}
+
 /* Conversion CTA adapted for a real designer: no fabricated plans or testimonials */
 .contact-section{padding-block:15px 109px}
 .contact-shell{position:relative;border:1px solid #2c4830;border-radius:28px;overflow:hidden;background:radial-gradient(ellipse at 10% 15%,rgba(59,160,86,.14),transparent 45%),linear-gradient(120deg,#131f16,#0e1510);padding:clamp(30px,5vw,73px)}
