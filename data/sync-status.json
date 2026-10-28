@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-28T20:43:01.293Z",
+  "checked_at": "2026-10-28T20:53:54.907Z",
   "provider": "scrappa-independent-third-party",
   "profile": "oa19635079ead",
   "profile_projects": 12,
@@ -30,14 +30,14 @@
     {
       "id": "behance-254950791",
       "status": "unavailable",
-      "error": "Provider project has no modules array; media_fields=id",
+      "error": "ID-only: Provider project has no modules array; media_fields=id; with slug: Provider project has no modules array; media_fields=id",
       "module_count": 0,
       "image_count": 0
     },
     {
       "id": "behance-254950629",
       "status": "unavailable",
-      "error": "Provider project has no modules array; media_fields=id",
+      "error": "ID-only: Provider project has no modules array; media_fields=id; with slug: Provider project has no modules array; media_fields=id",
       "module_count": 0,
       "image_count": 0
     },
