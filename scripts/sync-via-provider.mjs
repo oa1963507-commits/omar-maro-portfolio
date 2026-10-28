@@ -118,7 +118,7 @@ function newProject(entry){
   return {id:`behance-${entry.id}`,title:entry.title||`Behance project ${entry.id}`,title_en:'',category,category_label:LABELS[category],year:'',cover:entry.cover,images:[],description:'',story:'',source:'behance',url:entry.url,behance_id:entry.id};
 }
 export function mergeDetail(existing,entry,detail,now){
-  const isPlaceholder=title=>/^(?:[?\\s]+|Behance project \\d+)$/i.test(String(title||'').trim());
+  const isPlaceholder=title=>{const value=String(title||'').trim();return !value || [...value].every(ch=>ch==='?') || value.toLowerCase().startsWith('behance project ');};
   const title=detail.title && !isPlaceholder(detail.title)?detail.title:existing.title;
   return {
     ...existing,
