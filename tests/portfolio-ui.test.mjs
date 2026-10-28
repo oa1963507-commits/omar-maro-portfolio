@@ -152,9 +152,9 @@ test('English typography uses Plus Jakarta Sans display and Inter UI without rep
  assert.ok(script.includes('const displayTitle ='));
  assert.ok(editorHTML.includes("font-src https://fonts.gstatic.com"));
  assert.ok(editorHTML.includes("style-src 'self' https://fonts.googleapis.com"));
- assert.ok(editorCSS.includes("--font-display:'Syne'"));
- assert.ok(syncHTML.includes('family=Manrope:wght@'));
- assert.ok(syncHTML.includes('family=Syne:wght@'));
+ assert.ok(editorCSS.includes("--font-display:'Plus Jakarta Sans'"));
+ assert.ok(syncHTML.includes('family=Inter:wght@'));
+ assert.ok(syncHTML.includes('family=Plus+Jakarta+Sans:wght@'));
 });
 
 test('Arabic and English are selectable from a persistent, accessible header control',async()=>{
