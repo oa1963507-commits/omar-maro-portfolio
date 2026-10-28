@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111113"><title>OMAR MARO — استخراج روابط المشاريع</title>
+<style>
+:root{color-scheme:dark;font-family:Tahoma,Arial,sans-serif;background:#101113;color:#f7f7f6}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:48px 20px;background:radial-gradient(circle at 0 0,#272729 0,#101113 55%)}main{max-width:850px;margin:auto}header{display:flex;justify-content:space-between;align-items:center;gap:20px;border-bottom:1px solid #39393d;padding-bottom:20px}header strong{letter-spacing:2px;font-size:19px}header small{font-size:12px;color:#aaa}h1{font-size:clamp(28px,5vw,50px);margin:54px 0 16px;line-height:1.4}p{color:#bbb;line-height:2.2}ol{color:#d6d6d6;padding-right:24px;line-height:2.3}.panel{margin-top:32px;background:#1d1e21;border:1px solid #44454a;padding:24px;border-radius:16px}.drop{display:block;text-align:center;border:1px dashed #797a7e;background:#242529;padding:40px 20px;border-radius:12px;cursor:pointer;transition:.2s}.drop:hover,.drop:focus-within{border-color:#fff;background:#2b2c2f}.drop input{display:block;margin:18px auto 0;max-width:100%;font:inherit}.status{font-size:14px;color:#d3d3d3;margin-top:22px}textarea{width:100%;background:#111214;border:1px solid #444;border-radius:10px;color:#fff;padding:14px;line-height:1.8;font-size:13px;direction:ltr;min-height:220px;resize:vertical}.results{display:none}.actions{display:flex;gap:12px;margin:16px 0}button{border:none;padding:13px 22px;border-radius:30px;cursor:pointer;background:#f8f8f6;color:#111;font-size:14px;font-weight:bold}button:disabled{opacity:.5;cursor:not-allowed}.note{font-size:12px;border-top:1px solid #3e3e42;margin-top:25px;padding-top:16px;color:#b6b6b7}.count{color:#fff;font-weight:bold}a{color:#fff}
+</style>
+</head>
+<body><main>
+<header><strong>OMAR MARO</strong><small>FREE BEHANCE IMPORT HELPER</small></header>
+<h1>اجمع روابط مشاريعك<br>من غير أي اشتراك.</h1>
+<p>الأداة دي بتقرأ صفحة محفوظة من Behance <b>محليًا داخل متصفحك</b>، وتطلع منها روابط المشاريع العامة فقط. لا ترفع الصفحة لأي سيرفر، ولا تجمع كلمات مرور أو بيانات تسجيل دخول.</p>
+<ol>
+<li>افتح <a href="https://www.behance.net/oa19635079ead" target="_blank" rel="noopener noreferrer">حسابك على Behance</a>، ومرّر لأسفل لحد ما تظهر كل المشاريع في الصفحة.</li>
+<li>اضغط <b>Ctrl + S</b> واحفظ الصفحة بصيغة <b>Webpage, HTML Only</b> (صفحة ويب، HTML فقط).</li>
+<li>اختار ملف الـHTML هنا. الأداة هتستخرج روابط المشاريع وتعرضها لك للمراجعة.</li>
+<li>اضغط <b>نسخ الروابط</b>، وابعتها في محادثة ChatGPT. ما تبعتش ملف الصفحة المحفوظ؛ ابعت الروابط العامة فقط.</li>
+</ol>
+<section class="panel"><label class="drop">اختر ملف HTML اللي حفظته من Behance <input type="file" id="profile" accept=".html,.htm,text/html"></label>
+<div id="status" class="status" role="status">لسه ما اخترتش ملف.</div>
+<div id="results" class="results"><p><span id="count" class="count">0</span> مشروع اتعرف عليه. راجع القائمة قبل ما تبعتها.</p><textarea id="links" aria-label="روابط مشاريع Behance المكتشفة" spellcheck="false"></textarea><div class="actions"><button id="copy" type="button">نسخ الروابط</button></div></div>
+<p class="note">ملفات الصفحة لا تغادر جهازك. لو ظهر عدد أقل من 28، غالبًا Behance ما حمّلش كل الكروت وقت الحفظ. افتح البروفايل، كمّل التمرير حتى تظهر كلها، واحفظ الصفحة مرة ثانية. لا ترسل ملف HTML كاملًا لأنه قد يتضمن بيانات تخص جلسة تسجيل الدخول.</p></section>
+</main>
+<script>
+(() => {
+'use strict';
+const picker=document.getElementById('profile'),status=document.getElementById('status'),results=document.getElementById('results'),links=document.getElementById('links'),count=document.getElementById('count'),copy=document.getElementById('copy');
+function projectURL(value){
+ try{ const u=new URL(value,'https://www.behance.net');const segments=u.pathname.split('/').filter(Boolean);if(!['www.behance.net','behance.net'].includes(u.hostname)||u.protocol!=='https:'||segments[0]!=='gallery'||!/^\d{3,18}$/.test(segments[1]||''))return '';const slug=segments[2]&&/^[a-z0-9%_+.-]+$/i.test(segments[2])?'/'+segments[2]:'';return 'https://www.behance.net/gallery/'+segments[1]+slug; }catch{return ''}
+}
+function extract(html){
+ const doc=new DOMParser().parseFromString(html,'text/html');const found=new Map();
+ for(const a of doc.querySelectorAll('a[href]')){const p=projectURL(a.getAttribute('href'));if(p)found.set(p.split('/')[4],p)}
+ // Saved page source sometimes escapes links in serialized state. Accept only
+ // Behance gallery URLs; use the visible anchor list first when possible.
+ const raw=html.replace(/\\u002f/gi,'/').replace(/\\\//g,'/').replace(/&amp;/g,'&');
+ for(const m of raw.matchAll(/(?:https?:\/\/(?:www\.)?behance\.net)?\/gallery\/(\d{3,18})(?:\/([a-z0-9%_+.-]+))?/gi)){
+   const id=m[1],p=projectURL('https://www.behance.net/gallery/'+id+(m[2]?'/'+m[2]:''));if(p&&!found.has(id))found.set(id,p);
+ }
+ return [...found.values()];
+}
+picker.addEventListener('change',async()=>{
+ const file=picker.files?.[0];if(!file)return; if(file.size>45_000_000){status.textContent='الملف أكبر من الحد المسموح للأداة (45MB).';return;}
+ try{const items=extract(await file.text());links.value=items.join('\n');count.textContent=String(items.length);status.textContent=items.length?'تم استخراج الروابط من الملف المحلي بنجاح.':'ما لقيناش روابط مشاريع في الملف. جرّب حفظ صفحة البروفايل بعد التمرير.';results.style.display=items.length?'block':'none';}
+ catch(err){status.textContent='تعذّر قراءة ملف HTML. تأكد من اختيار الملف الصحيح.';results.style.display='none'}
+});
+copy.addEventListener('click',async()=>{if(!links.value.trim())return;try{await navigator.clipboard.writeText(links.value);copy.textContent='تم النسخ ✓';}catch{links.focus();links.select();copy.textContent='حدّد الروابط وانسخها بـ Ctrl+C';}});
+})();
+</script>
+</body></html>
