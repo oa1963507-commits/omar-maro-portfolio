@@ -118,10 +118,11 @@ function newProject(entry){
   return {id:`behance-${entry.id}`,title:entry.title||`Behance project ${entry.id}`,title_en:'',category,category_label:LABELS[category],year:'',cover:entry.cover,images:[],description:'',story:'',source:'behance',url:entry.url,behance_id:entry.id};
 }
 export function mergeDetail(existing,entry,detail,now){
-  const title=detail.title && !/^[?\s]+$/.test(detail.title)?detail.title:existing.title;
+  const isPlaceholder=title=>/^(?:[?\\s]+|Behance project \\d+)$/i.test(String(title||'').trim());
+  const title=detail.title && !isPlaceholder(detail.title)?detail.title:existing.title;
   return {
     ...existing,
-    title: /^[?\s]+$/.test(String(existing.title||'').trim())||!existing.title ? title : existing.title,
+    title: isPlaceholder(existing.title)||!existing.title ? title : existing.title,
     cover:detail.cover||entry.cover||existing.cover,
     url:detail.url||entry.url||existing.url,
     description:detail.description||existing.description||'',
