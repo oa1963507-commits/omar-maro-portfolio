@@ -138,7 +138,8 @@ export function projectSlug(url, expectedID) {
   if(!verified)return '';
   const parts=new URL(verified).pathname.split('/').filter(Boolean);
   const slug=parts[2]||'';
-  return /^[a-z0-9_+%.-]{1,160}$/i.test(slug)?decodeURIComponent(slug):'';
+  if(!/^[a-z0-9_+%.-]{1,160}$/i.test(slug))return '';
+  try {return decodeURIComponent(slug);}catch{return '';}
 }
 
 async function getJSON(path,key,fetchImpl){
