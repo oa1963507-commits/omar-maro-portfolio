@@ -82,7 +82,7 @@
 
   function projectCard(p,index){
     const thumbnail=p.cover||p.images?.[0]||'';
-    const im=thumbnail?qualityImage(thumbnail,'project-card-image',p.title,'card'):`<div class="project-image-fallback">OM / ${escapeHTML(p.category_label)}</div>`;
+    const im=thumbnail?qualityImage(thumbnail,'project-card-image',p.title,'card'):`<div class="project-image-fallback"><img src="assets/omar-mark.png" alt="" loading="lazy"><span>${escapeHTML(p.category_label)}</span></div>`;
     const number=String(index+1).padStart(2,'0');
     return `<a href="#project/${encodeURIComponent(p.id)}" class="project-card reveal" aria-label="شاهد مشروع ${escapeHTML(p.title)}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">عرض المشروع ↗</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(p.category_label)}${p.year?' · '+escapeHTML(p.year):''}</span><h3>${escapeHTML(p.title)}</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>`;
   }
