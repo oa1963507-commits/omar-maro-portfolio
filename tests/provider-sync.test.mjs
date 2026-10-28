@@ -113,12 +113,44 @@ test('backs off failed project details to avoid consuming monthly free API credi
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'omar-free-backoff-'));
  try{
   const catalog=path.join(dir,'projects.json'),report=path.join(dir,'report.json');
-  await fs.writeFile(catalog,JSON.stringify([{id:'behance-'+id,behance_id:id,source:'behance',title:'Example',url,images:[],modules:[],provider_retry_at:'2026-11-15T00:00:00Z'}])+'\\n');
+  await fs.writeFile(catalog,JSON.stringify([{id:'behance-'+id,behance_id:id,source:'behance',title:'Example',url,images:[],modules:[],provider_retry_at:'2026-11-15T00:00:00Z'}])+'\n');
   let calls=0;
   const fetchImpl=async(u)=>{calls++;return {ok:true,json:async()=>profile};};
   const result=await synchronizeProvider({key:'test-key-valid',knownProjects:[],fetchImpl,catalogPath:catalog,reportPath:report,now:new Date('2026-10-29T00:00:00Z')});
   assert.equal(result.skipped,1);
   assert.equal(result.failed,0);
   assert.equal(calls,1);
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
+
+test('discovers a newly published Behance project on the next scheduled profile check',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'omar-auto-publish-'));
+ try {
+  const catalog=path.join(dir,'projects.json'),report=path.join(dir,'report.json');
+  await fs.writeFile(catalog,JSON.stringify([{id:'behance-'+id,behance_id:id,source:'behance',title:'Existing',url,cover:cdn,images:[cdn],modules:[{type:'image',url:cdn}],full_project_synced:true,provider_checked_at:'2026-10-28T00:00:00Z'}])+'\n');
+  const newID='300012345',newUrl='https://www.behance.net/gallery/300012345/New-Brand';
+  let requested=0;
+  const fetchImpl=async(request)=>{
+   requested++;
+   if(request.includes('/user?'))return {ok:true,json:async()=>({success:true,data:{username:user,projects:[
+      {id:Number(newID),title:'New Brand',url:newUrl,cover_url:cdn},
+      {id:Number(id),title:'Existing',url,cover_url:cdn}
+   ]}})};
+   const projectID=new URL(request).searchParams.get('id');
+   return {ok:true,json:async()=>({success:true,data:{
+       id:Number(projectID),title:'New Brand',url:newUrl,cover_url:cdn,
+       owners:[{username:user}],modules:[{type:'image',url:cdn,position:1}]
+   }})};
+  };
+  const result=await synchronizeProvider({key:'valid-test-key',knownProjects:[],fetchImpl,catalogPath:catalog,reportPath:report,now:new Date('2026-10-29T00:00:00Z')});
+  assert.equal(result.imported,1);
+  assert.equal(result.skipped,1);
+  assert.equal(requested,2);
+  const saved=JSON.parse(await fs.readFile(catalog,'utf8'));
+  assert.equal(saved.filter(x=>x.source==='behance').length,2);
+  const fresh=saved.find(x=>x.behance_id===newID);
+  assert.equal(fresh.title,'New Brand');
+  assert.equal(fresh.images.length,1);
+  assert.equal(fresh.modules.length,1);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
