@@ -12,6 +12,7 @@ on:
     - cron: '23 */6 * * *' # UTC; GitHub can delay scheduled runs
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: portfolio-behance-sync
   cancel-in-progress: true
@@ -41,3 +42,11 @@ jobs:
             git commit -m 'Update full Behance projects and module galleries'
             git push
           fi
+      - name: Publish updated catalog to GitHub Pages
+        if: ${{ success() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # A push made with GITHUB_TOKEN does not trigger other workflows.
+          # workflow_dispatch is an explicit supported exception.
+          gh workflow run deploy-pages.yml --ref main --repo "$GITHUB_REPOSITORY"
