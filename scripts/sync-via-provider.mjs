@@ -173,7 +173,8 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
     const raw=typeof item==='string'?item:item?.url;
     if(typeof raw!=='string')continue;
     let u;try {u=new URL(raw);}catch{continue;}
-    const id=projectId(u.pathname.match(/^\\/gallery\\/(\\d{3,18})(?:\\/|$)/)?.[1]);
+    const parts=u.pathname.split('/');
+    const id=projectId(parts[1]==='gallery' ? parts[2] : '');
     const url=validGalleryUrl(raw,id);
     if(!id||!url||profileMap.has(id))continue;
     profileMap.set(id,{id,url,title:cleanText(typeof item==='object'?item.title:'',180),cover:validImageUrl(typeof item==='object'?item.cover:'')});
