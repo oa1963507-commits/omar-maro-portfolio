@@ -130,6 +130,17 @@ export function mergeDetail(existing,entry,detail,now){
     provider_checked_at:now.toISOString(),
   };
 }
+// Scrappa accepts an optional slug. Some public projects omit modules in an
+// ID-only response; retry those projects with their verified public URL slug.
+// Only the two incomplete records need this fallback; cached records are skipped.
+export function projectSlug(url, expectedID) {
+  const verified=validGalleryUrl(url,expectedID);
+  if(!verified)return '';
+  const parts=new URL(verified).pathname.split('/').filter(Boolean);
+  const slug=parts[2]||'';
+  return /^[a-z0-9_+%.-]{1,160}$/i.test(slug)?decodeURIComponent(slug):'';
+}
+
 async function getJSON(path,key,fetchImpl){
   const r=await fetchImpl(`${API}${path}`,{headers:{'x-api-key':key,accept:'application/json'},signal:AbortSignal.timeout(35000)});
   if(!r.ok)throw Error(`Provider HTTP ${r.status}`);
@@ -160,7 +171,20 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,fetch
       skipped++;continue;
     }
     try{
-      const detail=parseProject(await getJSON(`/project?id=${encodeURIComponent(entry.id)}`,key,fetchImpl),entry.id);
+      let detail;
+      let firstError;
+      try {
+        detail=parseProject(await getJSON(`/project?id=${encodeURIComponent(entry.id)}`,key,fetchImpl),entry.id);
+      }catch(e){firstError=e;}
+      if(!detail){
+        const slug=projectSlug(entry.url,entry.id);
+        if(!slug)throw firstError;
+        try {
+          detail=parseProject(await getJSON(`/project?id=${encodeURIComponent(entry.id)}&slug=${encodeURIComponent(slug)}`,key,fetchImpl),entry.id);
+        }catch(retryError){
+          throw Error(`ID-only: ${firstError.message}; with slug: ${retryError.message}`);
+        }
+      }
       requested++;
       const next=mergeDetail(old,entry,detail,now);
       byId.set(catalogID,next);
