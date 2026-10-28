@@ -4,10 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'scripts/import-project-details.mjs'
+      - 'scripts/sync-via-provider.mjs'
+      - 'tests/provider-sync.test.mjs'
       - '.github/workflows/sync-projects.yml'
   schedule:
-    - cron: '23 */6 * * *' # UTC, approximate; GitHub may delay scheduled jobs
+    - cron: '23 */6 * * *' # UTC; GitHub can delay scheduled runs
 permissions:
   contents: write
 concurrency:
@@ -16,7 +17,7 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,35 +25,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify importer with local fixtures
+      - name: Validate the catalog importer (no API credits used)
         run: node --test tests/*.test.mjs
-      - name: Install public-page reader
-        run: |
-          npm install --no-save playwright@1.56.1
-          npx playwright install chromium
-      - name: Import publicly visible Behance projects
-        env:
-          BEHANCE_FEED_URL: ${{ vars.BEHANCE_FEED_URL }}
-        run: |
-          node scripts/sync-behance.mjs || echo "Public project feed unavailable; keeping existing catalog."
-      - name: Read full public project galleries
-        id: hydrate
-        continue-on-error: true
+      - name: Import complete public Behance projects via JSON provider
         env:
           SCRAPPA_API_KEY: ${{ secrets.SCRAPPA_API_KEY }}
-        run: node scripts/import-project-details.mjs
-      - name: Commit only when projects change
+        run: node scripts/sync-via-provider.mjs
+      - name: Commit changes only if catalog or diagnostics changed
         run: |
           git config user.name 'omar-maro-portfolio[bot]'
           git config user.email 'omar-maro-portfolio[bot]@users.noreply.github.com'
           git add data/projects.json data/sync-status.json
           if ! git diff --cached --quiet; then
-            git commit -m 'Refresh Behance portfolio projects'
+            git commit -m 'Update full Behance projects and module galleries'
             git push
           fi
-
-      - name: Report unavailable project source clearly
-        if: steps.hydrate.outcome == 'failure'
-        run: |
-          echo 'Public Behance project pages could not be imported. Existing project data has been preserved; see data/sync-status.json for detailed diagnosis.'
-          exit 1
