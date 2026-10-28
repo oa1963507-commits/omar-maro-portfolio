@@ -16,9 +16,22 @@
     return '';
   }
   function safeExternal(s) { try {const u=new URL(s); return u.protocol === 'https:' ? u.href : '';} catch{return '';} }
+  function normalizeModule(m) {
+    if (!m || typeof m !== 'object') return null;
+    if (m.type === 'image') { const url = safeMediaUrl(m.url); return url ? {type:'image',url} : null; }
+    if (m.type === 'text') { const text=String(m.text||'').slice(0,7000); return text.trim()?{type:'text',text}:null; }
+    if (m.type === 'embed') {
+      const url=safeExternal(m.url);
+      if (!url) return null;
+      const hostname=new URL(url).hostname;
+      if (!['player.vimeo.com','www.youtube.com','www.youtube-nocookie.com','youtube.com'].includes(hostname))return null;
+      return {type:'embed',url};
+    }
+    return null;
+  }
   function normalize(p) {
     if (!p || typeof p !== 'object' || !/^[a-z0-9-]{2,120}$/.test(String(p.id||''))) return null;
-    return {id:p.id,title:String(p.title||'بدون عنوان'),title_en:String(p.title_en||p.title||''),category:['branding','social','covers','print','ai'].includes(p.category)?p.category:'social',category_label:String(p.category_label||'مشروع إبداعي'),year:String(p.year||''),cover:safeMediaUrl(p.cover),images:Array.isArray(p.images)?p.images.map(safeMediaUrl).filter(Boolean).slice(0,100):[],description:String(p.description||''),story:String(p.story||''),source:String(p.source||''),url:safeExternal(p.url||'')};
+    return {id:p.id,title:String(p.title||'بدون عنوان'),title_en:String(p.title_en||p.title||''),category:['branding','social','covers','print','ai'].includes(p.category)?p.category:'social',category_label:String(p.category_label||'مشروع إبداعي'),year:String(p.year||''),cover:safeMediaUrl(p.cover),images:Array.isArray(p.images)?p.images.map(safeMediaUrl).filter(Boolean).slice(0,120):[],modules:Array.isArray(p.modules)?p.modules.map(normalizeModule).filter(Boolean).slice(0,120):[],description:String(p.description||''),story:String(p.story||''),source:String(p.source||''),url:safeExternal(p.url||'')};
   }
   // Prefer Behance's larger public CDN variants; retain lower-res URLs as fallbacks.
   function imageSources(raw, kind='module') {
@@ -84,17 +97,26 @@
   }));
   function renderDetail(p){
     const images=(p.images||[]).filter(Boolean);
-    const gallery=images.map((im,index)=>{
-      const full=imageSources(im,'module')[0];
-      return `<figure class="case-media"><a data-full-image href="${escapeHTML(full)}" target="_blank" rel="noopener noreferrer" title="فتح الصورة بدقتها الأصلية">${qualityImage(im,'case-full-image',`${p.title} — صورة ${index+1}`,'module')}</a><figcaption>${String(index+1).padStart(2,'0')} / ${String(images.length).padStart(2,'0')} · افتح الصورة بدقتها الأصلية ↗</figcaption></figure>`;
+    const hasModules=Array.isArray(p.modules)&&p.modules.length>0;
+    const ordered=hasModules?p.modules:images.map(url=>({type:'image',url}));
+    const imageTotal=ordered.filter(m=>m.type==='image').length;
+    let imageNo=0;
+    const gallery=ordered.map(m=>{
+      if(m.type==='image'){
+        imageNo++;
+        const full=imageSources(m.url,'module')[0];
+        return `<figure class="case-media"><a data-full-image href="${escapeHTML(full)}" target="_blank" rel="noopener noreferrer" title="فتح الصورة بدقتها الأصلية">${qualityImage(m.url,'case-full-image',`${p.title} — صورة ${imageNo}`,'module')}</a><figcaption>${String(imageNo).padStart(2,'0')} / ${String(imageTotal).padStart(2,'0')} · افتح الصورة بأعلى دقة متاحة ↗</figcaption></figure>`;
+      }
+      if(m.type==='text')return `<div class="case-text-module">${escapeHTML(m.text)}</div>`;
+      if(m.type==='embed')return `<div class="case-embedded-video"><iframe loading="lazy" src="${escapeHTML(m.url)}" title="فيديو من مشروع ${escapeHTML(p.title)}" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
+      return '';
     }).join('');
     const behanceID=(p.source==='behance'&&p.url?.startsWith('https://')) ? p.url.match(/^https:\/\/(?:www\.)?behance\.net\/gallery\/(\d{3,18})(?:\/|$)/)?.[1] : null;
     const url=p.url?`<a href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer" class="case-cta">المشروع الأصلي على Behance <span>↗</span></a>`:`<a href="${BEHANCE}" target="_blank" rel="noopener noreferrer" class="case-cta">شوف باقي أعمالي <span>↗</span></a>`;
-    const summary=images.length?`<div class="case-quality-note">${images.length} صورة من المشروع · صور كبيرة ونِسَب أصلية · اضغط للتكبير</div>`:p.source==='behance'?`<div class="case-quality-note case-quality-pending">تعذّر استيراد الصور الداخلية من المصدر حتى الآن. تقدر تشوف معاينة المشروع المضمّنة أو تفتح النسخة الكاملة على Behance؛ الغلاف وحده مش هو المشروع الكامل.</div>`:'';
-    const preview=!images.length && behanceID?`<div class="case-official-preview"><p>معاينة Behance الرسمية</p><iframe loading="lazy" title="معاينة مشروع ${escapeHTML(p.title)}" src="https://www.behance.net/embed/project/${behanceID}?ilo0=1" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><small>محتوى التضمين يخضع لإعدادات Behance؛ لو المعاينة مختصرة، افتح المشروع الأصلي.</small></div>`:'';
-    // Do not pretend that an embedded Behance preview is a complete project import.
+    const summary=ordered.length?`<div class="case-quality-note">${imageTotal} صورة${hasModules?' + محتوى المشروع المرتب':''} · عرض كامل بدون قص · افتح الصور للتكبير</div>`:p.source==='behance'?`<div class="case-quality-note case-quality-pending">تعذّر استيراد الصور الداخلية من المصدر حتى الآن. المعروض غلاف فقط، ويمكنك فتح المشروع كاملًا على Behance.</div>`:'';
+    const preview=!ordered.length && behanceID?`<div class="case-official-preview"><p>معاينة Behance الرسمية</p><iframe loading="lazy" title="معاينة مشروع ${escapeHTML(p.title)}" src="https://www.behance.net/embed/project/${behanceID}?ilo0=1" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><small>قد تكون المعاينة مختصرة؛ لعرض كل المحتوى افتح المشروع الأصلي.</small></div>`:'';
     const hero=p.cover?qualityImage(p.cover,'case-hero-img',`غلاف ${p.title}`,'detail','eager'):'';
-    return `<div class="case-container"><p class="case-eyebrow">${escapeHTML(p.category_label)} / ${escapeHTML(p.year)}</p><h2 class="case-title">${escapeHTML(p.title)}</h2>${p.description?`<p class="case-desc">${escapeHTML(p.description)}</p>`:''}${summary}${images.length===0?hero:''}${preview}${p.story?`<div class="case-section"><span>THE IDEA / الفكرة</span><p>${escapeHTML(p.story)}</p></div>`:''}${gallery?`<div class="case-gallery">${gallery}</div>`:''}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING ✳</span>${url}</div></div>`;
+    return `<div class="case-container"><p class="case-eyebrow">${escapeHTML(p.category_label)} / ${escapeHTML(p.year)}</p><h2 class="case-title">${escapeHTML(p.title)}</h2>${p.description?`<p class="case-desc">${escapeHTML(p.description)}</p>`:''}${summary}${!ordered.length?hero:''}${preview}${p.story?`<div class="case-section"><span>THE IDEA / الفكرة</span><p>${escapeHTML(p.story)}</p></div>`:''}${gallery?`<div class="case-gallery">${gallery}</div>`:''}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING ✳</span>${url}</div></div>`;
   }
   function openProject(id){
     const p=projects.find(x=>x.id===id);
