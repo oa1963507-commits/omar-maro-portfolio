@@ -192,6 +192,15 @@ test('Behance project views and WhatsApp inquiries react to the selected languag
  assert.ok(script.includes('story_en:String(p.story_en'));
 });
 
+test('Arabic and English headings use solid, readable text with no hollow outline styling',()=>{
+ assert.ok(html.includes('class="heading-highlight">تتشاف.</span>'));
+ assert.ok(html.includes('>أثر.</h1>'));
+ assert.ok(css.includes('.heading-highlight{color:var(--accent);font-weight:900'));
+ assert.ok(!html.includes('class="heading-outline"'));
+ assert.ok(!css.includes('-webkit-text-stroke'));
+ assert.ok(!html.includes('تتـشــاف.'));
+ assert.ok(!html.includes('أثــــر.'));
+});
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
