@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-28T21:53:03.847Z",
+  "checked_at": "2026-10-28T21:54:20.214Z",
   "provider": "scrappa-free-with-owner-public-links",
   "profile": "oa19635079ead",
   "primary_projects": 12,
@@ -7,6 +7,10 @@
   "catalog_projects": 28,
   "known_project_links": 28,
   "added_from_known": 16,
+  "new_projects_detected": 0,
+  "new_project_ids": [],
+  "last_discovered_projects": [],
+  "last_new_project_at": null,
   "expected_minimum_from_owner": 28,
   "missing_from_minimum": 0,
   "discovery_incomplete": false,
