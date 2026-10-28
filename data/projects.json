@@ -470,7 +470,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/230185763/omars-portfolio",
     "behance_id": "230185763",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-230756783",
@@ -487,7 +488,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/230756783/_",
     "behance_id": "230756783",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-230558910",
@@ -504,7 +506,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/230558910/_",
     "behance_id": "230558910",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-230308711",
@@ -521,7 +524,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/230308711/Companions-of-the-Cave",
     "behance_id": "230308711",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-229727361",
@@ -538,7 +542,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/229727361/Haroun-General-Contracting-and-Finishing",
     "behance_id": "229727361",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-229118811",
@@ -555,7 +560,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/229118811/muscat-popcorn",
     "behance_id": "229118811",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-226842327",
@@ -572,7 +578,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/226842327/Moca-Coffee",
     "behance_id": "226842327",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-229201679",
@@ -589,7 +596,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/229201679/Dhu-al-Qarnayn",
     "behance_id": "229201679",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-229169997",
@@ -606,7 +614,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/229169997/Book-covers-and-designs-with-AI",
     "behance_id": "229169997",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-229169841",
@@ -623,7 +632,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/229169841/Palestinian",
     "behance_id": "229169841",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-229114233",
@@ -640,7 +650,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/229114233/Justice-Foundation",
     "behance_id": "229114233",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-229113721",
@@ -657,7 +668,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/229113721/ELSEHA-LAB",
     "behance_id": "229113721",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-229112765",
@@ -674,7 +686,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/229112765/Al-Haramain-Company",
     "behance_id": "229112765",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-162581937",
@@ -691,7 +704,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/162581937/_",
     "behance_id": "162581937",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-160746221",
@@ -708,7 +722,8 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/160746221/_",
     "behance_id": "160746221",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   },
   {
     "id": "behance-124761559",
@@ -725,6 +740,7 @@
     "source": "behance",
     "url": "https://www.behance.net/gallery/124761559/social-media",
     "behance_id": "124761559",
-    "full_project_synced": false
+    "full_project_synced": false,
+    "title_source": "url-slug"
   }
 ]
