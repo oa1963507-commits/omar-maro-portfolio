@@ -1,20 +1,22 @@
 {
-  "checked_at": "2026-10-28T21:17:50.173Z",
+  "checked_at": "2026-10-28T21:53:03.847Z",
   "provider": "scrappa-free-with-owner-public-links",
   "profile": "oa19635079ead",
   "primary_projects": 12,
-  "profile_projects": 12,
+  "profile_projects": 28,
   "catalog_projects": 28,
-  "known_project_links": 0,
-  "added_from_known": 0,
+  "known_project_links": 28,
+  "added_from_known": 16,
   "expected_minimum_from_owner": 28,
-  "missing_from_minimum": 16,
-  "discovery_incomplete": true,
-  "requests_attempted": 3,
+  "missing_from_minimum": 0,
+  "discovery_incomplete": false,
+  "requests_attempted": 1,
   "imported": 0,
-  "skipped": 10,
-  "failed": 2,
+  "skipped": 28,
+  "failed": 0,
   "with_modules": 28,
+  "browser_public_gallery_projects": 28,
+  "browser_public_gallery_images": 183,
   "projects": [
     {
       "id": "behance-229201617",
@@ -36,23 +38,21 @@
     },
     {
       "id": "behance-254950791",
-      "status": "unavailable",
-      "error": "ID-only: Provider HTTP 503; with slug: Provider project has no modules array; media_fields=id",
-      "module_count": 0,
-      "image_count": 0
+      "status": "cached",
+      "module_count": 5,
+      "image_count": 5
     },
     {
       "id": "behance-254950629",
-      "status": "unavailable",
-      "error": "ID-only: Provider project has no modules array; media_fields=id; with slug: Provider project has no modules array; media_fields=id",
-      "module_count": 0,
-      "image_count": 0
+      "status": "cached",
+      "module_count": 7,
+      "image_count": 7
     },
     {
       "id": "behance-254950265",
       "status": "cached",
-      "module_count": 4,
-      "image_count": 3
+      "module_count": 10,
+      "image_count": 9
     },
     {
       "id": "behance-248355233",
@@ -89,15 +89,102 @@
       "status": "cached",
       "module_count": 5,
       "image_count": 5
+    },
+    {
+      "id": "behance-230185763",
+      "status": "cached",
+      "module_count": 25,
+      "image_count": 25
+    },
+    {
+      "id": "behance-230756783",
+      "status": "cached",
+      "module_count": 9,
+      "image_count": 9
+    },
+    {
+      "id": "behance-230558910",
+      "status": "cached",
+      "module_count": 9,
+      "image_count": 9
+    },
+    {
+      "id": "behance-230308711",
+      "status": "cached",
+      "module_count": 7,
+      "image_count": 7
+    },
+    {
+      "id": "behance-229727361",
+      "status": "cached",
+      "module_count": 11,
+      "image_count": 11
+    },
+    {
+      "id": "behance-229118811",
+      "status": "cached",
+      "module_count": 10,
+      "image_count": 10
+    },
+    {
+      "id": "behance-226842327",
+      "status": "cached",
+      "module_count": 10,
+      "image_count": 10
+    },
+    {
+      "id": "behance-229201679",
+      "status": "cached",
+      "module_count": 8,
+      "image_count": 8
+    },
+    {
+      "id": "behance-229169997",
+      "status": "cached",
+      "module_count": 3,
+      "image_count": 3
+    },
+    {
+      "id": "behance-229169841",
+      "status": "cached",
+      "module_count": 4,
+      "image_count": 4
+    },
+    {
+      "id": "behance-229114233",
+      "status": "cached",
+      "module_count": 2,
+      "image_count": 2
+    },
+    {
+      "id": "behance-229113721",
+      "status": "cached",
+      "module_count": 4,
+      "image_count": 4
+    },
+    {
+      "id": "behance-229112765",
+      "status": "cached",
+      "module_count": 3,
+      "image_count": 3
+    },
+    {
+      "id": "behance-162581937",
+      "status": "cached",
+      "module_count": 7,
+      "image_count": 7
+    },
+    {
+      "id": "behance-160746221",
+      "status": "cached",
+      "module_count": 8,
+      "image_count": 8
+    },
+    {
+      "id": "behance-124761559",
+      "status": "cached",
+      "module_count": 6,
+      "image_count": 6
     }
-  ],
-  "owner_browser_import": {
-    "imported_at": "2026-10-29",
-    "file_format": "omar-maro-behance-public-media-v1",
-    "profile": "oa19635079ead",
-    "projects_with_images": 28,
-    "image_links": 183,
-    "confirmed_against_source_pages": false
-  },
-  "provider_report_note": "Provider fields imported/skipped/failed refer to the previous provider sync. The owner-browser import is shown separately."
+  ]
 }
