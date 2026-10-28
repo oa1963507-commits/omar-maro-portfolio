@@ -10,6 +10,7 @@
  * Preserves old projects and images on partial failure.
  */
 import fs from 'node:fs/promises';
+import {discoverApifyProjects} from './discover-apify.mjs';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
 export const USERNAME = 'oa19635079ead';
@@ -18,6 +19,8 @@ const CATALOG = new URL('../data/projects.json', import.meta.url);
 const REPORT = new URL('../data/sync-status.json', import.meta.url);
 const MAX_MODULES = 120;
 const REFRESH_MILLIS = 7 * 24 * 60 * 60 * 1000;
+const DISCOVERY_INTERVAL = 24 * 60 * 60 * 1000;
+const USER_REPORTED_MINIMUM = 28;
 const LABELS = {branding:'هويات بصرية',social:'سوشيال ميديا وتصميمات',covers:'أغلفة كتب',print:'مطبوعات وتغليف',ai:'تصميمات AI'};
 const ALLOWED_CDNS = new Set(['mir-s3-cdn-cf.behance.net','mir-cdn.behance.net','mir-s3-cdn.behance.net']);
 const VALID_MEDIA = /\.(?:png|jpe?g|webp|gif)(?:$|[?#])/i;
@@ -150,13 +153,36 @@ async function getJSON(path,key,fetchImpl){
   return body;
 }
 
-export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,fetchImpl=fetch,now=new Date(),catalogPath=CATALOG,reportPath=REPORT,refreshMillis=REFRESH_MILLIS}={}){
+export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,apifyToken=process.env.APIFY_TOKEN,discoverExtra=discoverApifyProjects,fetchImpl=fetch,now=new Date(),catalogPath=CATALOG,reportPath=REPORT,refreshMillis=REFRESH_MILLIS}={}){
   if(!key||String(key).trim().length<10)throw Error('SCRAPPA_API_KEY is missing. Add it in GitHub Settings > Secrets and variables > Actions. Never paste the token into chat.');
   const raw=await fs.readFile(catalogPath,'utf8');
   const catalog=JSON.parse(raw);
   if(!Array.isArray(catalog))throw Error('Invalid project catalog');
-  const profile=parseProfile(await getJSON(`/user?username=${encodeURIComponent(USERNAME)}`,key,fetchImpl));
+  const initial=parseProfile(await getJSON(`/user?username=${encodeURIComponent(USERNAME)}`,key,fetchImpl));
   const byId=new Map(catalog.map(p=>[p.id,p]));
+  const profileMap=new Map(initial.map(p=>[p.id,p]));
+  let apifyCount=0, apifyAdded=0, apifyError='';
+  let previousStatus={};
+  try {previousStatus=JSON.parse(await fs.readFile(reportPath,'utf8'));}catch{}
+  let apifyCheckedAt=previousStatus.apify_checked_at||'';
+  const lastCheck=getDate(apifyCheckedAt);
+  const due=!lastCheck || now.getTime()-lastCheck.getTime()>=DISCOVERY_INTERVAL;
+  if(apifyToken && due){
+    try{
+      const found=await discoverExtra({token:apifyToken,username:USERNAME});
+      apifyCount=found.length;
+      for(const entry of found){
+        const id=projectId(entry.id),url=validGalleryUrl(entry.url,id);
+        if(!id||!url)continue;
+        if(!profileMap.has(id)){
+          profileMap.set(id,{id,url,title:cleanText(entry.title,180),cover:validImageUrl(entry.cover)});
+          apifyAdded++;
+        }
+      }
+      apifyCheckedAt=now.toISOString();
+    }catch(e){apifyError=String(e?.message||e).slice(0,240);}
+  }
+  const profile=[...profileMap.values()];
   const events=[];
   let requested=1,imported=0,skipped=0,failed=0;
   for(const entry of profile){
@@ -202,9 +228,30 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,fetch
   const merged=[...byId.values()];
   const newRaw=JSON.stringify(merged,null,2)+'\n';
   if(newRaw!==raw)await fs.writeFile(catalogPath,newRaw,'utf8');
-  const report={checked_at:now.toISOString(),provider:'scrappa-independent-third-party',profile:USERNAME,profile_projects:profile.length,requests_attempted:requested+failed,imported,skipped,failed,with_modules:merged.filter(x=>x.source==='behance'&&x.modules?.length).length,projects:events};
+  const catalogProjects=merged.filter(x=>x.source==='behance');
+  const report={
+    checked_at:now.toISOString(),
+    provider:'scrappa-plus-optional-apify',
+    profile:USERNAME,
+    primary_projects:initial.length,
+    profile_projects:profile.length,
+    catalog_projects:catalogProjects.length,
+    expected_minimum_from_owner:USER_REPORTED_MINIMUM,
+    missing_from_minimum:Math.max(0,USER_REPORTED_MINIMUM-catalogProjects.length),
+    discovery_incomplete:catalogProjects.length<USER_REPORTED_MINIMUM,
+    apify_configured:!!apifyToken,
+    apify_checked_at:apifyCheckedAt,
+    apify_results:apifyCount,
+    apify_added_this_run:apifyAdded,
+    ...(apifyError?{apify_error:apifyError}:{}),
+    requests_attempted:requested+failed,imported,skipped,failed,
+    with_modules:catalogProjects.filter(x=>x.modules?.length).length,
+    projects:events
+  };
   await fs.writeFile(reportPath,JSON.stringify(report,null,2)+'\n');
-  console.log(`Behance provider: ${profile.length} projects; ${imported} full imports, ${skipped} cached, ${failed} incomplete; catalog has ${report.with_modules} with full modules.`);
+  console.log(`Behance provider: primary ${initial.length}, Apify discovered ${apifyCount}, new ${apifyAdded}, total ${catalogProjects.length}; ${report.missing_from_minimum} missing from owner-reported minimum; ${imported} imported, ${failed} detail failures.`);
+  if(apifyError)console.warn('Apify discovery unavailable: '+apifyError);
+  if(!apifyToken && report.discovery_incomplete)console.warn('Incomplete project list: configure APIFY_TOKEN to discover projects beyond the primary source.');
   if(failed && !imported && !skipped)process.exitCode=1;
   return report;
 }
