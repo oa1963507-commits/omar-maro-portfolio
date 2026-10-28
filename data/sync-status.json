@@ -1,140 +1,87 @@
 {
-  "checked_at": "2026-10-28T20:25:13.915Z",
-  "attempted": 12,
-  "imported": 0,
-  "with_images": 0,
+  "checked_at": "2026-10-28T20:41:13.198Z",
+  "provider": "scrappa-independent-third-party",
+  "profile": "oa19635079ead",
+  "profile_projects": 12,
+  "requests_attempted": 13,
+  "imported": 10,
+  "skipped": 0,
+  "failed": 2,
+  "with_modules": 10,
   "projects": [
     {
       "id": "behance-229201617",
-      "title": "Dhu al-Qarnayn",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 1,
+      "image_count": 1
     },
     {
       "id": "behance-254951187",
-      "title": "????",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 1,
+      "image_count": 1
     },
     {
       "id": "behance-254950911",
-      "title": "??????",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 4,
+      "image_count": 4
     },
     {
       "id": "behance-254950791",
-      "title": "dr/ahmed zakaria",
       "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "error": "Provider returned unexpected project details",
+      "module_count": 0,
+      "image_count": 0
     },
     {
       "id": "behance-254950629",
-      "title": "dr/sara",
       "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "error": "Provider returned unexpected project details",
+      "module_count": 0,
+      "image_count": 0
     },
     {
       "id": "behance-254950265",
-      "title": "Linor",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 4,
+      "image_count": 3
     },
     {
       "id": "behance-248355233",
-      "title": "Feelings and self-talk",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 3,
+      "image_count": 3
     },
     {
       "id": "behance-246374445",
-      "title": "Typography",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 2,
+      "image_count": 2
     },
     {
       "id": "behance-246373273",
-      "title": "freelancer",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 4,
+      "image_count": 4
     },
     {
       "id": "behance-239948007",
-      "title": "????? ???",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 1,
+      "image_count": 1
     },
     {
       "id": "behance-239434969",
-      "title": "???? ????",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 15,
+      "image_count": 15
     },
     {
       "id": "behance-230910139",
-      "title": "Rebuild logos",
-      "status": "unavailable",
-      "image_count": 0,
-      "quality_verified": false,
-      "errors": [
-        "public HTML: HTTP 403",
-        "browser: Browser page HTTP 403"
-      ]
+      "status": "imported",
+      "module_count": 5,
+      "image_count": 5
     }
   ]
 }
