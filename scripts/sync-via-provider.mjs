@@ -19,6 +19,7 @@ const KNOWN = new URL('../data/known-projects.json', import.meta.url);
 const REPORT = new URL('../data/sync-status.json', import.meta.url);
 const MAX_MODULES = 120;
 const REFRESH_MILLIS = 7 * 24 * 60 * 60 * 1000;
+const FAILURE_BACKOFF_MS = 14 * 24 * 60 * 60 * 1000;
 const USER_REPORTED_MINIMUM = 28;
 const LABELS = {branding:'هويات بصرية',social:'سوشيال ميديا وتصميمات',covers:'أغلفة كتب',print:'مطبوعات وتغليف',ai:'تصميمات AI'};
 const ALLOWED_CDNS = new Set(['mir-s3-cdn-cf.behance.net','mir-cdn.behance.net','mir-s3-cdn.behance.net']);
@@ -120,6 +121,11 @@ function newProject(entry){
 export function mergeDetail(existing,entry,detail,now){
   const isPlaceholder=title=>{const value=String(title||'').trim();return !value || [...value].every(ch=>ch==='?') || value.toLowerCase().startsWith('behance project ') || value.startsWith('مشروع Behance ');};
   const title=detail.title && !isPlaceholder(detail.title)?detail.title:existing.title;
+  const priorCount=Array.isArray(existing.images)?existing.images.length:0;
+  const incomingCount=detail.images.length;
+  // The owner's public-browser export may have recovered more of a project than
+  // the upstream provider. Never replace that gallery with a truncated response.
+  const preserveBetterGallery=priorCount>incomingCount;
   return {
     ...existing,
     title: isPlaceholder(existing.title)||existing.title_source==='url-slug' ? title : existing.title,
@@ -127,11 +133,13 @@ export function mergeDetail(existing,entry,detail,now){
     cover:detail.cover||entry.cover||existing.cover,
     url:detail.url||entry.url||existing.url,
     description:detail.description||existing.description||'',
-    images:detail.images.length?detail.images:existing.images||[],
-    modules:detail.modules,
+    images:preserveBetterGallery?existing.images:(detail.images.length?detail.images:existing.images||[]),
+    modules:preserveBetterGallery?(existing.modules||[]):detail.modules,
     full_project_synced:true,
-    image_quality:'provider-original-CDN-variants',
+    image_quality:preserveBetterGallery?(existing.image_quality||'existing-better-gallery'):'provider-original-CDN-variants',
     provider_checked_at:now.toISOString(),
+    provider_retry_at:null,
+    provider_last_error:null,
   };
 }
 // Scrappa accepts an optional slug. Some public projects omit modules in an
@@ -193,6 +201,12 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
     const old=byId.get(catalogID)||newProject(entry);
     const freshAt=getDate(old.provider_checked_at);
     const complete=old.full_project_synced && Array.isArray(old.modules) && old.modules.length>0;
+    const retryAt=getDate(old.provider_retry_at);
+    if(!complete && retryAt && retryAt.getTime()>now.getTime()){
+      byId.set(catalogID,old);
+      events.push({id:catalogID,status:'retry-backoff',image_count:old.images?.length||0,retry_at:old.provider_retry_at});
+      skipped++;continue;
+    }
     if(complete && freshAt && now.getTime()-freshAt.getTime()<refreshMillis){
       // Still update metadata if the profile changed without charging for details.
       const damaged=/^[?\s]+$/.test(String(old.title||'').trim());
@@ -223,8 +237,9 @@ export async function synchronizeProvider({key=process.env.SCRAPPA_API_KEY,known
     }catch(err){
       // Only old verified data is used; no placeholder or invented image content.
       const damaged=/^[?\s]+$/.test(String(old.title||'').trim());
-      byId.set(catalogID,{...old,title:damaged && entry.title && !/^[?\s]+$/.test(entry.title)?entry.title:old.title,cover:entry.cover||old.cover});
-      events.push({id:catalogID,status:'unavailable',error:err.message,module_count:old.modules?.length||0,image_count:old.images?.length||0});
+      const retryDate=new Date(now.getTime()+FAILURE_BACKOFF_MS).toISOString();
+      byId.set(catalogID,{...old,title:damaged && entry.title && !/^[?\s]+$/.test(entry.title)?entry.title:old.title,cover:entry.cover||old.cover,provider_retry_at:retryDate,provider_last_error:String(err.message).slice(0,180)});
+      events.push({id:catalogID,status:'unavailable',retry_at:retryDate,error:err.message,module_count:old.modules?.length||0,image_count:old.images?.length||0});
       failed++;
     }
   }
