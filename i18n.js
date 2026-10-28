@@ -43,8 +43,7 @@
     document.body.dataset.language=lang;
     translateText();
     translateAttrs();
-    const btn=document.getElementById('language-toggle');
-    if(btn){
+    for(const btn of document.querySelectorAll('#language-toggle,#language-toggle-project')){
       btn.setAttribute('aria-label',lang==='ar'?'Switch language to English':'التبديل إلى اللغة العربية');
       btn.setAttribute('title',lang==='ar'?'Switch to English':'التبديل إلى العربية');
       btn.setAttribute('aria-pressed',String(lang==='en'));
@@ -60,7 +59,8 @@
   }
   function t(ar,en){return lang==='en'?en:ar}
   Object.defineProperty(window,'OMI18N',{value:{get lang(){return lang},setLanguage,apply,t},writable:false,configurable:false});
-  const btn=document.getElementById('language-toggle');
-  if(btn)btn.addEventListener('click',()=>setLanguage(lang==='ar'?'en':'ar'));
+  for(const btn of document.querySelectorAll('#language-toggle,#language-toggle-project')){
+    btn.addEventListener('click',()=>setLanguage(lang==='ar'?'en':'ar'));
+  }
   apply();
 })();
