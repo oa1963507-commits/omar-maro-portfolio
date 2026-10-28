@@ -41,3 +41,23 @@ test('checks CDN source then falls back to known working fs image',async()=>{
 test('Behance title from meta tag handles Arabic unicode',()=>{
  assert.equal(extractMetadataTitle('<meta property="og:title" content="تصميم كتاب :: Behance">'),'تصميم كتاب');
 });
+import {createPublicBrowser} from '../scripts/import-project-details.mjs';
+
+test('awaits chromium.launch before using newContext, and returns a real Browser',async()=>{
+  const fakeBrowser={newContext:async()=>({}),close:async()=>{}};
+  const launched=await createPublicBrowser({
+    playwrightLoader:async()=>({chromium:{launch:async options=>{
+      assert.equal(options.headless,true);
+      return fakeBrowser;
+    }}})
+  });
+  assert.equal(launched,fakeBrowser);
+  assert.equal(typeof launched.newContext,'function');
+});
+
+test('rejects a Promise-shaped or malformed browser result',async()=>{
+  await assert.rejects(
+    ()=>createPublicBrowser({browserFactory:async()=>({close:async()=>{}})}),
+    /Browser instance/
+  );
+});
