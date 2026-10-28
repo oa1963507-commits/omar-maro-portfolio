@@ -156,6 +156,38 @@ test('English typography uses Syne display and Manrope UI without replacing Arab
  assert.ok(syncHTML.includes('family=Syne:wght@'));
 });
 
+test('Arabic and English are selectable from a persistent, accessible header control',async()=>{
+ const locale=await fs.readFile(new URL('../i18n.js',import.meta.url),'utf8');
+ assert.ok(html.includes('id="language-toggle"'));
+ assert.ok(html.includes('class="lang-ar"'));
+ assert.ok(html.includes('class="lang-en"'));
+ assert.ok(html.indexOf('src="i18n.js"')<html.indexOf('src="app.js"'));
+ assert.ok(locale.includes("document.documentElement.lang=lang"));
+ assert.ok(locale.includes("document.documentElement.dir=lang==='en'?'ltr':'rtl'"));
+ assert.ok(locale.includes("localStorage.setItem(storageKey,next)"));
+ assert.ok(locale.includes("window.dispatchEvent(new CustomEvent('om-language-change'"));
+ assert.ok(css.includes('.language-toggle{'));
+ assert.ok(css.includes('html[lang="en"] .hero h1'));
+ assert.ok(css.includes('@media(max-width:920px){.language-toggle'));
+});
+test('every original Arabic static text on the public site has an English translation',async()=>{
+ const locale=await fs.readFile(new URL('../i18n.js',import.meta.url),'utf8');
+ const match=locale.match(/const dictionary=new Map\((\[[\s\S]*?\])\);\n  const attributes=/);
+ assert.ok(match,'translated text dictionary missing');
+ const dictionary=new Map(JSON.parse(match[1]));
+ const texts=[...html.matchAll(/>([^<>]+)</g)].map(m=>m[1].trim()).filter(Boolean);
+ const unmatched=[...new Set(texts.filter(text=>/[\u0600-\u06FF]/.test(text)&&!dictionary.has(text)))];
+ assert.deepEqual(unmatched,[]);
+});
+test('Behance project views and WhatsApp inquiries react to the selected language',()=>{
+ for(const part of ['const displayTitle =','const displayCategory =','const displayDescription =','const displayStory =',"window.addEventListener('om-language-change'","Project brief:","View complete original project on Behance","View project ↗"]){
+   assert.ok(script.includes(part),'missing bilingual feature: '+part);
+ }
+ assert.ok(script.includes('title_en:String(p.title_en'));
+ assert.ok(script.includes('description_en:String(p.description_en'));
+ assert.ok(script.includes('story_en:String(p.story_en'));
+});
+
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
