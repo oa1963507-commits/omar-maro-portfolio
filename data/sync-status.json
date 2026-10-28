@@ -4,7 +4,7 @@
   "profile": "oa19635079ead",
   "primary_projects": 12,
   "profile_projects": 12,
-  "catalog_projects": 12,
+  "catalog_projects": 28,
   "known_project_links": 0,
   "added_from_known": 0,
   "expected_minimum_from_owner": 28,
@@ -14,7 +14,7 @@
   "imported": 0,
   "skipped": 10,
   "failed": 2,
-  "with_modules": 10,
+  "with_modules": 28,
   "projects": [
     {
       "id": "behance-229201617",
@@ -90,5 +90,14 @@
       "module_count": 5,
       "image_count": 5
     }
-  ]
+  ],
+  "owner_browser_import": {
+    "imported_at": "2026-10-29",
+    "file_format": "omar-maro-behance-public-media-v1",
+    "profile": "oa19635079ead",
+    "projects_with_images": 28,
+    "image_links": 183,
+    "confirmed_against_source_pages": false
+  },
+  "provider_report_note": "Provider fields imported/skipped/failed refer to the previous provider sync. The owner-browser import is shown separately."
 }
