@@ -201,6 +201,23 @@ test('Arabic and English headings use solid, readable text with no hollow outlin
  assert.ok(!html.includes('تتـشــاف.'));
  assert.ok(!html.includes('أثــــر.'));
 });
+test('every ornamental star is replaced with the blue Pen Tool icon across public sections and case studies',async()=>{
+ const icon=await fs.readFile(new URL('../assets/pen-tool.svg',import.meta.url),'utf8');
+ assert.ok(icon.includes('viewBox="0 0 64 64"'));
+ assert.ok(icon.includes('stroke="#6aafff"'));
+ assert.ok(icon.includes('<path'));
+ assert.ok(html.includes('src="assets/pen-tool.svg"'));
+ assert.equal((html.match(/src="assets\\/pen-tool\\.svg"/g)||[]).length,16);
+ assert.ok(css.includes(".statement-section::before{content:''"));
+ assert.ok(css.includes(".contact-shell::before{content:''"));
+ assert.ok(css.includes("mask:url('assets/pen-tool.svg')"));
+ assert.ok(css.includes(".pen-tool-icon{"));
+ assert.ok(script.includes('THANKS FOR WATCHING <img class="pen-tool-icon"'));
+ assert.ok(!html.includes('✳'));
+ assert.ok(!css.includes("content:'✳'"));
+ assert.ok(!script.includes('✳'));
+});
+
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
