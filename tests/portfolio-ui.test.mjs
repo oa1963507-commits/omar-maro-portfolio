@@ -207,7 +207,7 @@ test('every ornamental star is replaced with the blue Pen Tool icon across publi
  assert.ok(icon.includes('stroke="#6aafff"'));
  assert.ok(icon.includes('<path'));
  assert.ok(html.includes('src="assets/pen-tool.svg"'));
- assert.equal((html.match(/src="assets\\/pen-tool\\.svg"/g)||[]).length,16);
+ assert.equal(html.split('src="assets/pen-tool.svg"').length-1,16);
  assert.ok(css.includes(".statement-section::before{content:''"));
  assert.ok(css.includes(".contact-shell::before{content:''"));
  assert.ok(css.includes("mask:url('assets/pen-tool.svg')"));
