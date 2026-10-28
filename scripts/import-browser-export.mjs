@@ -47,7 +47,15 @@ export function mergeBrowserExport(catalog,input){
     if(incoming.images.length<previous){retained++;return old;}
     // Full scan is a best-effort, not a guarantee the Behance page had loaded fully.
     // Preserve existing ordered text/video modules if present.
-    const oldExtras=(old.modules||[]).filter(m=>m.type==='text'||m.type==='embed');
+    const oldModules=Array.isArray(old.modules)?old.modules:[];
+    // Keep existing text/video in their original relative order. Replace the
+    // existing image slots, then append any additional discovered images.
+    let nextImage=0;
+    const modules=oldModules.length ? oldModules.map(m => {
+      if(m.type!=='image')return m;
+      return {type:'image',url:incoming.images[nextImage++]||m.url};
+    }) : [];
+    modules.push(...incoming.images.slice(nextImage).map(url=>({type:'image',url})));
     const titleNeedsFix=old.title_source==='url-slug'||/^(?:مشروع Behance|Behance project) \d+/i.test(old.title||'');
     updated++;
     return {...old,
@@ -55,7 +63,7 @@ export function mergeBrowserExport(catalog,input){
       title_source:titleNeedsFix&&incoming.title?'browser-public':old.title_source,
       cover:old.cover||incoming.images[0],
       images:incoming.images,
-      modules:[...incoming.images.map(url=>({type:'image',url})),...oldExtras],
+      modules,
       browser_public_scan:true,
       image_quality:'browser-visible-module-cdn',
       full_project_synced:old.full_project_synced||false,
