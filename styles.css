@@ -146,7 +146,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 
 /* Huge typography instead of generic SaaS pricing and claims */
 .statement-section{position:relative;overflow:hidden;background:radial-gradient(ellipse at 75% 30%,rgba(49,88,135,.15),transparent 60%),#0a0e12;border-block:1px solid var(--line)}
-.statement-section::before{content:'✳';position:absolute;left:6%;top:-120px;font:500 440px/1 var(--font-en);color:rgba(145,187,245,.035);pointer-events:none}
+.statement-section::before{content:'';position:absolute;left:6%;top:-115px;width:min(44vw,410px);aspect-ratio:1;background:rgba(145,187,245,.045);-webkit-mask:url('assets/pen-tool.svg') center/contain no-repeat;mask:url('assets/pen-tool.svg') center/contain no-repeat;pointer-events:none}
 .statement-layout{padding-block:94px 80px;position:relative}
 .statement-top{color:#8f9cab;font-size:11px;letter-spacing:2px;text-align:right}
 .statement-layout p{font-size:clamp(45px,7.2vw,119px);line-height:1.4;letter-spacing:-4px;font-weight:900;margin:18px 0 23px}
@@ -282,7 +282,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* Conversion CTA adapted for a real designer: no fabricated plans or testimonials */
 .contact-section{padding-block:15px 109px}
 .contact-shell{position:relative;border:1px solid #29384b;border-radius:28px;overflow:hidden;background:radial-gradient(ellipse at 10% 15%,rgba(59,104,160,.14),transparent 45%),linear-gradient(120deg,#121821,#0c1117);padding:clamp(30px,5vw,73px)}
-.contact-shell::before{content:'✳';position:absolute;top:-85px;left:13%;font:500 350px/1 var(--font-en);color:rgba(135,185,255,.055);pointer-events:none}
+.contact-shell::before{content:'';position:absolute;top:-80px;left:13%;width:min(34vw,340px);aspect-ratio:1;background:rgba(135,185,255,.065);-webkit-mask:url('assets/pen-tool.svg') center/contain no-repeat;mask:url('assets/pen-tool.svg') center/contain no-repeat;pointer-events:none}
 .contact-grid{display:grid;grid-template-columns:1fr .83fr;gap:8%;align-items:center;position:relative}
 .contact-copy h2{font-size:clamp(41px,4.7vw,72px);line-height:1.4;letter-spacing:-1.8px;margin:20px 0}
 .contact-copy h2 span{color:var(--accent)}
@@ -606,3 +606,22 @@ html[lang="en"] .contact-form input,html[lang="en"] .contact-form textarea{direc
 /* Keep the bilingual switch accessible in fullscreen project case studies. */
 .project-language-toggle{min-width:88px;min-height:37px;padding:5px 8px;margin-inline:auto;font-size:11px}
 @media(max-width:690px){.project-language-toggle{min-width:80px;min-height:34px;margin-inline-start:auto;margin-inline-end:0}}
+
+
+/* Graphic designer Pen Tool replaces every ornamental asterisk throughout the site. */
+.pen-tool-icon{display:inline-block;inline-size:1.04em;block-size:1.04em;flex:0 0 auto;object-fit:contain;vertical-align:-.16em}
+.eyebrow-mark{display:inline-flex;align-items:center;justify-content:center}
+.eyebrow-mark .pen-tool-icon{width:21px;height:21px}
+.showcase-spark .pen-tool-icon{width:30px;height:30px;vertical-align:middle}
+.proof-icon .pen-tool-icon{width:42px;height:42px;vertical-align:middle}
+.statement-bottom span:first-child .pen-tool-icon{width:27px;height:27px;vertical-align:middle}
+.service-icon .pen-tool-icon{width:21px;height:21px;vertical-align:middle}
+.process-shape .pen-tool-icon{width:100px;height:100px;opacity:.19}
+.about-art-corner .pen-tool-icon{width:100px;height:100px;filter:drop-shadow(0 0 18px rgba(98,163,255,.3))}
+.form-head span:last-child .pen-tool-icon{width:26px;height:26px;vertical-align:middle}
+.case-next .pen-tool-icon{width:13px;height:13px;vertical-align:-.18em}
+@media(max-width:690px){
+ .process-shape .pen-tool-icon{width:78px;height:78px}
+ .about-art-corner .pen-tool-icon{width:67px;height:67px}
+ .proof-icon .pen-tool-icon{width:34px;height:34px}
+}
