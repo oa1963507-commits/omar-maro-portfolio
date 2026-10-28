@@ -11,7 +11,7 @@ on:
       - 'tests/provider-sync.test.mjs'
       - '.github/workflows/sync-projects.yml'
   schedule:
-    - cron: '23 4 * * *' # UTC; GitHub can delay scheduled runs
+    - cron: '17 1,7,13,19 * * *' # UTC: every six hours; ~120 profile requests/month
 permissions:
   contents: write
   actions: write
@@ -36,16 +36,22 @@ jobs:
           SCRAPPA_API_KEY: ${{ secrets.SCRAPPA_API_KEY }}
         run: node scripts/sync-via-provider.mjs
       - name: Commit changes only if catalog or diagnostics changed
+        id: commit_catalog
         run: |
           git config user.name 'omar-maro-portfolio[bot]'
           git config user.email 'omar-maro-portfolio[bot]@users.noreply.github.com'
           git add data/projects.json data/sync-status.json
+          if git diff --cached --quiet -- data/projects.json; then
+            echo "catalog_changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "catalog_changed=true" >> "$GITHUB_OUTPUT"
+          fi
           if ! git diff --cached --quiet; then
-            git commit -m 'Update full Behance projects and module galleries'
+            git commit -m 'Auto-sync public Behance projects'
             git push
           fi
       - name: Publish updated catalog to GitHub Pages
-        if: ${{ success() }}
+        if: ${{ success() && steps.commit_catalog.outputs.catalog_changed == 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
