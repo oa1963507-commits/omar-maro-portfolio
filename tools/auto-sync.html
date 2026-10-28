@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f1012">
+<title>المزامنة التلقائية — OMAR MARO</title>
+<style>
+:root{color-scheme:dark;font-family:Tahoma,Arial,sans-serif;color:#f5f4f0;background:#101114}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 90% 0,#252528 0,#101114 52%);padding:30px 18px;line-height:1.8}
+main{max-width:850px;margin:auto}
+nav{display:flex;justify-content:space-between;align-items:center;gap:16px}
+mark{background:transparent;color:#aaa;letter-spacing:2px;font-weight:bold;font-size:14px}
+a{color:inherit;text-decoration:none}
+.back{color:#aaa;font-size:13px}
+h1{font-size:clamp(30px,6vw,51px);line-height:1.3;margin:54px 0 15px}
+.lead{color:#b8b8bd;margin:0 0 25px;max-width:680px}
+.status{display:inline-flex;gap:9px;align-items:center;padding:9px 15px;border:1px solid #424246;border-radius:99px;background:#18191c;font-size:13px;color:#dadade}
+.dot{width:8px;height:8px;border-radius:50%;background:#a2a2a8}
+.status.ok .dot{background:#77d6a5}
+.status.late .dot{background:#ffc46b}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0}
+.stat{background:#1d1e22;border:1px solid #39393d;border-radius:17px;padding:23px}
+.stat b{display:block;font:600 clamp(28px,5vw,42px) Arial,sans-serif;margin:5px 0}
+.stat small{font-size:12px;color:#bbb}
+section{background:#1a1b1f;border:1px solid #3a3a40;border-radius:18px;padding:25px;margin:20px 0}
+section h2{font-size:19px;margin:0 0 7px}
+section p{color:#babac0;margin:5px 0}
+.buttons{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0 8px}
+.btn{display:inline-block;cursor:pointer;border:1px solid #68686d;background:#24252a;color:#f5f4f0;border-radius:99px;padding:12px 22px;font-weight:bold;font-size:13px}
+.btn.primary{color:#101114;background:#f5f4f0;border-color:#f5f4f0}
+ul{padding:0 22px 0 0;margin:6px 0}
+li{margin:9px 0}
+.mini{font-size:12px;color:#98989f}
+#newProjects{display:none}
+#newProjects li a{text-decoration:underline;text-underline-offset:4px}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:span 2}section{padding:20px}.buttons .btn{width:100%;text-align:center}}
+</style>
+</head>
+<body>
+<main>
+<nav><mark>OMAR MARO / AUTO SYNC</mark><a class="back" href="../#work">العودة للموقع ←</a></nav>
+<h1>مشاريعك تتحدث تلقائيًا.</h1>
+<p class="lead">بعد نشر مشروع جديد بشكل عام على Behance، النظام يفحص البروفايل دوريًا ويستورد بيانات المشروع وصوره المتاحة ثم ينشرها على موقعك. لا تحتاج لإضافة روابط يدويًا للمشاريع التي تظهر في قائمة أحدث الأعمال.</p>
+<div class="status" id="runStatus"><span class="dot"></span><span id="runMessage">جاري تحميل آخر حالة...</span></div>
+<div class="stats">
+<div class="stat"><small>مشاريع Behance على الموقع</small><b id="projectCount">—</b></div>
+<div class="stat"><small>مشاريع لها صور داخلية</small><b id="imageProjects">—</b></div>
+<div class="stat"><small>روابط الصور المستوردة</small><b id="imageCount">—</b></div>
+</div>
+<section>
+<h2>آخر فحص تلقائي</h2>
+<p id="lastCheck">جاري التحقق...</p>
+<p id="newSummary" class="mini"></p>
+<div id="newProjects"><h2>آخر مشاريع جديدة تم اكتشافها</h2><ul id="newList"></ul></div>
+<div class="buttons">
+<button class="btn" id="refresh" type="button">تحديث البيانات الآن</button>
+<a class="btn primary" href="https://github.com/oa1963507-commits/omar-maro-portfolio/actions/workflows/sync-projects.yml" target="_blank" rel="noopener noreferrer">اطلب مزامنة فورية عبر GitHub</a>
+</div>
+<p class="mini">للمزامنة الفورية: افتح GitHub Actions واضغط Run workflow ثم Run workflow. يتطلب تسجيل الدخول لحساب GitHub المصرّح له.</p>
+</section>
+<section>
+<h2>إزاي بتشتغل؟</h2>
+<ul>
+<li>يتم فحص قائمة المشاريع الحديثة تلقائيًا كل 6 ساعات بواسطة GitHub Actions؛ وقد يتأخر التشغيل بسبب جدولة GitHub.</li>
+<li>يكتشف المشاريع الجديدة بالرقم الفريد، ويحافظ على المشاريع والصور الموجودة بالفعل بلا تكرار.</li>
+<li>يحاول جلب الصور والنصوص من مزود Scrappa باستخدام مفتاح مخزن سرّيًا في GitHub؛ الرصيد المجاني له حدود استخدام.</li>
+<li>لو Behance أو مصدر البيانات منع جلب الصور الكاملة، يظهر المشروع بالقدر المتاح، وقد يلزم استخدام أداة <a href="./collect-full.html" style="text-decoration:underline">جمع الصور الداخلية</a> الموجودة بالفعل.</li>
+</ul>
+</section>
+<p class="mini">اللوحة للعرض فقط ولا تحتوي على مفاتيح API أو بيانات دخول. المشاريع الخاصة أو المسودات لا تُكتشف تلقائيًا.</p>
+</main>
+<script>
+(()=>{
+'use strict';
+const byId=id=>document.getElementById(id);
+const formatDate=s=>{const d=new Date(s);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('ar-EG',{dateStyle:'medium',timeStyle:'short'}).format(d):'غير متاح'};
+async function reload(){
+ const el=byId('runMessage');el.textContent='جاري تحديث الحالة...';
+ try{
+  const [statusResp,catalogResp]=await Promise.all([
+    fetch('../data/sync-status.json',{cache:'no-store'}),
+    fetch('../data/projects.json',{cache:'no-store'})
+  ]);
+  if(!statusResp.ok||!catalogResp.ok)throw Error('Failed fetching status');
+  const [status,projects]=await Promise.all([statusResp.json(),catalogResp.json()]);
+  if(!Array.isArray(projects))throw Error('Malformed projects');
+  const list=projects.filter(p=>p.source==='behance');
+  const totalImages=list.reduce((n,p)=>n+(Array.isArray(p.images)?p.images.length:0),0);
+  byId('projectCount').textContent=String(list.length);
+  byId('imageProjects').textContent=String(list.filter(p=>p.images?.length>0).length);
+  byId('imageCount').textContent=String(totalImages);
+  const last=status.checked_at;
+  byId('lastCheck').textContent=last?formatDate(last):'لم يتم تسجيل فحص بعد';
+  const hours=last?(Date.now()-new Date(last).getTime())/36e5:Infinity;
+  const state=byId('runStatus');
+  state.className='status '+(hours<=18?'ok':'late');
+  el.textContent=hours<=18?'آخر مزامنة حديثة':'آخر فحص قديم — راجع GitHub Actions';
+  const found=Array.isArray(status.last_discovered_projects)?status.last_discovered_projects:[];
+  byId('newSummary').textContent=status.last_new_project_at?'آخر اكتشاف: '+formatDate(status.last_new_project_at):'لم يسجل النظام اكتشاف مشروع جديد منذ تفعيل المتابعة.';
+  const holder=byId('newProjects'),ul=byId('newList');
+  ul.replaceChildren();
+  for(const p of found){
+    if(!(/^https:\/\/www\.behance\.net\/gallery\/\d+\//).test(p.url||''))continue;
+    const li=document.createElement('li'),a=document.createElement('a');
+    a.href=p.url;a.textContent=p.title||'مشروع Behance '+p.id;a.target='_blank';a.rel='noopener noreferrer';
+    li.append(a);ul.append(li);
+  }
+  holder.style.display=ul.children.length?'block':'none';
+ }catch(error){el.textContent='تعذّر قراءة الحالة من الموقع. راجع آخر تشغيل على GitHub.';byId('runStatus').className='status late';}
+}
+byId('refresh').addEventListener('click',reload);
+reload();
+})();
+</script>
+</body>
+</html>
