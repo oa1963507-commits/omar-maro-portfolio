@@ -91,10 +91,11 @@
   };
 
   function projectCard(p,index){
+    const title=displayTitle(p),category=displayCategory(p);
     const thumbnail=p.cover||p.images?.[0]||'';
-    const im=thumbnail?qualityImage(thumbnail,'project-card-image',p.title,'card'):`<div class="project-image-fallback"><img src="assets/omar-mark.png" alt="" loading="lazy"><span>${escapeHTML(p.category_label)}</span></div>`;
+    const im=thumbnail?qualityImage(thumbnail,'project-card-image',title,'card'):`<div class="project-image-fallback"><img src="assets/omar-mark.png" alt="" loading="lazy"><span>${escapeHTML(category)}</span></div>`;
     const number=String(index+1).padStart(2,'0');
-    return `<a href="#project/${encodeURIComponent(p.id)}" class="project-card reveal" aria-label="شاهد مشروع ${escapeHTML(p.title)}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">عرض المشروع ↗</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(p.category_label)}${p.year?' · '+escapeHTML(p.year):''}</span><h3 class="${isLatinTitle(p.title)?'is-latin':''}">${escapeHTML(p.title)}</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>`;
+    return `<a href="#project/${encodeURIComponent(p.id)}" class="project-card reveal" aria-label="${escapeHTML(t('شاهد مشروع ','View project '))}${escapeHTML(title)}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">${escapeHTML(t('عرض المشروع ↗','View project ↗'))}</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(category)}${p.year?' · '+escapeHTML(p.year):''}</span><h3 class="${isLatinTitle(title)?'is-latin':''}">${escapeHTML(title)}</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>`;
   }
   function renderFeaturedProjects(){
     const grid=$('#hero-featured');
@@ -104,9 +105,10 @@
       grid.innerHTML='<a href="#work" class="showcase-fallback"><img src="assets/omar-cover.jpg" alt="هوية OMAR MARO"></a>';
     } else {
       grid.innerHTML=selected.map((p,i)=>{
+        const title=displayTitle(p);
         const cover=p.cover||p.images?.[0]||'';
-        const image=qualityImage(cover,'showcase-img',p.title,'card',i===0?'eager':'lazy');
-        return `<a href="#project/${encodeURIComponent(p.id)}" class="showcase-card" aria-label="مشروع ${escapeHTML(p.title)}">${image}${i===0?'<span class="showcase-label">FEATURED</span>':''}<span class="showcase-caption${isLatinTitle(p.title)?' is-latin':''}">${escapeHTML(p.title)}</span></a>`;
+        const image=qualityImage(cover,'showcase-img',title,'card',i===0?'eager':'lazy');
+        return `<a href="#project/${encodeURIComponent(p.id)}" class="showcase-card" aria-label="${escapeHTML(t('مشروع ','Project '))}${escapeHTML(title)}">${image}${i===0?'<span class="showcase-label">FEATURED</span>':''}<span class="showcase-caption${isLatinTitle(title)?' is-latin':''}">${escapeHTML(title)}</span></a>`;
       }).join('');
     }
     attachImageFallbacks(grid);
@@ -117,7 +119,7 @@
   function renderProjects(){
     const shown = projects.filter(p=>activeFilter === 'all' || p.category === activeFilter);
     $('#total-projects').textContent=String(projects.length).padStart(2,'0');
-    $('#projects-grid').innerHTML=shown.length?shown.map((p,i)=>projectCard(p,i)).join(''):`<div class="empty-state"><strong>مفيش مشاريع في القسم ده حاليًا.</strong><p>شوف باقي الأعمال أو تصفّح صفحة Behance.</p><a href="${BEHANCE}" class="underlink" target="_blank" rel="noopener noreferrer">افتح Behance ↗</a></div>`;
+    $('#projects-grid').innerHTML=shown.length?shown.map((p,i)=>projectCard(p,i)).join(''):`<div class="empty-state"><strong>${escapeHTML(t("مفيش مشاريع في القسم ده حاليًا.","No projects in this category yet."))}</strong><p>${escapeHTML(t("شوف باقي الأعمال أو تصفّح صفحة Behance.","Browse more work or visit my Behance profile."))}</p><a href="${BEHANCE}" class="underlink" target="_blank" rel="noopener noreferrer">${escapeHTML(t("افتح Behance ↗","Open Behance ↗"))}</a></div>`;
     attachImageFallbacks($('#projects-grid'));
     watch($('#projects-grid'));
   }
