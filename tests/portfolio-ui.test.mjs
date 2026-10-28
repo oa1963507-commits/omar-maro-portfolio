@@ -53,6 +53,27 @@ test('existing imported project records and owner presentation choices remain in
  for(const k of ['order','hidden','excluded','overrides','customProjects']) assert.ok(Object.hasOwn(siteSettings,k));
 });
 
+test('project grid is uniform on desktop tablet and mobile with no bento spans',()=>{
+ assert.ok(css.includes('grid-template-columns:repeat(3,minmax(0,1fr));gap:20px'));
+ assert.ok(css.includes('@media(max-width:1120px) and (min-width:691px)'));
+ assert.ok(css.includes('.projects-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}'));
+ assert.ok(css.includes('.projects-grid{grid-template-columns:minmax(0,1fr);gap:16px}'));
+ assert.ok(!css.includes('grid-auto-flow:dense'));
+ assert.ok(!css.includes('.project-card:nth-child(8n+1)'));
+ assert.ok(!css.includes('.project-card:nth-child(6n+1)'));
+ assert.ok(css.includes('.project-image{display:flex;align-items:center;justify-content:center;flex:0 0 auto'));
+ assert.ok(css.includes('aspect-ratio:4/3;padding:12px'));
+ assert.ok(css.includes('height:112px'));
+ assert.ok(css.includes('object-fit:contain'));
+});
+test('all project details share the same case overview and preserve full modules',()=>{
+ assert.ok(script.includes('class="case-container"><header class="case-overview"'));
+ assert.ok(script.includes("const ordered=hasModules?p.modules:images.map"));
+ assert.ok(css.includes('.case-overview{'));
+ assert.ok(css.includes('.case-gallery{width:100%;max-width:1080px'));
+ assert.ok(css.includes('max-height:none;object-fit:contain'));
+});
+
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
