@@ -117,6 +117,8 @@ export function mergeCatalog(current, incoming) {
     const old=map.get(p.id);
     map.set(p.id,old?{
       ...old,...p,
+      // Preserve a real Arabic title when a broken feed returns literal ???.
+      title: /^\?+$/.test(String(p.title||'').trim()) && !/^\?+$/.test(String(old.title||'').trim()) ? old.title : p.title,
       cover:p.cover||old.cover,images:p.images.length?p.images:old.images,
       category:old.category||p.category,category_label:old.category_label||p.category_label,
       story:old.story||p.story,
