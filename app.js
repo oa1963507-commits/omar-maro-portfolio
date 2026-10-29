@@ -390,6 +390,7 @@
       const normalizedSettings=window.OMPortfolioControls?.normalizeControls(settings)||settings;
       featuredIDs=Array.isArray(normalizedSettings.featured)?normalizedSettings.featured:[];
       caseStudies=normalizedSettings.caseStudies||{};
+      window.OMARSiteSettings=normalizedSettings.siteContent||{};
       if(Array.isArray(records)){
         const cleaned=records.map(normalize).filter(Boolean);
         const controls=window.OMPortfolioControls;
@@ -403,6 +404,7 @@
       return;
     }
     renderFeaturedProjects();renderProjects();route();
+    window.OMSiteCMS?.apply(window.OMARSiteSettings||{});
   }
   window.addEventListener('om-language-change',()=>{
     redrawProjectFiles();
@@ -420,6 +422,7 @@
       }
     }
     menuBtn.setAttribute('aria-label',menu.hidden?t('فتح القائمة','Open menu'):t('إغلاق القائمة','Close menu'));
+    window.OMSiteCMS?.apply(window.OMARSiteSettings||{});
   });
   updateProgress();watch();loadProjects();
 })();
