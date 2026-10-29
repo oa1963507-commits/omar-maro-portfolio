@@ -139,5 +139,5 @@ ${sections}${story}${body||'<p>Project gallery is available from the original so
 }
 const sitemap=['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',...new Set([site,...dates].map(u=>'<url><loc>'+htmlEscape(u)+'</loc></url>')),'</urlset>'].join('\n');
 await fs.writeFile(path.join(root,'sitemap.xml'),sitemap+'\n');
-await fs.writeFile(path.join(root,'robots.txt'),'User-agent: *\nAllow: /\nSitemap: '+site+'sitemap.xml\n');
+await fs.writeFile(path.join(root,'robots.txt'),'User-agent: *\nAllow: /\nDisallow: /tools/\nSitemap: '+site+'sitemap.xml\n');
 console.log('SEO generated',dates.length,'public project pages; existing hidden/excluded projects omitted.');
