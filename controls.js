@@ -23,6 +23,15 @@
     const cover=cleanMedia(p.cover)||images[0]||'';
     return {id:p.id,source:'manual',title,category,category_label:categoryLabels[category],year:cleanText(p.year,12),description:cleanText(p.description,1500),cover,images,modules:images.map(url=>({type:'image',url})),url:cleanLink(p.url||'')};
   }
+  function cleanCaseStudy(value){
+    const v=value&&typeof value==='object'&&!Array.isArray(value)?value:{};
+    const result={};
+    for(const [key,max] of [['client',100],['role',120],['services',180],['duration',80],['challenge',1400],['approach',1400],['outcome',1400]]){
+      const val=cleanText(v[key],max);
+      if(val)result[key]=val;
+    }
+    return result;
+  }
   function normalizeControls(v){
     const raw=v && typeof v==='object' && !Array.isArray(v)?v:{};
     const order=cleanIDs(raw.order), hidden=cleanIDs(raw.hidden), excluded=cleanIDs(raw.excluded);
@@ -40,13 +49,22 @@
         if(Object.keys(edit).length)overrides[id]=edit;
       }
     }
+    const featured=cleanIDs(raw.featured).slice(0,3);
+    const caseStudies={};
+    if(raw.caseStudies&&typeof raw.caseStudies==='object'&&!Array.isArray(raw.caseStudies)){
+      for(const [id,v] of Object.entries(raw.caseStudies).slice(0,1000)){
+        if(!validId(id))continue;
+        const clean=cleanCaseStudy(v);
+        if(Object.keys(clean).length)caseStudies[id]=clean;
+      }
+    }
     const customProjects=[];
     const seen=new Set();
     for(const p of (Array.isArray(raw.customProjects)?raw.customProjects:[]).slice(0,500)){
       const cleaned=cleanProject(p);
       if(cleaned&&!seen.has(cleaned.id)){seen.add(cleaned.id);customProjects.push(cleaned);}
     }
-    return {version:1,order,hidden,excluded,overrides,customProjects};
+    return {version:1,order,hidden,excluded,overrides,customProjects,featured,caseStudies};
   }
   function applyControls(source, config){
     const c=normalizeControls(config);
