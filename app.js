@@ -13,6 +13,7 @@
   const escapeHTML = (s) => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   // Only pure Latin titles get the display face; mixed/Arabic titles retain Cairo.
   const isLatinTitle = value => /[A-Za-z]/.test(String(value ?? '')) && !/[\u0600-\u06FF]/.test(String(value ?? ''));
+  const projectHref = p => 'projects/'+encodeURIComponent(p.id)+'/';
   const isEnglish = () => window.OMI18N?.lang === 'en';
   const t = (ar,en) => isEnglish()?en:ar;
   const displayTitle = p => (isEnglish() && p.title_en && p.title_en.trim() ? p.title_en : p.title);
@@ -97,7 +98,7 @@
     const thumbnail=p.cover||p.images?.[0]||'';
     const im=thumbnail?qualityImage(thumbnail,'project-card-image',title,'card'):`<div class="project-image-fallback"><img src="assets/omar-mark.png" alt="" loading="lazy"><span>${escapeHTML(category)}</span></div>`;
     const number=String(index+1).padStart(2,'0');
-    return `<a href="#project/${encodeURIComponent(p.id)}" class="project-card reveal" aria-label="${escapeHTML(t('شاهد مشروع ','View project '))}${escapeHTML(title)}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">${escapeHTML(t('عرض المشروع ↗','View project ↗'))}</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(category)}${p.year?' · '+escapeHTML(p.year):''}</span><h3 class="${isLatinTitle(title)?'is-latin':''}">${escapeHTML(title)}</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>`;
+    return `<a href="${projectHref(p)}" class="project-card reveal" aria-label="${escapeHTML(t('شاهد مشروع ','View project '))}${escapeHTML(title)}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">${escapeHTML(t('عرض المشروع ↗','View project ↗'))}</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(category)}${p.year?' · '+escapeHTML(p.year):''}</span><h3 class="${isLatinTitle(title)?'is-latin':''}">${escapeHTML(title)}</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>`;
   }
   function renderFeaturedProjects(){
     const grid=$('#hero-featured');
@@ -112,7 +113,7 @@
         const title=displayTitle(p);
         const cover=p.cover||p.images?.[0]||'';
         const image=qualityImage(cover,'showcase-img',title,'card',i===0?'eager':'lazy');
-        return `<a href="#project/${encodeURIComponent(p.id)}" class="showcase-card" aria-label="${escapeHTML(t('مشروع ','Project '))}${escapeHTML(title)}">${image}${i===0?'<span class="showcase-label">FEATURED</span>':''}<span class="showcase-caption${isLatinTitle(title)?' is-latin':''}">${escapeHTML(title)}</span></a>`;
+        return `<a href="${projectHref(p)}" class="showcase-card" aria-label="${escapeHTML(t('مشروع ','Project '))}${escapeHTML(title)}">${image}${i===0?'<span class="showcase-label">FEATURED</span>':''}<span class="showcase-caption${isLatinTitle(title)?' is-latin':''}">${escapeHTML(title)}</span></a>`;
       }).join('');
     }
     attachImageFallbacks(grid);
@@ -127,7 +128,17 @@
     attachImageFallbacks($('#projects-grid'));
     watch($('#projects-grid'));
   }
-  $$('.filter').forEach(btn=>btn.addEventListener('click',()=>{
+  // Preserve full-screen in-page navigation while exposing crawlable public URLs.
+  document.addEventListener('click',e=>{
+    const anchor=e.target.closest('a.project-card,a.showcase-card');
+    if(!anchor||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||anchor.target)return;
+    const path=new URL(anchor.href,location.href).pathname;
+    const id=decodeURIComponent(path.match(/\/projects\/([a-z0-9-]+)\/?$/)?.[1]||'');
+    if(!projects.some(p=>p.id===id))return;
+    e.preventDefault();
+    location.hash='#project/'+encodeURIComponent(id);
+  });
+  $('.filter').forEach(btn=>btn.addEventListener('click',()=>{
     activeFilter=btn.dataset.filter;
     $$('.filter').forEach(b=>{const a=b===btn;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));});
     renderProjects();
