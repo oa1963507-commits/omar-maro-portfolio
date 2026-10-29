@@ -18,7 +18,7 @@ test('all primary portfolio sections and essential dynamic anchors are present',
 });
 
 test('owner-specific controls load before public app script, and management remains reachable',()=>{
- const a=html.indexOf('src="controls.js"'),b=html.indexOf('src="app.js"');
+ const a=html.search(/src="controls[.]js(?:[?][^"]*)?"/),b=html.search(/src="app[.]js(?:[?][^"]*)?"/);
  assert.ok(a>0 && b>a);
  assert.ok(html.includes('tools/manage-projects.html'));
  assert.ok(script.includes('OMPortfolioControls'));
@@ -29,7 +29,7 @@ test('owner-specific controls load before public app script, and management rema
 test('project list and hero are driven by owner-approved visible projects',()=>{
  assert.ok(script.includes('renderFeaturedProjects();renderProjects();route();'));
  assert.ok(script.includes("const selected=projects.filter"));
- assert.ok(script.includes("projects.filter(p=>activeFilter === 'all'"));
+ assert.ok(script.includes("projects.filter(p=>(activeFilter==='all'"));
  assert.ok(script.includes('showcase-card'));
  assert.ok(script.includes('metric-projects'));
 });
@@ -186,7 +186,7 @@ test('Arabic and English are selectable from a persistent, accessible header con
  assert.ok(html.includes('id="language-toggle-project"'));
  assert.ok(html.includes('class="lang-ar"'));
  assert.ok(html.includes('class="lang-en"'));
- assert.ok(html.indexOf('src="i18n.js"')<html.indexOf('src="app.js"'));
+ assert.ok(html.search(/src="i18n[.]js(?:[?][^"]*)?"/)<html.search(/src="app[.]js(?:[?][^"]*)?"/));
  assert.ok(locale.includes("document.documentElement.lang=lang"));
  assert.ok(locale.includes("document.documentElement.dir=lang==='en'?'ltr':'rtl'"));
  assert.ok(locale.includes("localStorage.setItem(storageKey,next)"));
@@ -202,7 +202,12 @@ test('every original Arabic static text on the public site has an English transl
  const match=locale.match(/const dictionary=new Map\((\[[\s\S]*?\])\);\n  const attributes=/);
  assert.ok(match,'translated text dictionary missing');
  const dictionary=new Map(JSON.parse(match[1]));
- const texts=[...html.matchAll(/>([^<>]+)</g)].map(m=>m[1].trim()).filter(Boolean);
+ // Exclude data-driven project artwork and SEO JSON-LD from static UI translations.
+ let ui=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
+ const dropRange=(input,start,end)=>{const a=input.indexOf(start);const b=a<0?-1:input.indexOf(end,a+start.length);return a<0||b<0?input:input.slice(0,a)+input.slice(b);};
+ ui=dropRange(ui,'<div id="projects-grid"','<div class="work-footer"');
+ ui=dropRange(ui,'<div id="hero-featured"','<div class="showcase-base"');
+ const texts=[...ui.matchAll(/>([^<>]+)</g)].map(m=>m[1].trim()).filter(Boolean);
  const unmatched=[...new Set(texts.filter(text=>/[\u0600-\u06FF]/.test(text)&&!dictionary.has(text)))];
  assert.deepEqual(unmatched,[]);
 });
@@ -266,7 +271,8 @@ test('WhatsApp attachment workflow is honest: native share when available, manua
  assert.ok(script.includes("typeof navigator.canShare!=='function'"));
  assert.ok(script.includes("await navigator.share({"));
  assert.ok(script.includes("files:[...selectedProjectFiles]"));
- assert.ok(script.includes("window.open('https://wa.me/'+WHATSAPP"));
+ assert.ok(script.includes("whatsappURL='https://wa.me/'+WHATSAPP"));
+ assert.ok(script.includes("window.open(whatsappURL"));
  assert.ok(script.includes('files have NOT been sent'));
  assert.ok(script.includes("redrawProjectFiles();\n    renderFeaturedProjects();"));
  assert.ok(!script.includes("fetch('/upload"));
