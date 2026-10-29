@@ -223,6 +223,33 @@ test('every ornamental star is replaced with the blue Pen Tool icon across publi
  assert.ok(!script.includes('✳'));
 });
 
+test('project inquiry offers accessible multi-file picker with selection, removal and blue dropzone',()=>{
+ for(const id of ['project-files','attachment-list','share-project-files','attachment-feedback'])
+   assert.ok(html.includes('id="'+id+'"'),'missing attachment control '+id);
+ assert.ok(html.includes('type="file" multiple'));
+ assert.ok(html.includes('class="attachment-dropzone"'));
+ assert.ok(html.includes('aria-live="polite"'));
+ for(const cl of ['.attachment-dropzone{','.attachment-list{','.attachment-item{','.attachment-remove{','.attachment-share{'])
+   assert.ok(css.includes(cl),'missing attachment styling '+cl);
+ assert.ok(script.includes("const selectedProjectFiles=[]"));
+ assert.ok(script.includes('maxAttachmentCount=6'));
+ assert.ok(script.includes('maxAttachmentBytes=20*1024*1024'));
+ assert.ok(script.includes('maxAttachmentTotalBytes=50*1024*1024'));
+ assert.ok(script.includes("projectFiles.addEventListener('change'"));
+ assert.ok(script.includes("picker.addEventListener('drop'"));
+ assert.ok(script.includes("remove.addEventListener('click'"));
+});
+test('WhatsApp attachment workflow is honest: native share when available, manual fallback otherwise',()=>{
+ assert.ok(script.includes("typeof navigator.canShare!=='function'"));
+ assert.ok(script.includes("await navigator.share({"));
+ assert.ok(script.includes("files:[...selectedProjectFiles]"));
+ assert.ok(script.includes("window.open('https://wa.me/'+WHATSAPP"));
+ assert.ok(script.includes('files have NOT been sent'));
+ assert.ok(script.includes("redrawProjectFiles();\n    renderFeaturedProjects();"));
+ assert.ok(!script.includes("fetch('/upload"));
+ assert.ok(html.includes('الملفات لا تُرفق تلقائيًا بالرابط'));
+});
+
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
