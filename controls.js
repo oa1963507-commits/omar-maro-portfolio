@@ -64,7 +64,7 @@
       const cleaned=cleanProject(p);
       if(cleaned&&!seen.has(cleaned.id)){seen.add(cleaned.id);customProjects.push(cleaned);}
     }
-    return {version:1,order,hidden,excluded,overrides,customProjects,featured,caseStudies};
+    return {version:1,order,hidden,excluded,overrides,customProjects,featured,caseStudies,siteContent:root.OMSiteCMS?root.OMSiteCMS.normalize(raw.siteContent):raw.siteContent||{}};
   }
   function applyControls(source, config){
     const c=normalizeControls(config);
