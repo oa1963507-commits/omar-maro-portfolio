@@ -29,14 +29,16 @@ function labelFor(p){return p.source==='behance'?'متزامن مع Behance':p.s
 function createAction(text,action,id,cls='',title=''){const b=document.createElement('button');b.type='button';b.textContent=text;b.dataset.action=action;b.dataset.id=id;if(cls)b.className=cls;if(title)b.title=title;return b;}
 function render(){const all=orderedProjects(),removed=new Set(settings.excluded),hidden=new Set(settings.hidden);const visible=all.filter(p=>!removed.has(p.id)&&!hidden.has(p.id));
  $('countAll').textContent=String(all.length);$('countVisible').textContent=String(visible.length);$('countHidden').textContent=String(all.filter(p=>hidden.has(p.id)&&!removed.has(p.id)).length);$('countExcluded').textContent=String(all.filter(p=>removed.has(p.id)).length);
- const view=$('viewFilter').value,term=$('projectSearch').value.trim().toLowerCase();const list=$('projectList');list.replaceChildren();
- const shown=all.filter(p=>{const isRemoved=removed.has(p.id),isHidden=hidden.has(p.id);if(view==='active'&&(isRemoved||isHidden))return false;if(view==='hidden'&&(!isHidden||isRemoved))return false;if(view==='excluded'&&!isRemoved)return false;return !term||getRecord(p).title?.toLowerCase().includes(term);});
+ const view=$('viewFilter').value,term=$('projectSearch').value.trim().toLowerCase();
+ const featuredNames=settings.featured.map(id=>getRecord(all.find(p=>p.id===id)||{title:id}).title).filter(Boolean);
+ $('featuredSummary').textContent='المشاريع المميزة ('+settings.featured.length+'/3): '+(featuredNames.join(' • ')||'لم يتم اختيار مشاريع مميزة بعد');const list=$('projectList');list.replaceChildren();
+ const shown=all.filter(p=>{const isRemoved=removed.has(p.id),isHidden=hidden.has(p.id);if(view==='active'&&(isRemoved||isHidden))return false;if(view==='hidden'&&(!isHidden||isRemoved))return false;if(view==='featured'&&(!settings.featured.includes(p.id)||isRemoved))return false;if(view==='excluded'&&!isRemoved)return false;return !term||getRecord(p).title?.toLowerCase().includes(term);});
  if(!shown.length){const el=document.createElement('p');el.className='empty';el.textContent='مفيش مشاريع مطابقة للبحث ده.';list.append(el);return;}
  for(const p of shown){const state=removed.has(p.id)?'excluded':hidden.has(p.id)?'hidden':'active';const project=getRecord(p),item=document.createElement('div');item.className='item'+(state==='active'?'':' inactive');item.dataset.id=p.id;item.draggable=state==='active'&&!term&&view==='active';
  const handle=document.createElement('span');handle.className='handle';handle.textContent='⋮⋮';handle.title='اسحب المشروع لتغيير الترتيب';item.append(handle);
  const imgUrl=controls.cleanMedia(project.cover);if(imgUrl){const img=document.createElement('img');img.src=imgUrl;img.alt='';img.loading='lazy';item.append(img);}else{const fallback=document.createElement('div');fallback.className='no-photo';fallback.textContent='OM';item.append(fallback);}
  const copy=document.createElement('div');copy.className='item-copy';const title=document.createElement('b');title.textContent=project.title||p.id;const sub=document.createElement('small');sub.textContent=labelFor(p)+' · '+(state==='excluded'?'محذوف من الموقع':state==='hidden'?'مخفي':'ظاهر')+' · '+(project.category_label||mediaCategories[project.category]||'')+(settings.featured.includes(p.id)?' · ★ بالواجهة الرئيسية':'');copy.append(title,sub);item.append(copy);
- const actions=document.createElement('div');actions.className='item-actions';if(state==='excluded'){actions.append(createAction('استعادة','restore',p.id,'restore'));}else{actions.append(createAction('↑','up',p.id,'','انقل لأعلى'),createAction('↓','down',p.id,'','انقل لأسفل'),createAction('تعديل','edit',p.id),createAction(settings.featured.includes(p.id)?'★ مميز':'☆ تمييز','featured',p.id,settings.featured.includes(p.id)?'is-featured':''),createAction(state==='hidden'?'إظهار':'إخفاء','toggle',p.id),createAction('حذف','delete',p.id,'danger'));}item.append(actions);list.append(item);
+ const actions=document.createElement('div');actions.className='item-actions';if(state==='excluded'){actions.append(createAction('استعادة','restore',p.id,'restore'));}else{actions.append(createAction('↑','up',p.id,'','انقل لأعلى'),createAction('↓','down',p.id,'','انقل لأسفل'),createAction('تعديل','edit',p.id),createAction('دراسة حالة','study',p.id),createAction(settings.featured.includes(p.id)?'★ مميز':'☆ تمييز','featured',p.id,settings.featured.includes(p.id)?'is-featured':''),createAction(state==='hidden'?'إظهار':'إخفاء','toggle',p.id),createAction('حذف','delete',p.id,'danger'));}item.append(actions);list.append(item);
  }
  $('publishBtn').textContent=dirty?'نشر التعديلات ●':'نشر التعديلات';}
 function reorder(id,direction){const i=order.indexOf(id),j=i+direction;if(i<0||j<0||j>=order.length)return;[order[i],order[j]]=[order[j],order[i]];markDirty();render();}
@@ -48,7 +50,7 @@ $('projectList').addEventListener('click',e=>{const b=e.target.closest('button[d
    else if(settings.featured.length>=3){inform('اختار 3 مشاريع مميزة كحد أقصى. ألغِ تمييز مشروع أولًا.',true);return;}
    else settings.featured.push(id);
    markDirty();render();
- }else if(state==='edit')openEdit(id);else if(state==='toggle'){settings.hidden=settings.hidden.includes(id)?settings.hidden.filter(x=>x!==id):[...settings.hidden,id];markDirty();render();}else if(state==='delete')deleteProject(id);else if(state==='restore'){settings.excluded=settings.excluded.filter(x=>x!==id);markDirty();render();}
+ }else if(state==='edit')openEdit(id);else if(state==='study'){openEdit(id);$('projectForm').elements.caseChallenge.focus();}else if(state==='toggle'){settings.hidden=settings.hidden.includes(id)?settings.hidden.filter(x=>x!==id):[...settings.hidden,id];markDirty();render();}else if(state==='delete')deleteProject(id);else if(state==='restore'){settings.excluded=settings.excluded.filter(x=>x!==id);markDirty();render();}
 });
 let dragID='';$('projectList').addEventListener('dragstart',e=>{const item=e.target.closest('.item[draggable="true"]');if(!item)return;e.dataTransfer.effectAllowed='move';dragID=item.dataset.id;item.classList.add('dragging');});
 $('projectList').addEventListener('dragover',e=>{const item=e.target.closest('.item[draggable="true"]');if(item&&dragID){e.preventDefault();item.classList.add('drop-target');}});
@@ -113,6 +115,16 @@ async function publish(){if(busy)return;if(!dirty){inform('مفيش تغييرا
  }catch(err){inform('تعذّر نشر التعديلات: '+err.message,true);}finally{lock(false);}
 }
 $('publishBtn').addEventListener('click',publish);
+$('backupBtn').addEventListener('click',()=>{
+  if(!token||!catalog.length){inform('ادخل لوحة الإدارة الأول',true);return;}
+  const payload={exportedAt:new Date().toISOString(),repository:OWNER+'/'+REPO,siteControls:controls.normalizeControls({...settings,order}),catalog};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='omar-maro-projects-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  inform('تم تنزيل نسخة احتياطية للمشاريع والإعدادات على جهازك.');
+});
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(busy)return;token=$('adminToken').value.trim();if(!token){inform('ادخل مفتاح GitHub',true);return;}$('adminToken').value='';lock(true);
  try{
   const user=await api('https://api.github.com/user');if(user.login!==OWNER)throw Error('المفتاح مرتبط بحساب '+user.login+' وليس حساب مالك هذا الموقع');await load();$('accountName').textContent=user.login;$('loginPanel').hidden=true;$('editor').hidden=false;inform('تم تسجيل الدخول إلى لوحة الإدارة.');
