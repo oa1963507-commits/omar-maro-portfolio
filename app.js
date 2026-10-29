@@ -169,7 +169,115 @@
   const menuBtn=$('#menu-toggle'), menu=$('#mobile-nav');
   menuBtn.addEventListener('click',()=>{const open=menu.hidden; menu.hidden=!open;menuBtn.setAttribute('aria-expanded',String(open));menuBtn.setAttribute('aria-label',open?t('إغلاق القائمة','Close menu'):t('فتح القائمة','Open menu'));});
   $$('#mobile-nav a').forEach(a=>a.addEventListener('click',()=>{menu.hidden=true;menuBtn.setAttribute('aria-expanded','false');}));
-  $('#brief-form').addEventListener('submit',e=>{e.preventDefault();const name=$('#client-name').value.trim(),type=$('#project-type').value,idea=$('#project-description').value.trim();if(!name||!type||!idea)return;const msg=isEnglish()?`Hi Omar, my name is ${name}.\n\nProject type: ${type}\n\nProject brief:\n${idea}\n\n(Sent via Omar Maro's portfolio website)`:`أهلًا عمر، أنا ${name}.\n\nنوع المشروع: ${type}\n\nتفاصيل الفكرة:\n${idea}\n\n(تم إرسال التفاصيل من موقع Omar Maro)`;window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank','noopener,noreferrer');});
+
+  // Attachments remain in this browser tab until explicitly shared by the visitor.
+  // GitHub Pages cannot upload files into a WhatsApp chat via wa.me.
+  const projectFiles=$('#project-files');
+  const attachmentList=$('#attachment-list');
+  const attachmentFeedback=$('#attachment-feedback');
+  const shareProjectFiles=$('#share-project-files');
+  const picker=$('.attachment-picker');
+  const selectedProjectFiles=[];
+  const maxAttachmentCount=6;
+  const maxAttachmentBytes=20*1024*1024;
+  const maxAttachmentTotalBytes=50*1024*1024;
+  const fileSizeLabel=bytes=>bytes>=1024*1024?(bytes/(1024*1024)).toFixed(1)+' MB':Math.max(1,Math.ceil(bytes/1024))+' KB';
+  const canShareProjectFiles=()=>{
+    if(!selectedProjectFiles.length||typeof navigator.share!=='function'||typeof navigator.canShare!=='function')return false;
+    try{return navigator.canShare({files:selectedProjectFiles});}catch{return false;}
+  };
+  function attachmentStatus(ar,en,error=false){
+    attachmentFeedback.textContent=t(ar,en);
+    attachmentFeedback.classList.toggle('is-error',error);
+  }
+  function redrawProjectFiles(){
+    attachmentList.replaceChildren();
+    selectedProjectFiles.forEach((file,index)=>{
+      const item=document.createElement('li');
+      item.className='attachment-item';
+      const glyph=document.createElement('span');glyph.className='attachment-item-icon';glyph.textContent='▤';glyph.setAttribute('aria-hidden','true');
+      const details=document.createElement('span');details.className='attachment-info';
+      const name=document.createElement('span');name.className='attachment-name';name.textContent=file.name;name.dir='auto';
+      const size=document.createElement('span');size.className='attachment-size';size.textContent=fileSizeLabel(file.size);
+      details.append(name,size);
+      const remove=document.createElement('button');remove.type='button';remove.className='attachment-remove';
+      remove.textContent='×';remove.setAttribute('aria-label',t('حذف الملف ','Remove file ')+file.name);
+      remove.addEventListener('click',()=>{
+        selectedProjectFiles.splice(index,1);
+        redrawProjectFiles();
+      });
+      item.append(glyph,details,remove);attachmentList.append(item);
+    });
+    shareProjectFiles.hidden=!canShareProjectFiles();
+    if(!selectedProjectFiles.length){
+      attachmentStatus('','');
+    }else if(!shareProjectFiles.hidden){
+      attachmentStatus('الملفات جاهزة للمشاركة. افتح واتساب للتفاصيل ثم استخدم زر مشاركة الملفات واختر المحادثة الصحيحة.','Files are ready to share. Open WhatsApp for your brief, then use Share files and select the correct conversation.');
+    }else{
+      attachmentStatus('الملفات اختيرت على جهازك فقط. بعد فتح واتساب، أرفقها يدويًا في نفس المحادثة.','Files are selected only on your device. After opening WhatsApp, attach them manually in the same chat.');
+    }
+  }
+  function addProjectFiles(list){
+    const rejected=[];
+    for(const file of Array.from(list||[])){
+      if(!(file instanceof File))continue;
+      if(selectedProjectFiles.some(existing=>existing.name===file.name&&existing.size===file.size&&existing.lastModified===file.lastModified))continue;
+      if(selectedProjectFiles.length>=maxAttachmentCount){
+        rejected.push(t('الحد الأقصى 6 ملفات.','Maximum 6 files.'));break;
+      }
+      if(file.size>maxAttachmentBytes){
+        rejected.push(t('الملف أكبر من 20 ميجابايت: ','File exceeds 20 MB: ')+file.name);continue;
+      }
+      if(selectedProjectFiles.reduce((sum,x)=>sum+x.size,0)+file.size>maxAttachmentTotalBytes){
+        rejected.push(t('إجمالي الملفات لا يمكن أن يتجاوز 50 ميجابايت.','Combined files cannot exceed 50 MB.'));break;
+      }
+      selectedProjectFiles.push(file);
+    }
+    projectFiles.value='';
+    redrawProjectFiles();
+    if(rejected.length)attachmentStatus(rejected.join(' '),rejected.join(' '),true);
+  }
+  projectFiles.addEventListener('change',()=>addProjectFiles(projectFiles.files));
+  for(const eventName of ['dragenter','dragover']){
+    picker.addEventListener(eventName,e=>{e.preventDefault();picker.classList.add('is-dragging');});
+  }
+  picker.addEventListener('dragleave',e=>{if(!picker.contains(e.relatedTarget))picker.classList.remove('is-dragging');});
+  picker.addEventListener('drop',e=>{
+    e.preventDefault();picker.classList.remove('is-dragging');
+    addProjectFiles(e.dataTransfer?.files);
+  });
+  shareProjectFiles.addEventListener('click',async()=>{
+    if(!canShareProjectFiles()){
+      attachmentStatus('المشاركة المباشرة غير متاحة على الجهاز ده. افتح محادثة واتساب وأرفق الملفات يدويًا.','Direct file sharing is unavailable on this device. Open the WhatsApp chat and attach files manually.',true);
+      return;
+    }
+    try{
+      await navigator.share({
+        files:[...selectedProjectFiles],
+        title:'OMAR MARO — Project references',
+        text:t('ملفات مرجعية لمشروع تصميم. اختر محادثة عمر مارو على واتساب قبل الإرسال.','Reference files for a design project. Select Omar Maro’s WhatsApp chat before sending.')
+      });
+      attachmentStatus('تمت المشاركة من جهازك. راجع المحادثة المختارة للتأكد من وصول الملفات.','Device sharing completed. Check the selected conversation to confirm delivery.');
+    }catch(error){
+      if(error?.name==='AbortError')attachmentStatus('تم إلغاء المشاركة، والملفات ما زالت مختارة.','Sharing cancelled; your files are still selected.');
+      else attachmentStatus('تعذرت المشاركة المباشرة. أرفق الملفات من داخل واتساب يدويًا.','Direct sharing failed. Please attach the files manually in WhatsApp.',true);
+    }
+  });
+  $('#brief-form').addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=$('#client-name').value.trim(),type=$('#project-type').value,idea=$('#project-description').value.trim();
+    if(!name||!type||!idea)return;
+    let msg=isEnglish()?'Hi Omar, my name is '+name+'.\n\nProject type: '+type+'\n\nProject brief:\n'+idea+'\n\n(Sent via Omar Maro\'s portfolio website)':'أهلًا عمر، أنا '+name+'.\n\nنوع المشروع: '+type+'\n\nتفاصيل الفكرة:\n'+idea+'\n\n(تم إرسال التفاصيل من موقع Omar Maro)';
+    if(selectedProjectFiles.length){
+      const names=selectedProjectFiles.map(file=>'• '+file.name).join('\n');
+      msg+=t('\n\nعندي ملفات مرجعية، وسأرسلها منفصلة داخل المحادثة:\n','\n\nI have reference files that I will share separately in the chat:\n')+names;
+    }
+    window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer');
+    if(selectedProjectFiles.length){
+      attachmentStatus('فتحت رسالة واتساب، لكن الملفات لم تُرسل بعد. استخدم مشاركة الملفات أو أرفقها داخل المحادثة.','Your WhatsApp message opened, but the files have NOT been sent. Use Share files or attach them manually in the chat.');
+    }
+  });
+
   function updateProgress(){const d=document.documentElement;let x=(d.scrollTop/(d.scrollHeight-d.clientHeight))*100;$('#progress').style.width=`${Math.max(0,Math.min(100,x||0))}%`;}
   window.addEventListener('scroll',updateProgress,{passive:true});
   $('#year').textContent=new Date().getFullYear();
@@ -194,6 +302,7 @@
     renderFeaturedProjects();renderProjects();route();
   }
   window.addEventListener('om-language-change',()=>{
+    redrawProjectFiles();
     renderFeaturedProjects();
     renderProjects();
     const layer=$('#project-view');
