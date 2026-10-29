@@ -24,7 +24,7 @@
 <section id="editor" hidden>
  <div class="toolbar panel"><div><span class="success-dot"></span><b>متصل بحسابك</b> <span id="accountName" class="muted"></span><p class="hint">التعديلات مش هتظهر للزوار إلا لما تضغط «نشر التعديلات».</p></div><div class="toolbar-actions"><button type="button" class="outline" id="disconnect">تسجيل خروج</button><button type="button" class="primary" id="publishBtn">نشر التعديلات</button></div></div>
  <div class="stats"><article><small>جميع المشاريع</small><b id="countAll">—</b></article><article><small>الظاهرة</small><b id="countVisible">—</b></article><article><small>المخفية</small><b id="countHidden">—</b></article><article><small>المحذوفة من الموقع</small><b id="countExcluded">—</b></article></div>
- <section class="panel"><div class="panel-heading"><div><h2>ترتيب وعرض المشاريع</h2><p>اسحب بطاقة المشروع أو استخدم الأسهم لتغيير الترتيب؛ المشاريع الجديدة من Behance بتفضل متاحة تلقائيًا.</p></div><button type="button" class="primary" id="addButton">+ أضف مشروعًا</button></div>
+ <section class="panel"><div class="panel-heading"><div><h2>ترتيب وعرض المشاريع</h2><p>اسحب بطاقة المشروع أو استخدم الأسهم لتغيير الترتيب. اضغط «تمييز» لاختيار حتى 3 أعمال للصفحة الرئيسية. «دراسة حالة» لإضافة تفاصيل حقيقية للمشروع.</p></div><button type="button" class="primary" id="addButton">+ أضف مشروعًا</button></div>
  <div class="filters"><input id="projectSearch" type="search" placeholder="ابحث باسم المشروع..." aria-label="بحث في المشاريع"><select id="viewFilter" aria-label="فلترة العرض"><option value="active">المشاريع الحالية</option><option value="all">كل المشاريع</option><option value="hidden">المخفية</option><option value="excluded">المحذوفة</option></select></div>
  <p class="hint" id="dragNote">اسحب البطاقة من الرمز ⋮⋮ لترتيبها. أزرار الأسهم مناسبة للموبايل أيضًا.</p><div id="projectList" class="project-list" aria-live="polite"></div></section>
  <section class="panel"><h2>مهم قبل الحذف</h2><p class="hint">«إخفاء» يخفي المشروع مؤقتًا ويمكن إظهاره في أي وقت. «حذف من الموقع» يمنع ظهوره حتى لو أضافته مزامنة Behance مرة تانية، مع إمكانية الاستعادة. <b>الحذف مش بيمسح مشروعك من Behance.</b></p></section>
@@ -40,6 +40,17 @@
  <label>رابط المشروع الأصلي<input name="url" type="url" placeholder="https://www.behance.net/gallery/..."></label>
  <label class="full">رابط صورة الغلاف (اختياري)<input name="cover" placeholder="https://... أو سيُستخدم أول تصميم"></label>
  <label class="full">وصف المشروع<textarea name="description" rows="3" maxlength="1500"></textarea></label>
+ <fieldset class="case-edit full"><legend>تفاصيل Case Study (اختيارية — اكتب المعلومات الحقيقية فقط)</legend>
+  <div class="form-grid">
+   <label>العميل / Client<input name="caseClient" maxlength="100"></label>
+   <label>الدور / Role<input name="caseRole" maxlength="120"></label>
+   <label>الخدمات / Services<input name="caseServices" maxlength="180"></label>
+   <label>المدة / Duration<input name="caseDuration" maxlength="80"></label>
+   <label class="full">التحدي / Challenge<textarea name="caseChallenge" rows="3" maxlength="1400"></textarea></label>
+   <label class="full">التنفيذ / Process<textarea name="caseApproach" rows="3" maxlength="1400"></textarea></label>
+   <label class="full">النتيجة / Outcome<textarea name="caseOutcome" rows="3" maxlength="1400"></textarea></label>
+  </div>
+ </fieldset>
  <div class="full manual-only" id="galleryFields"><label>روابط صور المشروع، رابط في كل سطر<textarea name="images" rows="4" dir="ltr" placeholder="https://.../image1.jpg&#10;https://.../image2.jpg"></textarea></label>
  <label>أو ارفع صور المشروع من الكمبيوتر (PNG / JPG / WebP / GIF، بحد أقصى 8MB للصورة)<input name="galleryFiles" id="galleryFiles" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple></label>
  <label>صورة غلاف من الجهاز (اختياري)<input name="coverFile" id="coverFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
