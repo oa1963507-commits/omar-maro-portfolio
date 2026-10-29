@@ -13,3 +13,10 @@ dialog{width:min(740px,calc(100vw - 25px));max-height:90vh;overflow:auto;backgro
 .wordmark small{font-family:var(--font-en);font-weight:700;letter-spacing:.17em}
 .eyebrow{font-family:var(--font-en);font-weight:700;letter-spacing:.14em}
 input[type=password],.hint b,code,.stats b{font-family:var(--font-en)}
+
+/* Featured selection and case-study editing */
+.item-actions .is-featured{background:rgba(83,155,247,.24);color:#b7dcff;border-color:#6aafff}
+.case-edit{border:1px solid #365678;border-radius:15px;margin:8px 0 0;padding:18px}
+.case-edit legend{font-size:14px;font-weight:700;color:#a9d5ff;padding:0 8px}
+.case-edit .form-grid{gap:13px}
+@media(max-width:600px){.case-edit{padding:12px}.case-edit .form-grid{grid-template-columns:1fr}}
