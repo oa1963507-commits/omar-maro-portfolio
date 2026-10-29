@@ -92,6 +92,14 @@
         <div><p class="eyebrow section-number"><span class="eyebrow-mark"><img class="pen-tool-icon" src="assets/pen-tool.svg?v=bezier-1" width="24" height="24" alt="" aria-hidden="true" loading="lazy"></span> 01 / SELECTED WORK</p><h2>أعمال تستحق<br><span class="heading-highlight">تتشاف.</span></h2></div>
         <div class="section-side"><p>من الهوية البصرية لأغلفة الكتب والتصميمات الرقمية. كل مشروع تجربة مختلفة، وكل تفصيلة ليها مكانها.</p><a class="underlink" href="https://www.behance.net/oa19635079ead" target="_blank" rel="noopener noreferrer">شاهد كل الأعمال على Behance <span>↗</span></a></div>
       </div>
+      <div class="portfolio-search">
+        <label for="portfolio-search-input">ابحث عن مشروع / Search projects</label>
+        <div class="portfolio-search-control">
+          <input id="portfolio-search-input" type="search" maxlength="120" autocomplete="off" placeholder="اسم المشروع أو نوع التصميم..." aria-label="ابحث في المشاريع">
+          <button id="portfolio-search-clear" type="button" aria-label="مسح البحث" hidden>✕</button>
+        </div>
+        <p id="portfolio-results-label" class="portfolio-results-label" role="status" aria-live="polite"></p>
+      </div>
       <div class="filters" id="project-filters" role="group" aria-label="تصفية الأعمال">
         <button class="filter active" data-filter="all" aria-pressed="true">كل الأعمال <span class="filter-count" id="total-projects">26</span></button>
         <button class="filter" data-filter="branding" aria-pressed="false">هويات بصرية</button>
