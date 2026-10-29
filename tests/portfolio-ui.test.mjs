@@ -273,6 +273,43 @@ test('WhatsApp attachment workflow is honest: native share when available, manua
  assert.ok(html.includes('الملفات لا تُرفق تلقائيًا بالرابط'));
 });
 
+test('fullscreen gallery supports original image links, zoom, arrows, swipe and keyboard',async()=>{
+ const overlay=await fs.readFile(new URL('../lightbox.js',import.meta.url),'utf8');
+ for(const id of ['image-lightbox','lightbox-image','lightbox-prev','lightbox-next','lightbox-close','lightbox-zoom'])
+   assert.ok(html.includes('id="'+id+'"'));
+ assert.ok(overlay.includes("a[data-full-image]"));
+ assert.ok(overlay.includes("gallery.addEventListener('click'"));
+ assert.ok(overlay.includes("scroll.addEventListener('touchstart'"));
+ assert.ok(overlay.includes("scroll.addEventListener('touchend'"));
+ assert.ok(overlay.includes("document.addEventListener('keydown'"));
+ assert.ok(css.includes('.image-lightbox[hidden]{display:none}'));
+ assert.ok(css.includes('.lightbox-scroll.zoomed img'));
+});
+test('owner can pin featured projects and author real case-study details',async()=>{
+ const manager=await fs.readFile(new URL('../tools/manage-projects.js',import.meta.url),'utf8');
+ const admin=await fs.readFile(new URL('../tools/manage-projects.html',import.meta.url),'utf8');
+ assert.ok(controls.includes('cleanCaseStudy'));
+ assert.ok(controls.includes('featured,caseStudies'));
+ assert.ok(manager.includes("settings.featured.push(id)"));
+ assert.ok(manager.includes('settings.caseStudies[id]=study'));
+ for(const field of ['caseClient','caseRole','caseServices','caseDuration','caseChallenge','caseApproach','caseOutcome'])
+  assert.ok(admin.includes('name="'+field+'"'));
+ assert.ok(script.includes('featuredIDs.map'));
+ assert.ok(script.includes('caseStudies[p.id]'));
+ assert.ok(script.includes('class="case-facts"'));
+ assert.ok(script.includes('class="case-study-details"'));
+});
+test('two-step client brief collects optional budget deadline and references safely',()=>{
+ for(const id of ['brief-step-one','brief-step-two','brief-next','brief-back','client-email','project-budget','project-deadline'])
+  assert.ok(html.includes('id="'+id+'"'));
+ assert.ok(script.includes('function setBriefStep(step)'));
+ assert.ok(script.includes("$('#brief-next').addEventListener('click'"));
+ assert.ok(script.includes("$('#project-budget')"));
+ assert.ok(script.includes("$('#project-deadline')"));
+ assert.ok(script.includes('navigator.share'));
+ assert.ok(css.includes('.brief-step[hidden]{display:none}'));
+});
+
 test('contact form remains usable and still sends via external WhatsApp link',()=>{
  assert.ok(html.includes('id="brief-form"'));
  for(const name of ['client-name','project-type','project-description'])assert.ok(html.includes(`id="${name}"`));
