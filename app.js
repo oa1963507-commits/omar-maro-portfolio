@@ -335,7 +335,8 @@
       ]);
       if(!catalogResponse.ok)throw Error('catalog request failed');
       const records=await catalogResponse.json();
-      const settings=settingsResponse.ok?await settingsResponse.json():{};
+      if(!settingsResponse.ok)throw Error('presentation settings request failed');
+      const settings=await settingsResponse.json();
       const normalizedSettings=window.OMPortfolioControls?.normalizeControls(settings)||settings;
       featuredIDs=Array.isArray(normalizedSettings.featured)?normalizedSettings.featured:[];
       caseStudies=normalizedSettings.caseStudies||{};
@@ -345,7 +346,12 @@
         const visible=controls?controls.applyControls(cleaned,settings):cleaned;
         projects=visible.map(normalize).filter(Boolean);
       }
-    }catch(e){ /* Local offline preview retains original seed. */ }
+    }catch(e){
+      // Keep the pre-rendered gallery and owner-selected visibility intact if
+      // requests fail; never replace all published work with the one seed item.
+      console.error('OMAR MARO: project catalog could not load; retaining the published gallery.',e);
+      return;
+    }
     renderFeaturedProjects();renderProjects();route();
   }
   window.addEventListener('om-language-change',()=>{
