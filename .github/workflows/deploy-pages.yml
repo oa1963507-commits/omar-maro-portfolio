@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'index.html'
+      - 'google*.html'
       - 'styles.css'
       - 'app.js'
       - 'lightbox.js'
