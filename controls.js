@@ -21,7 +21,7 @@
     const category=categories.has(p.category)?p.category:'social';
     const images=(Array.isArray(p.images)?p.images:[]).slice(0,120).map(cleanMedia).filter(Boolean);
     const cover=cleanMedia(p.cover)||images[0]||'';
-    return {id:p.id,source:'manual',title,category,category_label:categoryLabels[category],year:cleanText(p.year,12),description:cleanText(p.description,1500),cover,images,modules:images.map(url=>({type:'image',url})),url:cleanLink(p.url||'')};
+    return {id:p.id,source:'manual',title,title_en:cleanText(p.title_en,160),category,category_label:categoryLabels[category],year:cleanText(p.year,12),description:cleanText(p.description,1500),cover,images,modules:images.map(url=>({type:'image',url})),url:cleanLink(p.url||'')};
   }
   function cleanCaseStudy(value){
     const v=value&&typeof value==='object'&&!Array.isArray(value)?value:{};
@@ -41,6 +41,7 @@
         if(!validId(id)||!r||typeof r!=='object'||Array.isArray(r))continue;
         const edit={};
         if(typeof r.title==='string')edit.title=cleanText(r.title,160);
+        if(typeof r.title_en==='string')edit.title_en=cleanText(r.title_en,160);
         if(typeof r.category==='string'&&categories.has(r.category)){edit.category=r.category;edit.category_label=categoryLabels[r.category];}
         if(typeof r.cover==='string')edit.cover=cleanMedia(r.cover);
         if(typeof r.description==='string')edit.description=cleanText(r.description,1500);
