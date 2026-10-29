@@ -67,7 +67,7 @@
   function qualityImage(raw, className, alt, kind='module', loading='lazy') {
     const choices=imageSources(raw,kind);
     if(!choices.length)return '';
-    return `<img class="${className}" loading="${loading}" decoding="async" src="${escapeHTML(choices[0])}" data-fallbacks="${escapeHTML(choices.slice(1).join('|'))}" alt="${escapeHTML(alt)}">`;
+    return `<img class="${className}" loading="${loading}" fetchpriority="${loading==='eager'?'high':'low'}" decoding="async" src="${escapeHTML(choices[0])}" data-fallbacks="${escapeHTML(choices.slice(1).join('|'))}" alt="${escapeHTML(alt)}">`;
   }
   function attachImageFallbacks(scope=document) {
     scope.querySelectorAll('img[data-fallbacks]').forEach(img=>{
