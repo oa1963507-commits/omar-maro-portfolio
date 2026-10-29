@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101114">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://mir-s3-cdn-cf.behance.net https://mir-cdn.behance.net https://mir-s3-cdn.behance.net https: data:; connect-src 'self' https://api.github.com; form-action 'none'; base-uri 'none'; object-src 'none'">
-<title>إدارة المشاريع — OMAR MARO</title>
+<title>إدارة الموقع والمشاريع — OMAR MARO</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 <body>
 <header class="top"><a class="wordmark" href="../#work"><span class="mark"><img src="../assets/omar-mark.png" width="40" height="40" alt="شعار عمر مارو"></span><span>OMAR MARO <small>PORTFOLIO MANAGER</small></span></a><a class="subtle" href="../#work">← الرجوع للموقع</a></header>
 <main>
-<section class="intro"><p class="eyebrow">PROJECT CONTROL CENTER</p><h1>إدارة <span>المشاريع.</span></h1><p>رتّب أعمالك بالطريقة اللي تعجبك، أخفِ أو احذف أي مشروع من الموقع، وأضف أعمال جديدة مباشرة من لوحة التحكم.</p></section>
+<section class="intro"><p class="eyebrow">PROJECT CONTROL CENTER</p><h1>إدارة <span>الموقع والمشاريع.</span></h1><p>رتّب أعمالك بالطريقة اللي تعجبك، أخفِ أو احذف أي مشروع من الموقع، وأضف أعمال جديدة مباشرة من لوحة التحكم.</p></section>
 <section class="panel" id="loginPanel" aria-labelledby="connectTitle">
  <div class="panel-heading"><div><h2 id="connectTitle">اتصال آمن بحساب GitHub</h2><p>التعديل متاح لصاحب المستودع فقط. استخدم مفتاحًا محدود الصلاحيات لهذا الموقع.</p></div><span class="lock">🔒</span></div>
  <form id="loginForm"><label for="adminToken">GitHub Fine-grained Personal Access Token</label><div class="connect-row"><input id="adminToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_..." required><button class="primary" id="connectBtn" type="submit">دخول الإدارة</button></div></form>
@@ -23,18 +23,56 @@
 </section>
 <section id="editor" hidden>
  <div class="toolbar panel"><div><span class="success-dot"></span><b>متصل بحسابك</b> <span id="accountName" class="muted"></span><p class="hint">التعديلات مش هتظهر للزوار إلا لما تضغط «نشر التعديلات».</p></div><div class="toolbar-actions"><a class="outline" href="../#work" target="_blank" rel="noopener noreferrer">معاينة الموقع ↗</a><button type="button" class="outline" id="backupBtn">تنزيل نسخة إعدادات</button><button type="button" class="outline" id="disconnect">تسجيل خروج</button><button type="button" class="primary" id="publishBtn">نشر التعديلات</button></div></div>
+<nav class="cms-tabs" aria-label="أقسام الإدارة"><button type="button" id="cms-tab-projects" class="active" aria-selected="true">إدارة المشاريع</button><button type="button" id="cms-tab-site" aria-selected="false">إدارة الموقع بالكامل</button></nav>
+<div id="project-management-panel">
  <div class="stats"><article><small>جميع المشاريع</small><b id="countAll">—</b></article><article><small>الظاهرة</small><b id="countVisible">—</b></article><article><small>المخفية</small><b id="countHidden">—</b></article><article><small>المحذوفة من الموقع</small><b id="countExcluded">—</b></article></div>
  <section class="panel"><div class="panel-heading"><div><h2>ترتيب وعرض المشاريع</h2><p>اسحب بطاقة المشروع أو استخدم الأسهم لتغيير الترتيب. اضغط «تمييز» لاختيار حتى 3 أعمال للصفحة الرئيسية. «دراسة حالة» لإضافة تفاصيل حقيقية للمشروع.</p></div><button type="button" class="primary" id="addButton">+ أضف مشروعًا</button></div>
  <div class="filters"><input id="projectSearch" type="search" placeholder="ابحث باسم المشروع..." aria-label="بحث في المشاريع"><select id="viewFilter" aria-label="فلترة العرض"><option value="active">المشاريع الحالية</option><option value="all">كل المشاريع</option><option value="featured">المميزة ★</option><option value="hidden">المخفية</option><option value="excluded">المحذوفة</option></select></div>
  <p class="hint" id="featuredSummary" aria-live="polite"></p><p class="hint" id="dragNote">اسحب البطاقة من الرمز ⋮⋮ لترتيبها. أزرار الأسهم مناسبة للموبايل أيضًا.</p><div id="projectList" class="project-list" aria-live="polite"></div></section>
  <section class="panel"><h2>مهم قبل الحذف</h2><p class="hint">«إخفاء» يخفي المشروع مؤقتًا ويمكن إظهاره في أي وقت. «حذف من الموقع» يمنع ظهوره حتى لو أضافته مزامنة Behance مرة تانية، مع إمكانية الاستعادة. <b>الحذف مش بيمسح مشروعك من Behance.</b></p></section>
+
+</div>
+<div id="site-management-panel" hidden>
+  <section class="panel">
+    <div class="panel-heading"><div><h2>محتوى الموقع بالكامل</h2><p>تعديل النصوص بالعربي والإنجليزي، روابط الأزرار والقوائم، وصور الأقسام الحالية. اترك أي خانة فارغة للاحتفاظ بالمحتوى الأصلي. مش محتاج تلمس الكود.</p></div><a class="outline" href="../" target="_blank" rel="noopener noreferrer">معاينة الموقع ↗</a></div>
+    <div class="filters"><select id="cmsSection" aria-label="القسم المراد تعديله"></select><input type="search" id="cmsSearch" placeholder="ابحث عن عنوان، نص، رابط أو صورة..." aria-label="ابحث في عناصر الموقع"></div>
+    <p class="hint">الخانات العربية والإنجليزية مستقلة. رابط الصورة يقبل HTTPS أو مسار assets، ويمكن رفع صور من جهازك.</p>
+    <div id="cmsFields" class="cms-fields"></div>
+  </section>
+  <section class="panel">
+    <h2>إضافة أزرار في أي قسم</h2><p class="hint">الأزرار الجديدة تظهر بنفس هوية الموقع. اختار القسم، نص الزر، والرابط. اضغط «نشر التعديلات» لحفظها.</p>
+    <form id="cmsButtonForm" class="cms-button-form">
+      <label>القسم<select name="section" id="cmsButtonSection" required></select></label>
+      <label>النص العربي<input name="ar" maxlength="90" required placeholder="اطلب تصميمك"></label>
+      <label>النص الإنجليزي<input name="en" maxlength="90" placeholder="Start a project"></label>
+      <label>الرابط<input name="href" dir="ltr" required placeholder="https://... أو #contact"></label>
+      <label>شكل الزر<select name="variant"><option value="primary">زر أساسي</option><option value="outline">زر بإطار</option></select></label>
+      <button class="primary" type="submit">+ أضف الزر</button>
+    </form>
+    <div id="cmsButtonList" class="cms-button-list"></div>
+  </section>
+  <section class="panel">
+    <h2>الألوان والأقسام وبيانات Google</h2>
+    <div class="cms-theme">
+      <label>لون الأزرار الرئيسي<input type="color" id="cms-accent" value="#6aafff"></label>
+      <label>اللون الأزرق الثانوي<input type="color" id="cms-azure" value="#3ac7ff"></label>
+      <label>الخلفية الرئيسية<input type="color" id="cms-bg" value="#070c16"></label>
+      <label>لون النص<input type="color" id="cms-ink" value="#eef5ff"></label>
+    </div>
+    <button type="button" id="cmsResetColors" class="outline">استعادة الألوان الأصلية</button>
+    <h3>إظهار وإخفاء أقسام الموقع</h3><div id="cmsVisibility" class="cms-visibility"></div>
+    <h3>عنوان ووصف الموقع لمحركات البحث</h3>
+    <div class="cms-seo"><label>عنوان الموقع (اختياري)<input id="cmsSeoTitle" maxlength="90" placeholder="OMAR MARO — Creative Portfolio"></label><label>وصف الموقع (اختياري)<textarea id="cmsSeoDescription" rows="3" maxlength="200"></textarea></label></div>
+    <p class="hint">تغيير محتوى الموقع لا يزيل ملف إثبات ملكية Google ولا الروابط الحالية للمشاريع.</p>
+  </section>
+</div>
 </section>
 <div id="message" class="message" role="status" aria-live="polite" hidden></div>
 </main>
 <dialog id="projectDialog" aria-labelledby="dialogTitle"><form id="projectForm" method="dialog" novalidate><div class="dialog-top"><h2 id="dialogTitle">إضافة مشروع جديد</h2><button type="button" class="icon-button" id="closeDialog" aria-label="إغلاق">✕</button></div>
  <p class="hint">تقدر تضيف مشروع من جهازك مع صوره مباشرة، أو تستخدم روابط صور HTTPS. لو المشروع على Behance، ضيف رابطه الأصلي.</p>
  <div class="form-grid">
- <label>عنوان المشروع *<input name="title" maxlength="160" required></label>
+ <label>اسم المشروع بالعربي *<input name="title" maxlength="160" required></label><label>اسم المشروع بالإنجليزي<input name="title_en" maxlength="160" placeholder="English project title"></label>
  <label>التصنيف<select name="category"><option value="social">سوشيال ميديا</option><option value="branding">هوية بصرية</option><option value="covers">أغلفة كتب</option><option value="print">مطبوعات وتغليف</option><option value="ai">تصميمات AI</option></select></label>
  <label>سنة التنفيذ<input name="year" maxlength="12" placeholder="2026"></label>
  <label>رابط المشروع الأصلي<input name="url" type="url" placeholder="https://www.behance.net/gallery/..."></label>
@@ -56,5 +94,5 @@
  <label>صورة غلاف من الجهاز (اختياري)<input name="coverFile" id="coverFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
  <p class="hint">رفع الصور يحتاج مفتاح GitHub اللي دخلته. الملفات بتترفع لمستودع الموقع مباشرة، ومش لأي خدمة خارجية.</p></div></div>
  <div class="dialog-actions"><button class="outline" type="button" id="cancelForm">إلغاء</button><button class="primary" type="submit" id="saveProject">حفظ المشروع في اللوحة</button></div></form></dialog>
-<script src="../controls.js"></script><script src="manage-projects.js?v=20261029-v2" defer></script>
+<script src="../site-cms.js?v=site-admin-1"></script><script src="../controls.js"></script><script src="manage-projects.js?v=site-admin-1" defer></script>
 </body></html>
