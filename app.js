@@ -58,7 +58,10 @@
       add(src.replace(/\/projects\/(?:404|max_808|max_808_webp|original)\//i,'/projects/max_808_webp/'));
       add(src.replace(/\/projects\/(?:404|max_808|max_808_webp|original)\//i,'/projects/max_808/'));
     } else if (/\/project_modules\/[a-z0-9_-]+\//i.test(src)) {
-      add(src.replace(/\/project_modules\/[a-z0-9_-]+\//i,'/project_modules/source/'));
+      // For thumbnails use the verified CDN source first. Full case studies
+      // still try the larger original source before lower-resolution fallbacks.
+      if(kind==='card')add(src);
+      if(kind!=='card')add(src.replace(/\/project_modules\/[a-z0-9_-]+\//i,'/project_modules/source/'));
       add(src.replace(/\/project_modules\/[a-z0-9_-]+\//i,'/project_modules/fs/'));
       add(src.replace(/\/project_modules\/[a-z0-9_-]+\//i,'/project_modules/max_1200/'));
     }
