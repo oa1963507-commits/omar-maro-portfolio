@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /tools/
+Sitemap: https://oa1963507-commits.github.io/omar-maro-portfolio/sitemap.xml
