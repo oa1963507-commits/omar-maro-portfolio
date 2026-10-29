@@ -688,3 +688,19 @@ body.lightbox-open{overflow:hidden}
  .case-facts{grid-template-columns:1fr;gap:9px}
  .case-study-block{padding:17px}
 }
+
+/* Two-step client brief */
+.brief-step{border:0;margin:0;padding:0;min-inline-size:0}
+.brief-step[hidden]{display:none}
+.brief-progress{display:flex;direction:rtl;justify-content:space-between;gap:8px;margin:6px 0 19px}
+.brief-progress span{flex:1;padding:9px 7px;text-align:center;font-size:11px;border-radius:9px;background:#101b2a;border:1px solid #293d58;color:#899db7}
+.brief-progress span.is-current{background:rgba(106,175,255,.15);border-color:var(--accent);color:#c3e0ff}
+.brief-two-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.brief-next,.brief-back{border:1px solid #5079aa;color:#d8eaff;background:rgba(40,72,113,.45);border-radius:11px;padding:12px 18px;min-height:45px;cursor:pointer;font-weight:700}
+.brief-next{width:100%;margin-top:18px}
+.brief-next:hover,.brief-back:hover{background:rgba(82,132,198,.32)}
+.brief-submit-row{display:flex;align-items:stretch;gap:10px;margin-top:20px}
+.brief-submit-row .form-submit{margin-top:0;flex:1}
+.brief-back{flex:0 0 auto}
+html[dir="ltr"] .brief-progress{direction:ltr}
+@media(max-width:690px){.brief-two-cols{grid-template-columns:1fr}.brief-progress span{font-size:10px}.brief-back{padding:10px 14px}}
