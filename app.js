@@ -343,13 +343,27 @@
     const budget=$('#project-budget'),deadline=$('#project-deadline').value;
     const budgetLabel=budget.value?budget.options[budget.selectedIndex]?.textContent.trim():'';
     if(email)msg+=t('\n\nالبريد الإلكتروني: ','\n\nEmail: ')+email;
+    const phone=$('#client-phone')?.value.trim()||'';
+    const reference=$('#project-reference')?.value.trim()||'';
+    const priority=$('#project-priority');
+    if(phone)msg+=t('\n\nرقم التواصل: ','\n\nPhone: ')+phone;
+    if(reference)msg+=t('\n\nمرجع المشروع: ','\n\nReference link: ')+reference;
+    if(priority?.value)msg+=t('\n\nتوقيت البدء: ','\n\nStart timing: ')+priority.options[priority.selectedIndex].textContent.trim();
     if(budgetLabel)msg+=t('\n\nالميزانية المتوقعة: ','\n\nExpected budget: ')+budgetLabel;
     if(deadline)msg+=t('\n\nالموعد المطلوب: ','\n\nRequested date: ')+deadline;
     if(selectedProjectFiles.length){
       const names=selectedProjectFiles.map(file=>'• '+file.name).join('\n');
       msg+=t('\n\nعندي ملفات مرجعية، وسأرسلها منفصلة داخل المحادثة:\n','\n\nI have reference files that I will share separately in the chat:\n')+names;
     }
-    window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer');
+    const whatsappURL='https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg);
+    window.open(whatsappURL,'_blank','noopener,noreferrer');
+    const status=$('#brief-submit-status');
+    if(status){
+      status.replaceChildren();
+      const textNode=document.createTextNode(t('تم تجهيز طلبك. إذا لم تفتح نافذة واتساب، افتح الرابط هنا: ','Your project brief is ready. If WhatsApp did not open, use this link: '));
+      const link=document.createElement('a');link.href=whatsappURL;link.target='_blank';link.rel='noopener noreferrer';link.textContent=t('فتح الطلب في واتساب ↗','Open brief in WhatsApp ↗');
+      status.append(textNode,link);
+    }
     if(selectedProjectFiles.length){
       attachmentStatus('فتحت رسالة واتساب، لكن الملفات لم تُرسل بعد. استخدم مشاركة الملفات أو أرفقها داخل المحادثة.','Your WhatsApp message opened, but the files have NOT been sent. Use Share files or attach them manually in the chat.');
     }
