@@ -23,7 +23,7 @@ function textToBase64(text){const bytes=new TextEncoder().encode(text);let binar
 function base64ToText(value){const bin=atob(value.replace(/\s/g,'')),bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes);}
 async function readRepoFile(path){const d=await api('/contents/'+path+'?ref='+BRANCH);return {sha:d.sha,value:JSON.parse(base64ToText(d.content))};}
 async function load(){const [file,projects]=await Promise.all([readRepoFile(CONFIG),readRepoFile('data/projects.json')]);sha=file.sha;settings=controls.normalizeControls(file.value);catalog=projects.value;if(!Array.isArray(catalog))throw Error('ملف المشاريع الرئيسي غير صالح');
- const all=allProjects();order=[...new Set([...settings.order.filter(id=>all.some(p=>p.id===id)),...all.map(p=>p.id)])];dirty=false;render();await loadSiteInventory();renderSiteEditor();}
+ const all=allProjects();order=[...new Set([...settings.order.filter(id=>all.some(p=>p.id===id)),...all.map(p=>p.id)])];dirty=false;render();try{await loadSiteInventory()}catch(error){siteFields=[];inform('المشاريع متاحة، لكن تعذّر تحميل قائمة عناصر الموقع: '+error.message,true)}renderSiteEditor();}
 function allProjects(){const m=new Map();for(const p of [...catalog,...settings.customProjects]){if(p?.id&&!m.has(p.id))m.set(p.id,p);}return [...m.values()];}
 function orderedProjects(){const m=new Map(allProjects().map(p=>[p.id,p]));return order.map(id=>m.get(id)).filter(Boolean).concat([...m.values()].filter(p=>!order.includes(p.id)));}
 function markDirty(){dirty=true;$('publishBtn').textContent='نشر التعديلات ●';}
