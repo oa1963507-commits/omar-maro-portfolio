@@ -25,3 +25,17 @@ test('normalization rejects unsafe URL schemes and duplicate project IDs',()=>{
  const c=Controls.normalizeControls({order:['behance-1','behance-1'],customProjects:[{id:'manual-safe',title:'Safe',images:['javascript:alert(1)','https://example.org/x.jpg']},{id:'manual-safe',title:'Double'}],overrides:{'behance-1':{cover:'javascript:alert(1)'}}});
  assert.deepEqual(c.order,['behance-1']);assert.equal(c.customProjects.length,1);assert.equal(c.customProjects[0].images.length,1);assert.equal(c.overrides['behance-1'].cover,'');
 });
+test('explicit featured selections are capped and owner order is preserved',()=>{
+ const cfg=Controls.normalizeControls({featured:['behance-2','behance-1','behance-3','behance-4','behance-2']});
+ assert.deepEqual(cfg.featured,['behance-2','behance-1','behance-3']);
+});
+test('Case Study sanitization retains real details but trims unsafe overflow',()=>{
+ const cfg=Controls.normalizeControls({caseStudies:{'behance-1':{
+ client:'  A client  ',role:'Designer',services:'Identity / Print',
+ duration:'3 weeks',challenge:'x'.repeat(1600),approach:'Research / sketches',outcome:'Delivered visual identity'
+ },'bad/id':{client:'Unwanted'}}});
+ assert.equal(cfg.caseStudies['behance-1'].client,'A client');
+ assert.equal(cfg.caseStudies['behance-1'].challenge.length,1400);
+ assert.equal(cfg.caseStudies['behance-1'].outcome,'Delivered visual identity');
+ assert.ok(!cfg.caseStudies['bad/id']);
+});
