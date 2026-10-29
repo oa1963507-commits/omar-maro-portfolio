@@ -4,6 +4,8 @@
   const WHATSAPP = '201128791108';
   const SEED = [{ id:'omar-maro-identity', title:'OMAR MARO — الهوية الشخصية', title_en:'OMAR MARO — PERSONAL BRAND', category:'branding', category_label:'الهوية البصرية', year:'2026', cover:'assets/omar-cover.jpg', images:['assets/omar-profile.jpg','assets/omar-cover.jpg'], description:'الهوية الشخصية لمصمم الجرافيك عمر مارو: شعار أحادي اللون قائم على حرف M، ومعالجة بصرية داكنة تستحضر أجواء استوديو التصميم. الصور أصلية ومقدمة من صاحب الهوية.',story:'علامة بسيطة ومميزة تجمع بين الحرف الأول من الاسم والتكوين الهندسي الدائري. الفكرة هي حضور بصري واضح، أبيض وأسود، يبرز وسط التفاصيل بدون ازدحام.',source:'original',url:'' }];
   let projects = [...SEED];
+  let featuredIDs=[];
+  let caseStudies={};
   let activeFilter = 'all';
   let focusBeforeDialog = null;
   const $ = (s) => document.querySelector(s);
@@ -100,11 +102,13 @@
   function renderFeaturedProjects(){
     const grid=$('#hero-featured');
     if(!grid)return;
-    const selected=projects.filter(p=>p.cover||p.images?.length).slice(0,3);
-    if(!selected.length){
+    const selected=projects.filter(p=>p.cover||p.images?.length);
+    const explicit=featuredIDs.map(id=>selected.find(p=>p.id===id)).filter(Boolean);
+    const featured=explicit.length?explicit.slice(0,3):selected.slice(0,3);
+    if(!featured.length){
       grid.innerHTML='<a href="#work" class="showcase-fallback"><img src="assets/omar-cover.jpg" alt="هوية OMAR MARO"></a>';
     } else {
-      grid.innerHTML=selected.map((p,i)=>{
+      grid.innerHTML=featured.map((p,i)=>{
         const title=displayTitle(p);
         const cover=p.cover||p.images?.[0]||'';
         const image=qualityImage(cover,'showcase-img',title,'card',i===0?'eager':'lazy');
@@ -292,6 +296,9 @@
       if(!catalogResponse.ok)throw Error('catalog request failed');
       const records=await catalogResponse.json();
       const settings=settingsResponse.ok?await settingsResponse.json():{};
+      const normalizedSettings=window.OMPortfolioControls?.normalizeControls(settings)||settings;
+      featuredIDs=Array.isArray(normalizedSettings.featured)?normalizedSettings.featured:[];
+      caseStudies=normalizedSettings.caseStudies||{};
       if(Array.isArray(records)){
         const cleaned=records.map(normalize).filter(Boolean);
         const controls=window.OMPortfolioControls;
