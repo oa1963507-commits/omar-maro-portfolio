@@ -301,6 +301,33 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .contact-form input::placeholder,.contact-form textarea::placeholder{color:#7c8f7f}
 .contact-form textarea{resize:vertical;min-height:89px}
 .contact-form select{cursor:pointer}
+/* Client-provided project references — optional local files, never auto-uploaded */
+.attachment-field{margin-top:18px}
+.attachment-picker{position:relative;margin-top:9px}
+.contact-form input.attachment-input{position:absolute;inline-size:1px;block-size:1px;min-height:0;opacity:0;pointer-events:none;overflow:hidden;padding:0;border:0}
+.attachment-dropzone{width:100%;min-height:128px;display:flex!important;flex-direction:column;justify-content:center;align-items:center;gap:8px;padding:17px;border:1.5px dashed rgba(114,171,243,.58);border-radius:14px;background:linear-gradient(145deg,rgba(28,53,81,.57),rgba(10,22,37,.45));color:#d4e6ff;text-align:center;cursor:pointer;transition:border-color .2s,background .2s,transform .2s}
+.attachment-dropzone:hover,.attachment-picker:focus-within .attachment-dropzone,.attachment-picker.is-dragging .attachment-dropzone{border-color:var(--accent);background:rgba(55,101,158,.27)}
+.attachment-picker:focus-within .attachment-dropzone{outline:2px solid var(--accent);outline-offset:3px}
+.attachment-dropzone .attachment-clip{inline-size:38px;block-size:38px;display:grid;place-items:center;color:var(--accent);font-size:23px;line-height:1}
+.attachment-dropzone .attachment-prompt{font-weight:700;font-size:12px;line-height:1.8}
+.attachment-dropzone .attachment-select{padding:4px 12px;border:1px solid rgba(149,194,255,.42);border-radius:999px;color:#a9ccfa;font-size:11px;font-weight:700}
+.attachment-limits{color:#94a6ba;font-size:11px;line-height:1.8;margin:9px 0 12px}
+.attachment-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.attachment-list:empty{display:none}
+.attachment-item{min-width:0;display:flex;align-items:center;gap:10px;padding:11px 12px;background:rgba(18,33,53,.78);border:1px solid rgba(145,184,236,.24);border-radius:10px}
+.attachment-item-icon{flex:0 0 auto;color:var(--accent);font-size:17px;line-height:1}
+.attachment-info{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}
+.attachment-name{font-size:12px;line-height:1.45;color:#e9f3ff;overflow-wrap:anywhere;direction:auto}
+.attachment-size{color:#92a9c4;font:500 10px/1.4 var(--font-en)}
+.attachment-remove{flex-shrink:0;display:grid;place-items:center;inline-size:30px;block-size:30px;border:1px solid rgba(151,193,252,.24);border-radius:8px;color:#b5cbe4;background:transparent;cursor:pointer;font-size:17px}
+.attachment-remove:hover,.attachment-remove:focus-visible{color:#fff;border-color:var(--accent);background:rgba(106,175,255,.14)}
+.attachment-share{width:100%;margin-top:12px;min-height:42px;border:1px solid rgba(128,182,251,.5);border-radius:11px;background:rgba(36,75,121,.32);color:#d7eaff;font-size:12px;font-weight:700;cursor:pointer}
+.attachment-share:hover,.attachment-share:focus-visible{background:rgba(53,107,172,.38);border-color:var(--accent)}
+.attachment-share[hidden]{display:none}
+.attachment-feedback{min-height:0;margin:7px 0 0;color:#a9c2df;font-size:11px;line-height:1.85}
+.attachment-feedback:empty{display:none}
+.attachment-feedback.is-error{color:#ffb8b8}
+
 .form-submit{width:100%;margin-top:20px}
 .form-note{font-size:10px;color:#7d8794;line-height:1.9;margin:11px 0 0}
 
