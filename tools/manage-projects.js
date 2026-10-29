@@ -5,6 +5,9 @@
 const OWNER='oa1963507-commits',REPO='omar-maro-portfolio',BRANCH='main',CONFIG='data/site-controls.json';
 const API=`https://api.github.com/repos/${OWNER}/${REPO}`;
 const controls=globalThis.OMPortfolioControls;
+const siteCMS=globalThis.OMSiteCMS;
+let siteFields=[];
+let editingCMSButton='';
 const $=id=>document.getElementById(id);
 let token='',sha='',catalog=[],settings=controls.normalizeControls({}),order=[],dirty=false,busy=false,editorId=null,noticeTimeout=null;
 const mediaCategories=controls.categoryLabels;
@@ -20,7 +23,7 @@ function textToBase64(text){const bytes=new TextEncoder().encode(text);let binar
 function base64ToText(value){const bin=atob(value.replace(/\s/g,'')),bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes);}
 async function readRepoFile(path){const d=await api('/contents/'+path+'?ref='+BRANCH);return {sha:d.sha,value:JSON.parse(base64ToText(d.content))};}
 async function load(){const [file,projects]=await Promise.all([readRepoFile(CONFIG),readRepoFile('data/projects.json')]);sha=file.sha;settings=controls.normalizeControls(file.value);catalog=projects.value;if(!Array.isArray(catalog))throw Error('ملف المشاريع الرئيسي غير صالح');
- const all=allProjects();order=[...new Set([...settings.order.filter(id=>all.some(p=>p.id===id)),...all.map(p=>p.id)])];dirty=false;render();}
+ const all=allProjects();order=[...new Set([...settings.order.filter(id=>all.some(p=>p.id===id)),...all.map(p=>p.id)])];dirty=false;render();await loadSiteInventory();renderSiteEditor();}
 function allProjects(){const m=new Map();for(const p of [...catalog,...settings.customProjects]){if(p?.id&&!m.has(p.id))m.set(p.id,p);}return [...m.values()];}
 function orderedProjects(){const m=new Map(allProjects().map(p=>[p.id,p]));return order.map(id=>m.get(id)).filter(Boolean).concat([...m.values()].filter(p=>!order.includes(p.id)));}
 function markDirty(){dirty=true;$('publishBtn').textContent='نشر التعديلات ●';}
@@ -59,7 +62,7 @@ $('projectList').addEventListener('drop',e=>{e.preventDefault();const item=e.tar
 $('projectList').addEventListener('dragend',()=>{dragID='';document.querySelectorAll('.drop-target,.dragging').forEach(el=>el.classList.remove('drop-target','dragging'));});
 $('projectSearch').addEventListener('input',render);$('viewFilter').addEventListener('change',render);
 function openEdit(id=null){const p=id?allProjects().find(x=>x.id===id):null;if(id&&!p)return;editorId=id;const f=$('projectForm');f.reset();$('dialogTitle').textContent=p?'تعديل مشروع':'إضافة مشروع جديد';const item=p?getRecord(p):null;
- for(const key of ['title','category','year','url','cover','description'])f.elements[key].value=item?.[key]||'';
+ for(const key of ['title','title_en','category','year','url','cover','description'])f.elements[key].value=item?.[key]||'';
  const study=settings.caseStudies?.[id]||{};
  for(const [formKey,caseKey] of [['caseClient','client'],['caseRole','role'],['caseServices','services'],['caseDuration','duration'],['caseChallenge','challenge'],['caseApproach','approach'],['caseOutcome','outcome']]){
    f.elements[formKey].value=study[caseKey]||'';
@@ -84,13 +87,13 @@ $('projectForm').addEventListener('submit',async e=>{e.preventDefault();if(busy)
    const images=[...imageLines];for(let i=0;i<files.length;i++){$('saveProject').textContent='رفع الصورة '+(i+1)+' / '+files.length;images.push(await uploadFile(files[i],id));}
    let cover=controls.cleanMedia(coverValue);if(coverFile){$('saveProject').textContent='رفع صورة الغلاف...';cover=await uploadFile(coverFile,id);}
    if(manual){const previous=original?.images||[];const finalImages=images.length?images:previous;const category=form.elements.category.value;
-     const project=controls.cleanProject({id,source:'manual',title,category,year:form.elements.year.value,description:form.elements.description.value,cover:cover||original?.cover||finalImages[0]||'',url,images:finalImages});
+     const project=controls.cleanProject({id,source:'manual',title,title_en:form.elements.title_en.value.trim(),category,year:form.elements.year.value,description:form.elements.description.value,cover:cover||original?.cover||finalImages[0]||'',url,images:finalImages});
      if(!project)throw Error('بيانات المشروع غير صالحة');
      settings.customProjects=editorId?settings.customProjects.map(p=>p.id===id?project:p):[project,...settings.customProjects];
      if(!order.includes(id))order.unshift(id);
    }else{
      const base=catalog.find(p=>p.id===id)||{};
-     const current={...settings.overrides[id],title,category:form.elements.category.value,year:form.elements.year.value,description:form.elements.description.value,url:url||''};
+     const current={...settings.overrides[id],title,title_en:form.elements.title_en.value.trim(),category:form.elements.category.value,year:form.elements.year.value,description:form.elements.description.value,url:url||''};
      if(cover&&(cover!==base.cover || Boolean(settings.overrides[id]?.cover)))current.cover=cover;
      else delete current.cover;
      settings.overrides[id]=current;
@@ -106,6 +109,175 @@ $('projectForm').addEventListener('submit',async e=>{e.preventDefault();if(busy)
    markDirty();$('projectDialog').close();render();inform('اتحفظ المشروع في لوحة الإدارة. اضغط «نشر التعديلات» عشان يظهر على الموقع.');
  }catch(err){inform('مشكلة أثناء حفظ المشروع: '+err.message,true);}finally{$('saveProject').textContent='حفظ المشروع في اللوحة';lock(false);}
 });
+
+/* Entire site control: text, images, links, buttons, appearance and visibility */
+function siteState(){
+ if(!settings.siteContent||typeof settings.siteContent!=='object')settings.siteContent=siteCMS.normalize({});
+ if(!settings.siteContent.text)settings.siteContent.text={};
+ if(!settings.siteContent.attrs)settings.siteContent.attrs={};
+ if(!settings.siteContent.buttons)settings.siteContent.buttons=[];
+ if(!settings.siteContent.theme)settings.siteContent.theme={};
+ if(!settings.siteContent.hiddenSections)settings.siteContent.hiddenSections=[];
+ if(!settings.siteContent.seo)settings.siteContent.seo={};
+ return settings.siteContent;
+}
+async function loadSiteInventory(){
+ const response=await fetch('../index.html?cms-inventory=1',{cache:'no-store'});
+ if(!response.ok)throw Error('تعذّر قراءة أقسام الموقع (HTTP '+response.status+')');
+ const markup=await response.text();
+ const parsed=new DOMParser().parseFromString(markup,'text/html');
+ siteFields=siteCMS.collect(parsed);
+ for(const [key,label] of siteCMS.sections){
+  for(const el of [$('cmsSection'),$('cmsButtonSection')]){
+   if(![...el.options].some(x=>x.value===key)){
+    const option=document.createElement('option');option.value=key;option.textContent=label;el.append(option);
+   }
+  }
+ }
+ $('cmsSection').value='home';
+}
+function renderSiteEditor(){
+ const v=siteState();
+ for(const key of ['accent','azure','bg','ink'])$('cms-'+key).value=v.theme[key]||({accent:'#6aafff',azure:'#3ac7ff',bg:'#070c16',ink:'#eef5ff'}[key]);
+ $('cmsSeoTitle').value=v.seo.title||'';
+ $('cmsSeoDescription').value=v.seo.description||'';
+ renderCMSFields();renderCMSButtons();renderCMSVisibility();
+}
+function makeLabel(text,control){
+ const label=document.createElement('label');label.textContent=text;label.append(control);return label;
+}
+function makeInput(kind,placeholder,value,max){
+ const input=document.createElement(kind);
+ if(kind==='textarea')input.rows=2;
+ else input.type='text';
+ input.placeholder=placeholder||'';
+ input.value=value||'';
+ input.maxLength=max||2200;
+ return input;
+}
+function renderCMSFields(){
+ const box=$('cmsFields');box.replaceChildren();
+ const section=$('cmsSection').value,term=$('cmsSearch').value.trim().toLowerCase();
+ const matches=siteFields.filter(x=>x.section===section&&(!term||[x.value,x.key,x.label].some(v=>String(v||'').toLowerCase().includes(term)))).slice(0,150);
+ if(!matches.length){const p=document.createElement('p');p.className='hint';p.textContent='لا توجد عناصر مطابقة في القسم المختار.';box.append(p);return}
+ const v=siteState();
+ for(const field of matches){
+  const row=document.createElement('article');row.className='cms-field';
+  const title=document.createElement('strong');title.textContent=field.type==='text'?'نص: '+field.value.slice(0,120):(field.type==='href'?'رابط: ':'صورة: ')+field.label;
+  const small=document.createElement('small');small.textContent=field.sectionLabel+' · '+field.key+' · الأصل: '+field.value.slice(0,210);
+  row.append(title,small);
+  if(field.type==='text'){
+   const pair=document.createElement('div');pair.className='cms-line';
+   const current=v.text[field.key]||{};
+   for(const lang of ['ar','en']){
+    const input=makeInput('textarea',lang==='ar'?'النص العربي (اتركه فارغًا للأصل)':'English text (optional)',current[lang],2200);
+    input.dir=lang==='ar'?'rtl':'ltr';
+    input.addEventListener('input',()=>{
+     const state=siteState(),original=state.text[field.key]||{ar:'',en:''};
+     const next={...original,[lang]:input.value};
+     if(!next.ar&&!next.en)delete state.text[field.key];
+     else state.text[field.key]=next;
+     markDirty();
+    });
+    pair.append(makeLabel(lang==='ar'?'العربي':'English',input));
+   }
+   row.append(pair);
+  }else{
+   const current=v.attrs[field.key]?.url||'';
+   const input=makeInput('input',field.value,current,700);input.className='cms-url';input.dir='ltr';
+   input.addEventListener('change',()=>{
+    const state=siteState();
+    if(!input.value.trim()){delete state.attrs[field.key];markDirty();return}
+    const valid=siteCMS.validURL(input.value,field.type);
+    if(!valid){inform('الرابط غير صالح. استخدم HTTPS أو رابط داخلي آمن.',true);input.focus();return;}
+    state.attrs[field.key]={type:field.type,url:valid};markDirty();
+   });
+   row.append(makeLabel(field.type==='src'?'رابط الصورة الجديد':'الرابط الجديد',input));
+   if(field.type==='src'){
+    const file=document.createElement('input');file.type='file';file.accept='image/jpeg,image/png,image/webp,image/gif';
+    file.addEventListener('change',async()=>{
+     if(!file.files?.[0])return;
+     lock(true);
+     try{
+      const path=await uploadFile(file.files[0],'site-media');
+      siteState().attrs[field.key]={type:'src',url:path};input.value=path;markDirty();inform('تم رفع الصورة. اضغط «نشر التعديلات» لتفعيلها في الموقع.');
+     }catch(err){inform('فشل رفع الصورة: '+err.message,true)}
+     finally{lock(false)}
+    });
+    row.append(makeLabel('أو ارفع صورة من جهازك',file));
+   }
+  }
+  box.append(row);
+ }
+}
+function renderCMSButtons(){
+ const box=$('cmsButtonList');box.replaceChildren();
+ for(const button of siteState().buttons){
+  const item=document.createElement('div');item.className='cms-button-item';
+  const wrap=document.createElement('div'),name=document.createElement('b'),info=document.createElement('small');
+  name.textContent=button.ar||button.en;info.textContent=(siteCMS.sections.find(s=>s[0]===button.section)?.[1]||button.section)+' · '+button.href;
+  wrap.append(name,info);
+  const actions=document.createElement('div'),edit=document.createElement('button'),remove=document.createElement('button');
+  edit.type=remove.type='button';edit.className='outline';remove.className='outline';
+  edit.textContent='تعديل';remove.textContent='حذف';
+  edit.addEventListener('click',()=>{
+   editingCMSButton=button.id;
+   const form=$('cmsButtonForm');
+   for(const key of ['section','ar','en','href','variant'])form.elements[key].value=button[key]||'';
+   form.querySelector('[type="submit"]').textContent='حفظ تعديل الزر';
+   form.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+  remove.addEventListener('click',()=>{
+   siteState().buttons=siteState().buttons.filter(b=>b.id!==button.id);
+   if(editingCMSButton===button.id){editingCMSButton='';$('cmsButtonForm').reset()}
+   markDirty();renderCMSButtons();
+  });
+  actions.append(edit,remove);item.append(wrap,actions);box.append(item);
+ }
+}
+function renderCMSVisibility(){
+ const box=$('cmsVisibility');box.replaceChildren();
+ for(const [key,label] of siteCMS.sections.filter(s=>['proof','statement','services','process','about','contact'].includes(s[0]))){
+  const check=document.createElement('input');check.type='checkbox';check.checked=!siteState().hiddenSections.includes(key);
+  check.addEventListener('change',()=>{
+   const state=siteState();state.hiddenSections=check.checked?state.hiddenSections.filter(x=>x!==key):[...new Set([...state.hiddenSections,key])];
+   markDirty();
+  });
+  box.append(makeLabel('إظهار '+label,check));
+ }
+}
+$('cms-tab-projects').addEventListener('click',()=>{
+ $('project-management-panel').hidden=false;$('site-management-panel').hidden=true;
+ $('cms-tab-projects').classList.add('active');$('cms-tab-site').classList.remove('active');
+ $('cms-tab-projects').setAttribute('aria-selected','true');$('cms-tab-site').setAttribute('aria-selected','false');
+});
+$('cms-tab-site').addEventListener('click',()=>{
+ $('project-management-panel').hidden=true;$('site-management-panel').hidden=false;
+ $('cms-tab-site').classList.add('active');$('cms-tab-projects').classList.remove('active');
+ $('cms-tab-site').setAttribute('aria-selected','true');$('cms-tab-projects').setAttribute('aria-selected','false');
+});
+$('cmsSection').addEventListener('change',renderCMSFields);
+$('cmsSearch').addEventListener('input',renderCMSFields);
+$('cmsButtonForm').addEventListener('submit',event=>{
+ event.preventDefault();
+ const f=event.currentTarget,section=f.elements.section.value,ar=f.elements.ar.value.trim(),en=f.elements.en.value.trim(),href=siteCMS.validURL(f.elements.href.value,'href');
+ if(!href||!ar){inform('اكتب النص العربي ورابطًا صحيحًا للزر.',true);return}
+ const v=siteState();
+ const id=editingCMSButton||('btn-'+crypto.randomUUID().replace(/-/g,''));
+ const next={id,section,ar,en,href,variant:f.elements.variant.value};
+ if(editingCMSButton)v.buttons=v.buttons.map(x=>x.id===id?next:x);
+ else{
+  if(v.buttons.length>=90){inform('الحد الأقصى 90 زرًا.',true);return}
+  v.buttons.push(next);
+ }
+ editingCMSButton='';f.reset();f.querySelector('[type="submit"]').textContent='+ أضف الزر';
+ markDirty();renderCMSButtons();inform('تم تجهيز الزر؛ اضغط «نشر التعديلات» لإظهاره على الموقع.');
+});
+for(const key of ['accent','azure','bg','ink'])$('cms-'+key).addEventListener('input',e=>{siteState().theme[key]=e.target.value;markDirty()});
+$('cmsResetColors').addEventListener('click',()=>{siteState().theme={};for(const [k,v] of Object.entries({accent:'#6aafff',azure:'#3ac7ff',bg:'#070c16',ink:'#eef5ff'}))$('cms-'+k).value=v;markDirty()});
+$('cmsSeoTitle').addEventListener('input',e=>{siteState().seo.title=e.target.value;markDirty()});
+$('cmsSeoDescription').addEventListener('input',e=>{siteState().seo.description=e.target.value;markDirty()});
+
 async function publish(){if(busy)return;if(!dirty){inform('مفيش تغييرات جديدة للنشر.');return;}lock(true);
  try{
   const remote=await readRepoFile(CONFIG);if(remote.sha!==sha)throw Error('حدّث حد تاني إعدادات الموقع. اعمل تحديث للصفحة بدل الكتابة فوق تعديلاته.');
