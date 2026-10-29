@@ -209,7 +209,15 @@
       <div class="contact-shell">
         <div class="contact-grid">
           <div class="contact-copy reveal"><p class="eyebrow section-number"><span class="eyebrow-mark"><img class="pen-tool-icon" src="assets/pen-tool.svg?v=bezier-1" width="24" height="24" alt="" aria-hidden="true" loading="lazy"></span> 05 / LET'S CREATE</p><h2>عندك فكرة؟<br><span>خلّيها تشوف النور.</span></h2><p>سواء هتبدأ براند من الصفر أو عندك مشروع محتاج رؤية جديدة، احكيلي عنه وخلّينا نعمل حاجة مختلفة.</p><a class="big-whatsapp" href="https://wa.me/201128791108" target="_blank" rel="noopener noreferrer">كلّمني على واتساب <span>↗</span></a><div class="contact-signature mono">THE NEXT GREAT DESIGN STARTS WITH A CONVERSATION.</div></div>
-          <form class="contact-form reveal" id="brief-form"><div class="form-head"><span class="mono">PROJECT INQUIRY / 01</span><span><img class="pen-tool-icon" src="assets/pen-tool.svg?v=bezier-1" width="24" height="24" alt="" aria-hidden="true" loading="lazy"></span></div><h3>قولّي عن المشروع.</h3><label for="client-name">اسمك</label><input id="client-name" name="name" placeholder="اسمك أو اسم البراند" maxlength="90" required><label for="project-type">نوع المشروع</label><select id="project-type" name="type" required><option value="">اختار نوع المشروع</option><option>هوية بصرية</option><option>تصميمات سوشيال ميديا</option><option>أغلفة كتب</option><option>كروت أعمال ومطبوعات</option><option>تصميمات ذكاء اصطناعي</option><option>مشروع آخر</option></select><label for="project-description">تفاصيل الفكرة</label><textarea id="project-description" rows="3" maxlength="1200" placeholder="احكيلي إيه اللي بتفكر فيه..." required></textarea>
+          <form class="contact-form reveal" id="brief-form"><div class="form-head"><span class="mono">PROJECT INQUIRY / 01</span><span><img class="pen-tool-icon" src="assets/pen-tool.svg?v=bezier-1" width="24" height="24" alt="" aria-hidden="true" loading="lazy"></span></div><h3>قولّي عن المشروع.</h3><div class="brief-progress" aria-label="مراحل طلب المشروع"><span id="brief-stage-one" class="is-current">01 — بيانات أساسية</span><span id="brief-stage-two">02 — تفاصيل المشروع</span></div><fieldset class="brief-step" id="brief-step-one"><label for="client-name">اسمك</label><input id="client-name" name="name" placeholder="اسمك أو اسم البراند" maxlength="90" required><label for="project-type">نوع المشروع</label><select id="project-type" name="type" required><option value="">اختار نوع المشروع</option><option>هوية بصرية</option><option>تصميمات سوشيال ميديا</option><option>أغلفة كتب</option><option>كروت أعمال ومطبوعات</option><option>تصميمات ذكاء اصطناعي</option><option>مشروع آخر</option></select>
+ <label for="client-email">بريدك الإلكتروني (اختياري)</label><input id="client-email" name="email" type="email" autocomplete="email" maxlength="160" placeholder="name@example.com">
+ <button id="brief-next" class="brief-next" type="button">التالي: تفاصيل المشروع ↗</button></fieldset>
+ <fieldset class="brief-step" id="brief-step-two" hidden>
+ <div class="brief-two-cols">
+  <div><label for="project-budget">الميزانية المتوقعة (اختياري)</label><select id="project-budget" name="budget"><option value="">اختار الميزانية المناسبة</option><option value="under-3000">أقل من 3,000 جنيه</option><option value="3000-6000">من 3,000 إلى 6,000 جنيه</option><option value="6000-12000">من 6,000 إلى 12,000 جنيه</option><option value="over-12000">أكثر من 12,000 جنيه</option><option value="discuss">نتفق عليها معًا</option></select></div>
+  <div><label for="project-deadline">الموعد المطلوب (اختياري)</label><input id="project-deadline" name="deadline" type="date"></div>
+ </div>
+ <label for="project-description">تفاصيل الفكرة</label><textarea id="project-description" rows="3" maxlength="1200" placeholder="احكيلي إيه اللي بتفكر فيه..." required></textarea>
             <div class="attachment-field">
               <label for="project-files">ملفات المشروع (اختياري)</label>
               <div class="attachment-picker">
@@ -225,7 +233,7 @@
               <button class="attachment-share" id="share-project-files" type="button" hidden>مشاركة الملفات من الجهاز ↗</button>
               <p id="attachment-feedback" class="attachment-feedback" role="status" aria-live="polite"></p>
             </div>
-            <button class="pill pill-lime form-submit" type="submit">ابعت التفاصيل <span>↗</span></button><p class="form-note">التفاصيل بتتفتح في واتساب. الملفات لا تُرفق تلقائيًا بالرابط؛ شاركها من جهازك أو أرفقها داخل المحادثة. الموقع لا يرفع ملفاتك أو يخزنها.</p></form>
+            <div class="brief-submit-row"><button class="brief-back" id="brief-back" type="button">← رجوع</button><button class="pill pill-lime form-submit" type="submit">ابعت التفاصيل <span>↗</span></button></div></fieldset><p class="form-note">التفاصيل بتتفتح في واتساب. الملفات لا تُرفق تلقائيًا بالرابط؛ شاركها من جهازك أو أرفقها داخل المحادثة. الموقع لا يرفع ملفاتك أو يخزنها.</p></form>
         </div>
       </div>
     </section>
