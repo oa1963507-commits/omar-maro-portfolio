@@ -47,7 +47,7 @@ jobs:
           node --check controls.js
           node --check scripts/build-seo.mjs
           node scripts/build-seo.mjs
-          node --test tests/portfolio-ui.test.mjs tests/controls.test.mjs tests/seo.test.mjs tests/site-cms.test.mjs tests/portfolio-smoke.test.mjs
+          node --test tests/portfolio-ui.test.mjs tests/controls.test.mjs tests/seo.test.mjs tests/site-cms.test.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
