@@ -93,7 +93,7 @@ test('original Omar Maro logo replaces all standalone decorative OM letters',asy
 test('CV-based About profile contains five real career entries and verified accomplishments',()=>{
  assert.ok(html.includes('id="about-heading"'));
  assert.equal((html.match(/class="career-card reveal"/g)||[]).length,5);
- for(const name of ['Infinity Marketing Agency','Coffee Moca','Print Alwan','موقع حصري الإخباري','شركة ارنج لماكينات الطباعة']){
+ for(const name of ['Infinity Marketing Agency','Coffee Moca','Print Alwan','موقع حصري الإخباري','شركة أريج لماكينات الطباعة']){
    assert.ok(html.includes(name),'missing CV organization '+name);
  }
  for(const date of ['2021-08','2023-02','2023-11','2025-02','2025-06','2025-09','2025-10','2025-12']){
@@ -102,6 +102,29 @@ test('CV-based About profile contains five real career entries and verified acco
  assert.ok(html.includes('أكثر من 20 مشروعًا لأكثر من 8 أطباء'));
  assert.ok(html.includes('خبرة تتجاوز 6 سنوات'));
 });
+test('CV names, dates, and credentials are reproduced faithfully in Arabic and English',async()=>{
+ const locale=await fs.readFile(new URL('../i18n.js',import.meta.url),'utf8');
+ assert.ok(html.includes('شركة أريج لماكينات الطباعة'));
+ assert.ok(!html.includes('شركة ارنج'));
+ assert.ok(!locale.includes('Orange Printing Machines Company'));
+ assert.ok(!locale.includes('شركة ارنج لماكينات الطباعة'));
+ assert.ok(locale.includes('Areej Printing Machines Company'));
+ assert.ok(html.includes('موقع حصري الإخباري'));
+ assert.ok(html.includes('Infinity Marketing Agency'));
+ assert.ok(html.includes('Coffee Moca'));
+ assert.ok(html.includes('Print Alwan'));
+ assert.ok(html.includes('tel:+201128791108'));
+ assert.ok(html.includes('01128791108'));
+ assert.ok(html.includes('mailto:oa456aa@gmail.com'));
+ assert.ok(html.includes('linkedin.com/in/omar-adel-63a729213'));
+ assert.ok(html.includes('www.behance.net/oa19635079ead'));
+ assert.ok(html.includes('Dayline design'));
+ assert.ok(html.includes('Adoby ex'));
+ assert.ok(html.includes('التخصص غير مذكور في السيرة الذاتية'));
+ assert.ok(html.includes('دون توضيح نوع الدراسة أو المؤهل'));
+ assert.ok(!html.includes('22/3/2001'),'birth date remains private');
+});
+
 test('About section lists education, five CV skills and public professional links without publishing DOB',()=>{
  for(const skill of ['Adobe Photoshop','Adobe Illustrator','Branding Design','AI-powered design tools','Dayline design'])
    assert.ok(html.includes(skill));
