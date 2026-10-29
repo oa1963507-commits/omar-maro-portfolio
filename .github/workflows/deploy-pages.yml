@@ -7,7 +7,11 @@ on:
       - 'index.html'
       - 'styles.css'
       - 'app.js'
+      - 'lightbox.js'
       - 'i18n.js'
+      - 'scripts/build-seo.mjs'
+      - 'tests/controls.test.mjs'
+      - 'tests/seo.test.mjs'
       - 'controls.js'
       - 'assets/**'
       - 'data/projects.json'
@@ -33,9 +37,12 @@ jobs:
       - name: Validate redesigned site and owner project settings
         run: |
           node --check app.js
+          node --check lightbox.js
           node --check i18n.js
           node --check controls.js
-          node --test tests/portfolio-ui.test.mjs
+          node --check scripts/build-seo.mjs
+          node scripts/build-seo.mjs
+          node --test tests/portfolio-ui.test.mjs tests/controls.test.mjs tests/seo.test.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
