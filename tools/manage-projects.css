@@ -20,3 +20,34 @@ input[type=password],.hint b,code,.stats b{font-family:var(--font-en)}
 .case-edit legend{font-size:14px;font-weight:700;color:#a9d5ff;padding:0 8px}
 .case-edit .form-grid{gap:13px}
 @media(max-width:600px){.case-edit{padding:12px}.case-edit .form-grid{grid-template-columns:1fr}}
+
+
+/* Unified site-editor tabs, fields and optional controls */
+.cms-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.cms-tabs button{border:1px solid #3b5d7f;background:#172235;color:#d3e5f9;border-radius:12px;padding:13px 24px;font-weight:800;cursor:pointer}
+.cms-tabs button.active{background:#67abff;color:#08131f;border-color:#67abff}
+#site-management-panel[hidden],#project-management-panel[hidden]{display:none!important}
+.cms-fields{display:grid;gap:12px;max-height:680px;overflow:auto;padding:2px;scrollbar-width:thin}
+.cms-field{display:flex;flex-direction:column;gap:8px;padding:17px;border:1px solid #34475b;border-radius:14px;background:#111d2c;min-width:0}
+.cms-field strong{font-size:13px;line-height:1.7;color:#eaf5ff;overflow-wrap:anywhere}
+.cms-field small{font-size:11px;color:#96b7d6;overflow-wrap:anywhere;line-height:1.8}
+.cms-field textarea,.cms-field input,.cms-button-form input,.cms-button-form select,.cms-seo input,.cms-seo textarea{width:100%;background:#09131f;color:#eaf5ff;border:1px solid #3e546c;border-radius:9px;padding:9px 11px;min-width:0}
+.cms-field textarea:focus,.cms-field input:focus{border-color:#67abff;outline:2px solid #67abff55}
+.cms-field label{font-size:12px;font-weight:600;display:grid;gap:5px}
+.cms-field input[type=file]{font-size:11px}
+.cms-field .cms-line{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cms-field .cms-url{direction:ltr;text-align:left}
+.cms-button-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.cms-button-form label,.cms-seo label,.cms-theme label{display:grid;gap:7px;font-size:13px;font-weight:700}
+.cms-button-form button{align-self:end;min-height:44px}
+.cms-button-list{display:grid;gap:10px}
+.cms-button-item{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid #385673;border-radius:12px;padding:12px;background:#101d2d}
+.cms-button-item small{display:block;color:#94acc4;overflow-wrap:anywhere}
+.cms-theme{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
+.cms-theme input[type=color]{min-height:44px;width:100%;border:1px solid #3e546c;border-radius:10px;background:transparent;padding:4px}
+.cms-visibility{display:flex;gap:15px;flex-wrap:wrap;margin:13px 0 22px}
+.cms-visibility label{display:flex;align-items:center;gap:8px;border:1px solid #385673;border-radius:9px;padding:8px 12px;font-size:13px}
+.cms-seo{display:grid;gap:12px;margin:12px 0 18px}
+#cmsFields:empty::after{content:'اختار القسم لعرض العناصر القابلة للتعديل';color:#a5bbd4;padding:15px}
+@media(max-width:780px){.cms-button-form{grid-template-columns:1fr 1fr}.cms-theme{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.cms-field .cms-line{grid-template-columns:1fr}.cms-button-form{grid-template-columns:1fr}.cms-tabs button{flex:1}}
