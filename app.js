@@ -138,7 +138,7 @@
     e.preventDefault();
     location.hash='#project/'+encodeURIComponent(id);
   });
-  $('.filter').forEach(btn=>btn.addEventListener('click',()=>{
+  $$('.filter').forEach(btn=>btn.addEventListener('click',()=>{
     activeFilter=btn.dataset.filter;
     $$('.filter').forEach(b=>{const a=b===btn;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));});
     renderProjects();
