@@ -237,8 +237,25 @@
     <div class="project-view-header"><a href="#work" class="close-project">✕ <span>إغلاق المشروع</span></a><button id="language-toggle-project" class="language-toggle project-language-toggle" type="button" aria-label="Switch language to English" aria-pressed="false"><span class="lang-ar" lang="ar">AR</span><span class="language-divider" aria-hidden="true">/</span><span class="lang-en" lang="en">EN</span></button><span class="mono">OMAR MARO / CASE STUDY</span></div>
     <div id="project-view-content"></div>
   </div>
+  <div class="image-lightbox" id="image-lightbox" role="dialog" aria-modal="true" aria-label="معرض صور المشروع" aria-hidden="true" hidden>
+    <div class="lightbox-toolbar">
+      <span class="lightbox-count" id="lightbox-count" aria-live="polite">1 / 1</span>
+      <div class="lightbox-actions">
+        <button id="lightbox-zoom" type="button" aria-label="تكبير أو تصغير الصورة">تكبير +</button>
+        <a id="lightbox-original" href="#" target="_blank" rel="noopener noreferrer">الأصل ↗</a>
+        <button id="lightbox-close" type="button" aria-label="إغلاق معرض الصور">✕</button>
+      </div>
+    </div>
+    <div class="lightbox-stage" id="lightbox-stage">
+      <button class="lightbox-arrow" id="lightbox-prev" type="button" aria-label="الصورة السابقة">❮</button>
+      <div class="lightbox-scroll" id="lightbox-scroll"><img id="lightbox-image" alt="" draggable="false"></div>
+      <button class="lightbox-arrow" id="lightbox-next" type="button" aria-label="الصورة التالية">❯</button>
+    </div>
+    <p class="lightbox-help">اسحب للتنقل بين الصور، واضغط تكبير لعرض التفاصيل. الصور بدون قص.</p>
+  </div>
   <script src="i18n.js" defer></script>
   <script src="controls.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="lightbox.js" defer></script>
 </body>
 </html>
