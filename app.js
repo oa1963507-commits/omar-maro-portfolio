@@ -330,7 +330,7 @@
     // Visibility/order/deletion survive all future automatic Behance imports.
     try{
       const [catalogResponse,settingsResponse]=await Promise.all([
-        fetch('data/projects.json',{cache:'default'}),
+        fetch('data/projects.json',{cache:'no-store'}),
         fetch('data/site-controls.json',{cache:'no-store'})
       ]);
       if(!catalogResponse.ok)throw Error('catalog request failed');
