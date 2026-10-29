@@ -7,6 +7,7 @@
   let featuredIDs=[];
   let caseStudies={};
   let activeFilter = 'all';
+  let searchTerm = '';
   let focusBeforeDialog = null;
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => [...document.querySelectorAll(s)];
@@ -122,7 +123,13 @@
     if(images)images.textContent=String(projects.reduce((n,p)=>n+(p.images?.length||0),0)).padStart(2,'0');
   }
   function renderProjects(){
-    const shown = projects.filter(p=>activeFilter === 'all' || p.category === activeFilter);
+    const q=searchTerm.trim().toLocaleLowerCase();
+    const shown=projects.filter(p=>(activeFilter==='all'||p.category===activeFilter) &&
+      (!q||[p.title,p.title_en,p.category_label,p.description,p.year].some(value=>String(value||'').toLocaleLowerCase().includes(q))));
+    const label=$('#portfolio-results-label');
+    if(label)label.textContent=t('المعروض: ','Showing: ')+shown.length+' / '+projects.length;
+    const clear=$('#portfolio-search-clear');
+    if(clear)clear.hidden=!searchTerm;
     $('#total-projects').textContent=String(projects.length).padStart(2,'0');
     $('#projects-grid').innerHTML=shown.length?shown.map((p,i)=>projectCard(p,i)).join(''):`<div class="empty-state"><strong>${escapeHTML(t("مفيش مشاريع في القسم ده حاليًا.","No projects in this category yet."))}</strong><p>${escapeHTML(t("شوف باقي الأعمال أو تصفّح صفحة Behance.","Browse more work or visit my Behance profile."))}</p><a href="${BEHANCE}" class="underlink" target="_blank" rel="noopener noreferrer">${escapeHTML(t("افتح Behance ↗","Open Behance ↗"))}</a></div>`;
     attachImageFallbacks($('#projects-grid'));
@@ -143,6 +150,15 @@
     $$('.filter').forEach(b=>{const a=b===btn;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));});
     renderProjects();
   }));
+  const searchInput=$('#portfolio-search-input');
+  if(searchInput)searchInput.addEventListener('input',()=>{
+    searchTerm=searchInput.value.slice(0,120);
+    renderProjects();
+  });
+  const clearSearch=$('#portfolio-search-clear');
+  if(clearSearch)clearSearch.addEventListener('click',()=>{
+    searchTerm='';searchInput.value='';renderProjects();searchInput.focus();
+  });
   function renderDetail(p){
     const title=displayTitle(p),category=displayCategory(p),description=displayDescription(p),story=displayStory(p);
     const study=caseStudies[p.id]||{};
@@ -153,7 +169,13 @@
     const caseSections=[['challenge','التحدي','The challenge'],['approach','الفكرة والتنفيذ','The process'],['outcome','النتيجة','The outcome']]
       .filter(([key])=>typeof study[key]==='string'&&study[key].trim())
       .map(([key,ar,en])=>'<section class="case-study-block"><span>'+escapeHTML(t(ar,en))+'</span><p>'+escapeHTML(study[key])+'</p></section>').join('');
-    const permanentLink='<a class="case-permalink" href="projects/'+encodeURIComponent(p.id)+'/">'+escapeHTML(t('رابط دائم للمشروع ↗','Project permalink ↗'))+'</a>';
+    const permanentURL=location.origin+location.pathname+'#project/'+encodeURIComponent(p.id);
+    const permanentLink='<a class="case-permalink" href="'+escapeHTML(permanentURL)+'">'+escapeHTML(t('رابط دائم للمشروع ↗','Project permalink ↗'))+'</a>';
+    const shareLink='<button class="case-share-button" type="button" data-share-project="'+escapeHTML(p.id)+'">'+escapeHTML(t('نسخ رابط المشروع','Copy project link'))+' ↗</button>';
+    const idx=projects.findIndex(project=>project.id===p.id);
+    const prior=projects[(idx-1+projects.length)%projects.length];
+    const following=projects[(idx+1)%projects.length];
+    const navigation=projects.length>1?'<nav class="case-related" aria-label="'+escapeHTML(t('مشاريع أخرى','More projects'))+'"><a href="#project/'+encodeURIComponent(prior.id)+'">← '+escapeHTML(t('السابق: ','Previous: ')+displayTitle(prior))+'</a><a href="#project/'+encodeURIComponent(following.id)+'">'+escapeHTML(t('التالي: ','Next: ')+displayTitle(following))+' →</a></nav>':'';
     const images=(p.images||[]).filter(Boolean);
     const hasModules=Array.isArray(p.modules)&&p.modules.length>0;
     const ordered=hasModules?p.modules:images.map(url=>({type:'image',url}));
@@ -175,8 +197,19 @@
     const preview=!ordered.length && behanceID?`<div class="case-official-preview"><p>${t('معاينة Behance الرسمية','Official Behance preview')}</p><iframe loading="lazy" title="${t('معاينة مشروع ','Project preview: ')}${escapeHTML(title)}" src="https://www.behance.net/embed/project/${behanceID}?ilo0=1" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><small>${t('قد تكون المعاينة مختصرة؛ لعرض كل المحتوى افتح المشروع الأصلي.','This preview may be limited; visit Behance for the full project.')}</small></div>`:'';
     const originalLink=p.source==='behance' && p.url ? `<a class="case-cta case-origin-link" href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer">${t('شاهد المشروع الأصلي كاملًا على Behance ↗','View complete original project on Behance ↗')}</a>` : '';
     const hero=p.cover?`<figure class="case-media case-cover-only"><a data-full-image href="${escapeHTML(imageSources(p.cover,'detail')[0]||p.cover)}" title="${escapeHTML(t('فتح الصورة بدقتها الأصلية','Open full-resolution image'))}">${qualityImage(p.cover,'case-hero-img',`${t('غلاف','Cover')} ${title}`,'detail','eager')}</a></figure>`:'';
-    return `<div class="case-container"><header class="case-overview"><p class="case-eyebrow">${escapeHTML(category)}${p.year?' / '+escapeHTML(p.year):''}</p><h2 class="case-title${isLatinTitle(title)?' is-latin':''}">${escapeHTML(title)}</h2>${description?`<p class="case-desc">${escapeHTML(description)}</p>`:''}${summary}${caseFacts}${originalLink}</header>${caseSections?'<div class="case-study-details">'+caseSections+'</div>':''}${!ordered.length?hero:''}${preview}${story?`<div class="case-section"><span>${t('THE IDEA / الفكرة','THE IDEA')}</span><p>${escapeHTML(story)}</p></div>`:''}${gallery?`<div class="case-gallery">${gallery}</div>`:''}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING <img class="pen-tool-icon" src="assets/pen-tool.svg?v=bezier-1" width="14" height="14" alt="" aria-hidden="true" loading="lazy"></span>${url}${permanentLink}</div></div>`;
+    return `<div class="case-container"><header class="case-overview"><p class="case-eyebrow">${escapeHTML(category)}${p.year?' / '+escapeHTML(p.year):''}</p><h2 class="case-title${isLatinTitle(title)?' is-latin':''}">${escapeHTML(title)}</h2>${description?`<p class="case-desc">${escapeHTML(description)}</p>`:''}${summary}${caseFacts}${originalLink}</header>${caseSections?'<div class="case-study-details">'+caseSections+'</div>':''}${!ordered.length?hero:''}${preview}${story?`<div class="case-section"><span>${t('THE IDEA / الفكرة','THE IDEA')}</span><p>${escapeHTML(story)}</p></div>`:''}${gallery?`<div class="case-gallery">${gallery}</div>`:''}<div class="case-next"><span class="mono" style="font-size:11px;color:#999">THANKS FOR WATCHING <img class="pen-tool-icon" src="assets/pen-tool.svg?v=bezier-1" width="14" height="14" alt="" aria-hidden="true" loading="lazy"></span>${url}${permanentLink}${shareLink}</div>${navigation}</div>`;
   }
+  document.addEventListener('click',async e=>{
+    const button=e.target.closest('[data-share-project]');
+    if(!button)return;
+    const url=location.origin+location.pathname+'#project/'+encodeURIComponent(button.dataset.shareProject);
+    try{
+      await navigator.clipboard.writeText(url);
+      button.textContent=t('تم نسخ الرابط ✓','Link copied ✓');
+    }catch{
+      window.prompt(t('انسخ الرابط:','Copy link:'),url);
+    }
+  });
   function openProject(id){
     const p=projects.find(x=>x.id===id);
     if(!p){window.location.hash='#work';return;}
