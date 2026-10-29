@@ -276,11 +276,31 @@
       else attachmentStatus('تعذرت المشاركة المباشرة. أرفق الملفات من داخل واتساب يدويًا.','Direct sharing failed. Please attach the files manually in WhatsApp.',true);
     }
   });
+  const stepOne=$('#brief-step-one'),stepTwo=$('#brief-step-two');
+  function setBriefStep(step){
+    const isFirst=step===1;
+    stepOne.hidden=!isFirst;stepTwo.hidden=isFirst;
+    $('#brief-stage-one').classList.toggle('is-current',isFirst);
+    $('#brief-stage-two').classList.toggle('is-current',!isFirst);
+    if(!isFirst)stepTwo.querySelector('select, input, textarea')?.focus();
+  }
+  $('#brief-next').addEventListener('click',()=>{
+    const items=['#client-name','#project-type','#client-email'].map(sel=>$(sel));
+    for(const el of items){if(!el.checkValidity()){el.reportValidity();el.focus();return;}}
+    setBriefStep(2);
+  });
+  $('#brief-back').addEventListener('click',()=>setBriefStep(1));
   $('#brief-form').addEventListener('submit',e=>{
     e.preventDefault();
     const name=$('#client-name').value.trim(),type=$('#project-type').value,idea=$('#project-description').value.trim();
     if(!name||!type||!idea)return;
     let msg=isEnglish()?'Hi Omar, my name is '+name+'.\n\nProject type: '+type+'\n\nProject brief:\n'+idea+'\n\n(Sent via Omar Maro\'s portfolio website)':'أهلًا عمر، أنا '+name+'.\n\nنوع المشروع: '+type+'\n\nتفاصيل الفكرة:\n'+idea+'\n\n(تم إرسال التفاصيل من موقع Omar Maro)';
+    const email=$('#client-email').value.trim();
+    const budget=$('#project-budget'),deadline=$('#project-deadline').value;
+    const budgetLabel=budget.value?budget.options[budget.selectedIndex]?.textContent.trim():'';
+    if(email)msg+=t('\n\nالبريد الإلكتروني: ','\n\nEmail: ')+email;
+    if(budgetLabel)msg+=t('\n\nالميزانية المتوقعة: ','\n\nExpected budget: ')+budgetLabel;
+    if(deadline)msg+=t('\n\nالموعد المطلوب: ','\n\nRequested date: ')+deadline;
     if(selectedProjectFiles.length){
       const names=selectedProjectFiles.map(file=>'• '+file.name).join('\n');
       msg+=t('\n\nعندي ملفات مرجعية، وسأرسلها منفصلة داخل المحادثة:\n','\n\nI have reference files that I will share separately in the chat:\n')+names;
