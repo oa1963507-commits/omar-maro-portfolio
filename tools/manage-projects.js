@@ -35,15 +35,20 @@ function render(){const all=orderedProjects(),removed=new Set(settings.excluded)
  for(const p of shown){const state=removed.has(p.id)?'excluded':hidden.has(p.id)?'hidden':'active';const project=getRecord(p),item=document.createElement('div');item.className='item'+(state==='active'?'':' inactive');item.dataset.id=p.id;item.draggable=state==='active'&&!term&&view==='active';
  const handle=document.createElement('span');handle.className='handle';handle.textContent='⋮⋮';handle.title='اسحب المشروع لتغيير الترتيب';item.append(handle);
  const imgUrl=controls.cleanMedia(project.cover);if(imgUrl){const img=document.createElement('img');img.src=imgUrl;img.alt='';img.loading='lazy';item.append(img);}else{const fallback=document.createElement('div');fallback.className='no-photo';fallback.textContent='OM';item.append(fallback);}
- const copy=document.createElement('div');copy.className='item-copy';const title=document.createElement('b');title.textContent=project.title||p.id;const sub=document.createElement('small');sub.textContent=labelFor(p)+' · '+(state==='excluded'?'محذوف من الموقع':state==='hidden'?'مخفي':'ظاهر')+' · '+(project.category_label||mediaCategories[project.category]||'');copy.append(title,sub);item.append(copy);
- const actions=document.createElement('div');actions.className='item-actions';if(state==='excluded'){actions.append(createAction('استعادة','restore',p.id,'restore'));}else{actions.append(createAction('↑','up',p.id,'','انقل لأعلى'),createAction('↓','down',p.id,'','انقل لأسفل'),createAction('تعديل','edit',p.id),createAction(state==='hidden'?'إظهار':'إخفاء','toggle',p.id),createAction('حذف','delete',p.id,'danger'));}item.append(actions);list.append(item);
+ const copy=document.createElement('div');copy.className='item-copy';const title=document.createElement('b');title.textContent=project.title||p.id;const sub=document.createElement('small');sub.textContent=labelFor(p)+' · '+(state==='excluded'?'محذوف من الموقع':state==='hidden'?'مخفي':'ظاهر')+' · '+(project.category_label||mediaCategories[project.category]||'')+(settings.featured.includes(p.id)?' · ★ بالواجهة الرئيسية':'');copy.append(title,sub);item.append(copy);
+ const actions=document.createElement('div');actions.className='item-actions';if(state==='excluded'){actions.append(createAction('استعادة','restore',p.id,'restore'));}else{actions.append(createAction('↑','up',p.id,'','انقل لأعلى'),createAction('↓','down',p.id,'','انقل لأسفل'),createAction('تعديل','edit',p.id),createAction(settings.featured.includes(p.id)?'★ مميز':'☆ تمييز','featured',p.id,settings.featured.includes(p.id)?'is-featured':''),createAction(state==='hidden'?'إظهار':'إخفاء','toggle',p.id),createAction('حذف','delete',p.id,'danger'));}item.append(actions);list.append(item);
  }
  $('publishBtn').textContent=dirty?'نشر التعديلات ●':'نشر التعديلات';}
 function reorder(id,direction){const i=order.indexOf(id),j=i+direction;if(i<0||j<0||j>=order.length)return;[order[i],order[j]]=[order[j],order[i]];markDirty();render();}
 function swapDrag(from,to){if(from===to)return;const x=order.indexOf(from),y=order.indexOf(to);if(x<0||y<0)return;order.splice(x,1);order.splice(y,0,from);markDirty();render();}
 function deleteProject(id){const project=allProjects().find(p=>p.id===id);if(!project)return;if(!confirm('حذف «'+(project.title||id)+'» من الموقع؟\nالمشروع هيفضل موجود على Behance، وتقدر تستعيده من فلتر «المحذوفة».'))return;settings.excluded=[...new Set([...settings.excluded,id])];settings.hidden=settings.hidden.filter(x=>x!==id);markDirty();render();}
 $('projectList').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b||busy)return;const id=b.dataset.id;const state=b.dataset.action;
- if(state==='up')reorder(id,-1);else if(state==='down')reorder(id,1);else if(state==='edit')openEdit(id);else if(state==='toggle'){settings.hidden=settings.hidden.includes(id)?settings.hidden.filter(x=>x!==id):[...settings.hidden,id];markDirty();render();}else if(state==='delete')deleteProject(id);else if(state==='restore'){settings.excluded=settings.excluded.filter(x=>x!==id);markDirty();render();}
+ if(state==='up')reorder(id,-1);else if(state==='down')reorder(id,1);else if(state==='featured'){
+   if(settings.featured.includes(id))settings.featured=settings.featured.filter(x=>x!==id);
+   else if(settings.featured.length>=3){inform('اختار 3 مشاريع مميزة كحد أقصى. ألغِ تمييز مشروع أولًا.',true);return;}
+   else settings.featured.push(id);
+   markDirty();render();
+ }else if(state==='edit')openEdit(id);else if(state==='toggle'){settings.hidden=settings.hidden.includes(id)?settings.hidden.filter(x=>x!==id):[...settings.hidden,id];markDirty();render();}else if(state==='delete')deleteProject(id);else if(state==='restore'){settings.excluded=settings.excluded.filter(x=>x!==id);markDirty();render();}
 });
 let dragID='';$('projectList').addEventListener('dragstart',e=>{const item=e.target.closest('.item[draggable="true"]');if(!item)return;e.dataTransfer.effectAllowed='move';dragID=item.dataset.id;item.classList.add('dragging');});
 $('projectList').addEventListener('dragover',e=>{const item=e.target.closest('.item[draggable="true"]');if(item&&dragID){e.preventDefault();item.classList.add('drop-target');}});
@@ -53,6 +58,10 @@ $('projectList').addEventListener('dragend',()=>{dragID='';document.querySelecto
 $('projectSearch').addEventListener('input',render);$('viewFilter').addEventListener('change',render);
 function openEdit(id=null){const p=id?allProjects().find(x=>x.id===id):null;if(id&&!p)return;editorId=id;const f=$('projectForm');f.reset();$('dialogTitle').textContent=p?'تعديل مشروع':'إضافة مشروع جديد';const item=p?getRecord(p):null;
  for(const key of ['title','category','year','url','cover','description'])f.elements[key].value=item?.[key]||'';
+ const study=settings.caseStudies?.[id]||{};
+ for(const [formKey,caseKey] of [['caseClient','client'],['caseRole','role'],['caseServices','services'],['caseDuration','duration'],['caseChallenge','challenge'],['caseApproach','approach'],['caseOutcome','outcome']]){
+   f.elements[formKey].value=study[caseKey]||'';
+ }
  const manual=!p||p.source==='manual';$('galleryFields').hidden=!manual;$('galleryFields').style.display=manual?'flex':'none';f.elements.images.value=manual?(item?.images||[]).join('\n'):'';
  $('projectDialog').showModal();}
 $('addButton').addEventListener('click',()=>openEdit());$('closeDialog').addEventListener('click',()=>$('projectDialog').close());$('cancelForm').addEventListener('click',()=>$('projectDialog').close());
@@ -84,6 +93,14 @@ $('projectForm').addEventListener('submit',async e=>{e.preventDefault();if(busy)
      else delete current.cover;
      settings.overrides[id]=current;
    }
+   settings.caseStudies=settings.caseStudies||{};
+   const study={};
+   for(const [formKey,caseKey] of [['caseClient','client'],['caseRole','role'],['caseServices','services'],['caseDuration','duration'],['caseChallenge','challenge'],['caseApproach','approach'],['caseOutcome','outcome']]){
+     const value=form.elements[formKey].value.trim();
+     if(value)study[caseKey]=value;
+   }
+   if(Object.keys(study).length)settings.caseStudies[id]=study;
+   else delete settings.caseStudies[id];
    markDirty();$('projectDialog').close();render();inform('اتحفظ المشروع في لوحة الإدارة. اضغط «نشر التعديلات» عشان يظهر على الموقع.');
  }catch(err){inform('مشكلة أثناء حفظ المشروع: '+err.message,true);}finally{$('saveProject').textContent='حفظ المشروع في اللوحة';lock(false);}
 });
