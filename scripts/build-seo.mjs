@@ -19,6 +19,21 @@ const trimmed=s=>asText(s).slice(0,220);
 const [catalog,rawSettings]=await Promise.all([read('data/projects.json'),read('data/site-controls.json')]);
 const settings=normalizeControls(rawSettings);
 const projects=applyControls(catalog,settings);
+// When the owner edits homepage SEO in the dashboard, publish real HTML metadata
+// in the static GitHub Pages artifact (not only client-side DOM mutations).
+const ownerSEO=settings.siteContent?.seo||{};
+if(ownerSEO.title||ownerSEO.description){
+ let home=await fs.readFile(path.join(root,'index.html'),'utf8');
+ if(ownerSEO.title){
+  home=home.replace(/<title>[^<]*<\/title>/,()=>'<title>'+htmlEscape(String(ownerSEO.title).slice(0,90))+'</title>');
+  home=home.replace(/(<meta property="og:title" content=")[^"]*(")/,(_,a,b)=>a+htmlEscape(String(ownerSEO.title).slice(0,90))+b);
+ }
+ if(ownerSEO.description){
+  home=home.replace(/(<meta name="description" content=")[^"]*(")/,(_,a,b)=>a+htmlEscape(String(ownerSEO.description).slice(0,200))+b);
+  home=home.replace(/(<meta property="og:description" content=")[^"]*(")/,(_,a,b)=>a+htmlEscape(String(ownerSEO.description).slice(0,200))+b);
+ }
+ await fs.writeFile(path.join(root,'index.html'),home);
+}
 const outDir=path.join(root,'projects');
 await fs.mkdir(outDir,{recursive:true});
 
