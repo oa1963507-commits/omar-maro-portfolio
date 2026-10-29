@@ -35,8 +35,42 @@ if(ownerSEO.title||ownerSEO.description){
  await fs.writeFile(path.join(root,'index.html'),home);
 }
 const outDir=path.join(root,'projects');
+// Deploy only owner-approved public pages. Removed/hidden projects must not
+// remain reachable from older generated artifacts.
+await fs.rm(outDir,{recursive:true,force:true});
 await fs.mkdir(outDir,{recursive:true});
 
+// Keep pre-rendered project cards synchronized with the dashboard too.
+let homepage=await fs.readFile(path.join(root,'index.html'),'utf8');
+const galleryBegin=homepage.indexOf('<div id="projects-grid"');
+const galleryEnd=homepage.indexOf('<div class="work-footer">',galleryBegin);
+if(galleryBegin>=0&&galleryEnd>galleryBegin){
+ const galleryCards=projects.map((p,i)=>{
+  const title=htmlEscape(p.title||'Project'),category=htmlEscape(p.category_label||p.category||'');
+  const cover=safeUrl(p.cover||(p.images||[])[0])||site+'assets/omar-cover.jpg';
+  const year=p.year?' · '+htmlEscape(p.year):'';
+  return '<a href="projects/'+encodeURIComponent(p.id)+'/" class="project-card" aria-label="شاهد مشروع '+title+'"><div class="project-image"><span class="project-card-no">'+String(i+1).padStart(2,'0')+'</span><img class="project-card-image" loading="lazy" decoding="async" src="'+htmlEscape(cover)+'" alt="'+title+'"><span class="project-view-link">عرض المشروع ↗</span></div><div class="project-info"><div><span class="project-category">'+category+year+'</span><h3>'+title+'</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>';
+ }).join('\n        ');
+ homepage=homepage.slice(0,galleryBegin)+'<div id="projects-grid" class="projects-grid" aria-live="polite">\n        '+galleryCards+'\n      </div>\n      '+homepage.slice(galleryEnd);
+}
+const featured=(settings.featured||[]).map(id=>projects.find(p=>p.id===id)).filter(Boolean);
+const featuredItems=(featured.length?featured:projects).slice(0,3);
+const heroBegin=homepage.indexOf('<div id="hero-featured"');
+const heroEnd=homepage.indexOf('<div class="showcase-base">',heroBegin);
+if(heroBegin>=0&&heroEnd>heroBegin){
+ const cards=featuredItems.map((p,i)=>{
+  const title=htmlEscape(p.title||'Project');
+  const img=safeUrl(p.cover||(p.images||[])[0])||site+'assets/omar-cover.jpg';
+  return '<a href="projects/'+encodeURIComponent(p.id)+'/" class="showcase-card" aria-label="مشروع '+title+'"><img class="showcase-img" loading="'+(i===0?'eager':'lazy')+'" decoding="async" src="'+htmlEscape(img)+'" alt="'+title+'">'+(i===0?'<span class="showcase-label">FEATURED</span>':'')+'<span class="showcase-caption">'+title+'</span></a>';
+ }).join('\n            ');
+ homepage=homepage.slice(0,heroBegin)+'<div id="hero-featured" class="showcase-grid">\n            '+cards+'\n          </div>\n          '+homepage.slice(heroEnd);
+}
+const number=String(projects.length).padStart(2,'0');
+const imageCount=String(projects.reduce((sum,p)=>sum+(p.images?.length||0),0)).padStart(2,'0');
+homepage=homepage.replace(/(id="metric-projects" class="metric-num">)[^<]*/,(_,a)=>a+number);
+homepage=homepage.replace(/(id="metric-images" class="metric-num">)[^<]*/,(_,a)=>a+imageCount);
+homepage=homepage.replace(/(id="total-projects">)[^<]*/,(_,a)=>a+number);
+await fs.writeFile(path.join(root,'index.html'),homepage);
 const dates=[];
 for(const p of projects){
  if(!/^[a-z0-9-]{2,120}$/.test(p.id))continue;
