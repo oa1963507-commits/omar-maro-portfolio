@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 /* Static, crawlable project case studies. Reuses the main brand palette. */
 .project-seo-page{background:var(--bg);color:var(--ink);font-family:var(--font-ar);margin:0}
 .project-seo-page a{color:inherit}
