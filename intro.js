@@ -53,5 +53,6 @@
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
  else init();
- window.addEventListener('pagehide',()=>{window.clearTimeout(autoClose);window.clearTimeout(removeLater)}, {once:true});
+ window.addEventListener('pagehide',()=>{endIntro();window.clearTimeout(autoClose);window.clearTimeout(removeLater);root.classList.remove('mm-intro-pending','mm-intro-leaving')},{once:true});
+ window.addEventListener('pageshow',event=>{if(event.persisted&&root.classList.contains('mm-intro-pending')){endIntro();root.classList.remove('mm-intro-pending','mm-intro-leaving');document.getElementById('site-intro')?.remove()}},{once:false});
 })();
