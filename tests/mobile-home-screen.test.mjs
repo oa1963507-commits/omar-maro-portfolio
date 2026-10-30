@@ -16,13 +16,15 @@ test('home screen manifest uses correct GitHub Pages scope and original brand ic
  assert.equal(manifest.display,'standalone');
  assert.equal(manifest.background_color,'#070c16');
  assert.equal(manifest.theme_color,'#070c16');
+ assert.equal(manifest.icons.length,1,'only the original brand logo should be offered to home-screen installers');
  assert.ok(manifest.icons.some(icon=>icon.src==='assets/omar-mark.png'&&icon.type==='image/png'));
+ assert.ok(!manifest.icons.some(icon=>/pen-tool/.test(icon.src)),'do not reuse decorative Pen Tool as home-screen icon');
  for(const icon of manifest.icons){await fs.access(new URL('../'+icon.src,import.meta.url))}
  assert.deepEqual(manifest.shortcuts.map(item=>item.url),[
   '/omar-maro-portfolio/#work','/omar-maro-portfolio/#about','/omar-maro-portfolio/#contact'
  ]);
- assert.match(html,/href="manifest.webmanifest"/);
- assert.match(html,/rel="apple-touch-icon" href="assets\/omar-mark\.png"/);
+ assert.match(html,/href="manifest.webmanifest\?v=logo-20261031"/);
+ assert.match(html,/rel="apple-touch-icon" href="assets\/omar-mark\.png\?v=logo-20261031"/);
  assert.match(html,/apple-mobile-web-app-title" content="OMAR MARO"/);
  assert.match(html,/viewport-fit=cover/);
 });
