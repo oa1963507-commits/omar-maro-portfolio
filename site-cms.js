@@ -13,7 +13,7 @@ const sections=[
  ['contact','التواصل وطلب مشروع','#contact'],
  ['footer','الفوتر','.footer']
 ];
-const blocked='#projects-grid,#hero-featured,#project-view,#project-view-content,#image-lightbox,.site-cms-buttons,script,style,noscript,svg,[contenteditable]';
+const blocked='#projects-grid,#hero-featured,#project-view,#project-view-content,#image-lightbox,.site-cms-buttons,.mm-orbit,script,style,noscript,svg,[contenteditable]';
 const cleanText=(s,max=2200)=>String(s??'').slice(0,max);
 const validColor=s=>/^#[0-9a-f]{6}$/i.test(String(s||''))?s:'';
 function validURL(value,type){
@@ -57,7 +57,7 @@ function normalize(raw){
  if(Array.isArray(v.hiddenSections))for(const k of v.hiddenSections)if(['proof','statement','services','process','about','contact'].includes(k)&&!sectionsHidden.includes(k))sectionsHidden.push(k);
  if(typeof v.seo?.title==='string')seo.title=cleanText(v.seo.title,90);
  if(typeof v.seo?.description==='string')seo.description=cleanText(v.seo.description,200);
- return {text,attrs,buttons,theme,hiddenSections:sectionsHidden,seo};
+ return {text,attrs,buttons,theme,hiddenSections:sectionsHidden,seo,visual:{effects:v.visual?.effects==='off'?'off':'on'}};
 }
 function collect(doc){
  const out=[];
@@ -79,6 +79,7 @@ function collect(doc){
 }
 function apply(raw,doc=document){
  const data=normalize(raw),lang=doc.documentElement.lang==='en'?'en':'ar';
+ doc.documentElement.dataset.mmEffects=data.visual.effects;
  for(const item of collect(doc)){
   if(item.type==='text'){
    const value=data.text[item.key]?.[lang];
