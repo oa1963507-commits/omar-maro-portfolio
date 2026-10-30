@@ -1,0 +1,130 @@
+/* OMAR MARO — mobile refinement. Fully additive to desktop styling.
+   Designed for 320–920px touch screens and installable home-screen mode. */
+html{ -webkit-text-size-adjust:100%; }
+@media(max-width:920px){
+ .topbar{z-index:95}
+ .mobile-nav{top:78px;max-height:calc(100dvh - 78px);overflow-y:auto;overscroll-behavior:contain;background:rgba(9,19,34,.97);box-shadow:0 24px 60px rgba(0,4,12,.44);padding:16px max(22px,5vw) calc(25px + env(safe-area-inset-bottom,0px))}
+ .mobile-nav a{min-height:48px;display:flex;align-items:center;padding:12px 8px;line-height:1.55;font-size:14px}
+ .mobile-nav a:focus-visible{border-radius:10px;outline:2px solid var(--accent)}
+ .menu-toggle{min-width:44px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px}
+ .menu-toggle span{margin:0;width:22px}
+ .hero-showcase{max-width:660px}
+ .service-card,.process-card,.about-highlight,.resume-panel{transform:none!important}
+ .project-card,.showcase-card{transform:none!important}
+ .hero h1{text-wrap:balance}
+ .site-cms-buttons{max-width:100%}
+ .site-cms-button{min-height:44px}
+ .project-view-header{padding-inline:max(14px,env(safe-area-inset-left,0px));padding-block:12px}
+ .lightbox-toolbar{padding-inline:max(12px,env(safe-area-inset-left,0px))}
+}
+@media(max-width:690px){
+ html{scroll-padding-top:84px}
+ .wrap{width:calc(100% - 32px)}
+ .topbar-inner{height:72px;gap:8px}
+ .mobile-nav{top:72px;max-height:calc(100dvh - 72px)}
+ .brand{gap:7px;min-width:0}
+ .brand img{width:38px;height:38px;flex:none}
+ .brand>span{font-size:clamp(14px,4vw,17px);white-space:nowrap}
+ .brand>span small{font-size:7px;letter-spacing:.16em;margin-top:4px}
+ .topbar-actions{gap:7px}
+ .language-toggle{min-width:76px;min-height:44px;padding:5px;font-size:11px}
+ .menu-toggle{border-radius:12px}
+ .hero-topline{padding-top:21px}
+ .hero-layout{gap:23px;padding-block:20px 10px}
+ .hero-copy{padding:0}
+ .hero h1{font-size:clamp(40px,10.3vw,64px);line-height:1.25;letter-spacing:-.045em;margin:14px 0 20px;overflow-wrap:anywhere}
+ html[lang=en] .hero h1{font-size:clamp(37px,9.6vw,60px);line-height:1.18}
+ .hero-lead{font-size:13px;line-height:2;max-width:50ch}
+ .hero-buttons{gap:9px}
+ .hero-buttons .pill{min-height:46px;font-size:12px;padding:10px 15px;justify-content:center}
+ .hero-showcase{width:100%;height:365px;max-width:none;padding:16px 13px;margin-inline:auto}
+ .hero-showcase::before{border-radius:24px}
+ .showcase-grid{height:252px;gap:8px}
+ .showcase-card img{object-fit:contain}
+ .showcase-caption{max-width:100%;text-overflow:ellipsis}
+ .hero-bottom{margin-top:9px}
+ .proof-grid{gap:0}
+ .proof-item{min-height:102px}
+ .proof-item .metric-num{font-size:clamp(34px,9vw,42px)}
+ .section{padding-top:68px;padding-bottom:50px}
+ .section-intro h2,.process-head h2,.about-copy h2{font-size:clamp(33px,8.2vw,52px);line-height:1.35}
+ .work-section{overflow:visible}
+ .portfolio-search{gap:9px;margin-top:4px}
+ .portfolio-search-control{width:100%;min-height:48px}
+ #portfolio-search-input{font-size:16px}
+ .filters{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding:4px 2px 12px;scrollbar-width:thin;scroll-snap-type:x proximity;overscroll-behavior-inline:contain}
+ .filter{flex:none;white-space:nowrap;scroll-snap-align:start;padding:11px 15px;min-height:44px;font-size:12px}
+ .projects-grid{gap:17px}
+ .project-card{border-radius:17px}
+ .project-image{aspect-ratio:4/3;padding:11px}
+ .project-info{height:auto;min-height:96px;padding:16px;gap:13px}
+ .project-info h3,.project-info h3.is-latin{font-size:clamp(15px,4.4vw,18px);line-height:1.4}
+ .project-category{font-size:11px}
+ .project-arrow{width:38px;height:38px;font-size:18px}
+ .project-view-link{opacity:1;transform:none;bottom:10px;left:10px;min-height:32px;display:inline-flex;align-items:center;font-size:10px}
+ .service-card,.service-card-hero,.service-card:nth-child(2),.service-card:nth-child(3),.service-card:nth-child(4){min-height:295px;border-radius:20px}
+ .service-card-hero{min-height:410px}
+ .service-text h3{font-size:clamp(22px,6vw,27px)}
+ .service-text p{font-size:13px;line-height:1.85}
+ .service-link{display:inline-flex;min-height:44px;align-items:center}
+ .process-section{padding-block:62px}
+ .process-card{min-height:187px;padding:23px;border-radius:17px}
+ .process-card h3{font-size:20px;margin-top:35px}
+ .process-card p{font-size:13px;line-height:1.85}
+ .about-grid{gap:25px}
+ .about-art{min-height:330px}
+ .about-copy>p:not(.eyebrow){font-size:13px;line-height:2}
+ .about-link{min-height:44px;font-size:12px}
+ .about-highlights{margin-block:30px 52px}
+ .resume-heading h3,.resume-panel h3{font-size:clamp(31px,7.8vw,46px)}
+ .career-role p,.resume-panel p{font-size:13px}
+ .contact-shell{padding:22px 14px;border-radius:22px}
+ .contact-copy h2{font-size:clamp(32px,8vw,48px)}
+ .contact-copy>p:not(.eyebrow){font-size:13px}
+ .contact-form{padding:19px 15px;border-radius:17px}
+ .contact-form input,.contact-form select,.contact-form textarea{min-height:48px;font-size:16px}
+ .brief-progress{gap:7px}
+ .brief-progress span{padding:10px 6px;font-size:11px}
+ .attachment-dropzone{min-height:110px}
+ .footer{padding-bottom:calc(25px + env(safe-area-inset-bottom,0px))}
+ .footer-main strong{font-size:clamp(31px,8.6vw,57px);letter-spacing:-.045em}
+ .footer-bottom nav a{display:inline-flex;align-items:center;min-height:44px}
+ .lightbox-actions{gap:4px}
+ .lightbox-actions button,.lightbox-actions a{font-size:10px;min-height:40px;padding:8px}
+ .lightbox-stage{grid-template-columns:30px minmax(0,1fr) 30px}
+ .close-project{min-height:44px}
+}
+@media(max-width:365px){
+ .wrap{width:calc(100% - 26px)}
+ .brand>span{font-size:13px}
+ .brand>span small{font-size:6px;letter-spacing:.08em}
+ .brand img{width:34px;height:34px}
+ .topbar-inner{gap:5px}
+ .topbar-actions{gap:5px}
+ .language-toggle{min-width:71px;padding:4px}
+ .menu-toggle{min-width:42px;width:42px}
+ .hero h1{font-size:clamp(37px,10vw,43px)}
+ .hero-buttons .pill{font-size:11px;padding-inline:12px}
+ .hero-showcase{height:323px;padding:12px}
+ .showcase-grid{height:224px}
+ .project-info h3,.project-info h3.is-latin{font-size:15px}
+ .contact-shell{padding:19px 11px}
+ .contact-form{padding:16px 12px}
+ .lightbox-toolbar{gap:6px}
+ .lightbox-actions button,.lightbox-actions a{font-size:10px;padding:7px}
+}
+@media(display-mode:standalone){
+ .topbar{padding-top:env(safe-area-inset-top,0px)}
+ .mobile-nav{top:calc(72px + env(safe-area-inset-top,0px));max-height:calc(100dvh - 72px - env(safe-area-inset-top,0px))}
+ .site-intro{padding-top:env(safe-area-inset-top,0px)}
+}
+/* Install action is deliberately placed only in the mobile menu */
+.mm-install-button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px;margin-top:13px;padding:13px 15px;border:1px solid rgba(125,185,255,.5);border-radius:13px;background:rgba(41,88,148,.18);color:#cfe4ff;text-align:start;font-size:13px;font-weight:800;cursor:pointer}
+.mm-install-button:hover,.mm-install-button:focus-visible{border-color:var(--accent);background:rgba(69,124,195,.27)}
+.mm-install-button[hidden]{display:none!important}
+.mm-install-guide{margin:12px 0 0;padding:15px;border:1px solid rgba(122,176,242,.35);border-radius:13px;background:#111f32;color:#dae9fa;line-height:1.9;font-size:12px}
+.mm-install-guide[hidden]{display:none!important}
+.mm-install-guide strong{color:#8fc4ff;display:block;margin-bottom:6px}
+.mm-install-guide p{margin:0}
+@media(min-width:921px){.mm-install-button,.mm-install-guide{display:none!important}}
+@media(prefers-reduced-motion:reduce){.filter{scroll-behavior:auto}}
