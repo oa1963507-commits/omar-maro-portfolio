@@ -26,12 +26,6 @@
       "sizes": "572x520",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "assets/pen-tool.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
     }
   ],
   "shortcuts": [
