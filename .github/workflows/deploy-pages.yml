@@ -20,6 +20,7 @@ on:
       - 'lightbox.js'
       - 'i18n.js'
       - 'scripts/build-seo.mjs'
+      - 'scripts/build-home-icons.py'
       - 'tests/controls.test.mjs'
       - 'tests/seo.test.mjs'
       - 'controls.js'
@@ -48,6 +49,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate verified square home-screen icons
+        run: |
+          python -m pip install --disable-pip-version-check Pillow==11.3.0
+          python scripts/build-home-icons.py
       - name: Validate redesigned site and owner project settings
         run: |
           node --check app.js
