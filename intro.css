@@ -1,0 +1,75 @@
+/* Full-screen introduction for the OMAR MARO Minimal 3D portfolio.
+   All imagery uses the owner's existing logo and blue Pen Tool icon. */
+.site-intro{display:none}
+html.mm-intro-pending{overflow:hidden;scroll-behavior:auto}
+html.mm-intro-pending body{overflow:hidden}
+html.mm-intro-pending .site-intro{
+ position:fixed;inset:0;z-index:9999;display:grid;place-items:center;isolation:isolate;overflow:hidden;
+ min-height:100vh;min-height:100dvh;padding:clamp(22px,5vw,65px);
+ background:radial-gradient(ellipse 55% 50% at 50% 43%,rgba(43,101,175,.17),transparent 80%),radial-gradient(ellipse 25% 40% at 85% 80%,rgba(31,73,130,.13),transparent 90%),#070d18;
+ color:#eff6ff;direction:ltr;-webkit-font-smoothing:antialiased;
+ opacity:1;transition:opacity .42s ease,filter .42s ease;
+}
+.site-intro::before{
+ content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background-image:linear-gradient(rgba(132,181,243,.042) 1px,transparent 1px),linear-gradient(90deg,rgba(132,181,243,.042) 1px,transparent 1px);
+ background-size:70px 70px;mask-image:radial-gradient(ellipse at center,#000 0%,transparent 69%);
+}
+.site-intro::after{
+ content:'';position:absolute;inset:6%;border:1px solid rgba(144,187,248,.09);
+ border-radius:clamp(18px,3vw,40px);pointer-events:none;
+}
+.mm-intro-top,.mm-intro-bottom{position:absolute;z-index:3;inset-inline:clamp(26px,6vw,100px);display:flex;align-items:center;justify-content:space-between;gap:20px;direction:ltr;font-family:var(--font-display),'Inter',sans-serif}
+.mm-intro-top{top:clamp(32px,6vh,70px);color:#a7bede;font-size:10px;letter-spacing:2.4px}
+.mm-intro-top i{display:inline-block;width:6px;height:6px;margin-inline-end:12px;border-radius:50%;background:#73baff;box-shadow:0 0 15px #5aa8ffaa}
+.mm-intro-index{color:rgba(188,215,250,.63)}
+.mm-intro-bottom{bottom:clamp(31px,6vh,68px)}
+.mm-intro-footnote{font-size:10px;font-weight:600;letter-spacing:1.7px;color:#738fad}
+.mm-intro-skip{
+ border:1px solid rgba(148,193,253,.32);border-radius:999px;padding:11px 21px;background:rgba(32,59,91,.35);
+ color:#f1f7ff;font:700 12px/1.3 var(--font-ar),'Cairo',sans-serif;cursor:pointer;
+ transition:background .2s,border-color .2s,transform .2s;direction:rtl
+}
+.mm-intro-skip:hover{background:rgba(62,116,189,.28);border-color:#7cbcff;transform:translateY(-2px)}
+.mm-intro-skip:focus-visible{outline:3px solid #9acaff;outline-offset:4px}
+.mm-intro-content{width:min(96%,680px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;transform:translateZ(0)}
+.mm-intro-emblem{width:clamp(116px,17vw,174px);height:clamp(116px,17vw,174px);position:relative;display:grid;place-items:center;margin-bottom:clamp(31px,5vh,58px);perspective:680px}
+.mm-intro-emblem::before{content:'';position:absolute;inset:-15%;border-radius:50%;background:radial-gradient(circle,rgba(75,138,221,.17),transparent 66%);filter:blur(12px)}
+.mm-intro-orbit{position:absolute;inset:3%;border-radius:33%;border:1px solid rgba(133,193,255,.26);transform:rotate(-22deg) rotateX(34deg) rotateY(-20deg);box-shadow:inset 0 1px rgba(231,244,255,.15),0 24px 44px rgba(0,8,24,.32)}
+.mm-intro-orbit.two{inset:14%;border-radius:31%;border-color:rgba(107,166,246,.3);transform:rotate(26deg) rotateY(33deg) rotateX(-24deg)}
+.mm-intro-orbit.three{inset:26%;border-radius:28%;border-color:rgba(133,193,255,.21);transform:rotate(-12deg) rotateY(-25deg)}
+.mm-intro-logo{position:relative;width:57%;height:57%;object-fit:contain;filter:drop-shadow(0 0 18px rgba(114,176,250,.34));transform:translateZ(28px)}
+.mm-intro-kicker{font:700 10px/1.5 var(--font-display),'Inter',sans-serif;letter-spacing:clamp(2px,.5vw,4.5px);color:#82bfff;margin:0 0 12px;direction:ltr}
+.mm-intro-title{font:800 clamp(42px,9.6vw,104px)/1.04 var(--font-display),'Inter',sans-serif;letter-spacing:clamp(-5px,-.4vw,-2px);white-space:nowrap;color:#f7fbff;margin:0;text-shadow:0 16px 42px rgba(2,10,24,.35)}
+.mm-intro-title span{color:#7fbcff}
+.mm-intro-rule{display:block;width:min(190px,44vw);height:1px;margin:clamp(19px,3vh,32px) auto 20px;background:linear-gradient(90deg,transparent,#7cb5f7,transparent);box-shadow:0 0 14px #5ba3ff66}
+.mm-intro-caption{font:600 clamp(13px,2.4vw,17px)/1.8 var(--font-ar),'Cairo',sans-serif;color:#b0c3dc;margin:0;direction:rtl}
+.mm-intro-track{margin-top:clamp(30px,5vh,49px);width:min(240px,50vw);height:2px;border-radius:20px;background:rgba(157,195,245,.14);overflow:hidden}
+.mm-intro-track span{display:block;width:100%;height:100%;background:linear-gradient(90deg,#4c93f4,#9bd2ff);transform:scaleX(0);transform-origin:left;border-radius:inherit;box-shadow:0 0 15px #87c6ff}
+.mm-intro-bloom{position:absolute;z-index:-1;bottom:14%;width:40vw;max-width:650px;height:100px;filter:blur(80px);opacity:.25;border-radius:100%;background:#2966b7;pointer-events:none}
+html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-content{animation:mmIntroAppear .65s cubic-bezier(.19,.9,.23,1) both}
+html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-emblem{animation:mmIntroFloat 2.25s ease-in-out both}
+html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-title{animation:mmIntroTitle .78s ease-out .18s both}
+html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-caption{animation:mmIntroTitle .7s ease-out .38s both}
+html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-track span{animation:mmIntroTrack 1.85s cubic-bezier(.1,.6,.5,1) .19s forwards}
+html.mm-intro-leaving .site-intro{opacity:0;filter:blur(7px);pointer-events:none}
+@keyframes mmIntroAppear{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mmIntroTitle{from{opacity:0;transform:translateY(12px);filter:blur(4px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes mmIntroTrack{to{transform:scaleX(1)}}
+@keyframes mmIntroFloat{0%{transform:translateY(12px) scale(.9);opacity:.25}42%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@media(max-width:600px){
+ .mm-intro-top,.mm-intro-bottom{inset-inline:24px}
+ .mm-intro-top{letter-spacing:1.3px;font-size:8px}
+ .mm-intro-footnote{font-size:8px;letter-spacing:.6px}
+ .mm-intro-skip{font-size:11px;padding:10px 15px}
+ .mm-intro-emblem{margin-bottom:25px}
+ .mm-intro-title{font-size:clamp(37px,10.6vw,64px)}
+ .mm-intro-kicker{letter-spacing:2px}
+ .mm-intro-content{width:100%}
+ .site-intro::after{inset:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ .site-intro,.mm-intro-content,.mm-intro-emblem,.mm-intro-title,.mm-intro-caption,.mm-intro-track span{animation:none!important;transition:none!important}
+ .mm-intro-track span{transform:none}
+ html.mm-intro-leaving .site-intro{display:none}
+}
