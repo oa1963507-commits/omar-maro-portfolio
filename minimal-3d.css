@@ -1,0 +1,131 @@
+/* OMAR MARO / Minimal 3D system
+   Deliberately lightweight: CSS depth + pointer variables, no canvas or 3D bundles.
+   Uses the site's existing blue tokens and preserves all image aspect ratios. */
+
+:root{--mm-ease:cubic-bezier(.2,.75,.2,1);--mm-deep-shadow:0 24px 60px rgba(0,5,15,.28);--mm-glass:rgba(18,34,54,.52)}
+body{background-image:radial-gradient(ellipse 65vw 34vw at 7% 7%,rgba(57,110,189,.046),transparent 73%),radial-gradient(ellipse 48vw 30vw at 95% 48%,rgba(61,126,219,.035),transparent 75%);background-attachment:fixed}
+.topbar{background:rgba(8,16,29,.82);border-bottom-color:rgba(137,178,231,.18);box-shadow:0 13px 40px rgba(1,7,16,.2);-webkit-backdrop-filter:blur(18px) saturate(130%);backdrop-filter:blur(18px) saturate(130%)}
+.topbar-inner .desktop-nav{box-shadow:inset 0 1px rgba(250,253,255,.05),0 9px 30px rgba(2,9,17,.13);border-color:rgba(172,204,244,.18)}
+.desktop-nav a,.topbar-actions .pill,.language-toggle{transition:background .28s var(--mm-ease),color .28s var(--mm-ease),border-color .28s var(--mm-ease),transform .28s var(--mm-ease)}
+.topbar .brand img{filter:drop-shadow(0 0 14px rgba(117,175,255,.21))}
+.hero::before{background:radial-gradient(ellipse at 63% 41%,rgba(59,111,184,.17),transparent 44%),radial-gradient(ellipse at 9% 15%,rgba(71,111,178,.11),transparent 43%)}
+.hero-showcase{transform-style:preserve-3d;perspective:1150px}
+.hero-showcase::before{border-color:rgba(153,195,248,.23);background:linear-gradient(145deg,rgba(26,44,67,.75),rgba(8,14,24,.94) 63%);box-shadow:0 39px 110px rgba(0,3,11,.39),inset 0 1px rgba(255,255,255,.065)}
+.showcase-halo{filter:blur(44px);opacity:.8}
+.showcase-meta{position:relative;z-index:1}
+.showcase-grid{position:relative;z-index:1}
+.showcase-card{box-shadow:inset 0 1px rgba(245,250,255,.045);transform-style:preserve-3d;backface-visibility:hidden}
+.showcase-card .showcase-caption{transform:translateZ(12px);text-shadow:0 3px 12px rgba(0,0,0,.9)}
+.showcase-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.showcase-base{position:relative;z-index:1}
+
+/* The only 3D emblem: the approved pen-tool glyph, not a substitute logo */
+.mm-orbit{position:absolute;z-index:3;top:-24px;inset-inline-end:-13px;width:100px;height:100px;pointer-events:none;filter:drop-shadow(0 20px 18px rgba(0,9,27,.3));transform-style:preserve-3d;perspective:500px}
+.mm-orbit-rim{position:absolute;inset:7px;border:1px solid rgba(165,203,255,.43);border-radius:30px;transform:rotate(-19deg) rotateX(30deg) rotateY(-24deg);background:linear-gradient(145deg,rgba(113,172,247,.22),rgba(8,20,38,.11) 46%,rgba(46,96,153,.22));box-shadow:inset 0 1px 2px rgba(232,244,255,.32),0 21px 40px rgba(3,12,30,.3)}
+.mm-orbit-rim::after{content:'';position:absolute;inset:13px;border-radius:20px;border:1px solid rgba(144,194,255,.17)}
+.mm-orbit-core{position:absolute;inset:27px;display:grid;place-items:center;transform:translateZ(30px) rotate(-10deg)}
+.mm-orbit-core img{width:43px;height:43px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(111,177,255,.5))}
+.mm-orbit-glint{position:absolute;top:10px;right:9px;width:6px;height:6px;border-radius:50%;background:#b9ddff;box-shadow:0 0 17px 5px rgba(110,176,255,.3)}
+.mm-orbit::after{content:'';position:absolute;inset:1px;border-radius:50%;border:1px solid rgba(130,181,242,.11);transform:rotateX(67deg) rotateZ(27deg)}
+html[data-mm-effects="on"] .mm-orbit{animation:mm-hover 7.5s ease-in-out infinite}
+html[data-mm-effects="on"] .mm-orbit-rim{animation:mm-glow 8s ease-in-out infinite}
+@keyframes mm-hover{0%,100%{transform:translate3d(0,0,0) rotate(-2deg)}50%{transform:translate3d(0,-9px,0) rotate(4deg)}}
+@keyframes mm-glow{0%,100%{box-shadow:inset 0 1px 2px rgba(232,244,255,.32),0 21px 40px rgba(3,12,30,.3)}50%{box-shadow:inset 0 1px 2px rgba(232,244,255,.32),0 21px 48px rgba(45,95,175,.35)}}
+.hero .pill,.form-submit,.big-whatsapp{position:relative;transition:transform .3s var(--mm-ease),box-shadow .3s var(--mm-ease),border-color .3s}
+.hero .pill:hover,.big-whatsapp:hover{transform:translateY(-3px);box-shadow:0 13px 32px rgba(19,67,121,.18)}
+.hero .pill:active,.big-whatsapp:active{transform:translateY(0) scale(.985)}
+
+/* Section framing: depth without hiding or moving owner-managed content */
+.proof-band{position:relative;isolation:isolate}
+.proof-item{transition:background .3s,border-color .3s,box-shadow .3s,transform .3s var(--mm-ease)}
+.proof-item:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(2,12,26,.16)}
+.statement-section{position:relative;isolation:isolate}
+.statement-section::before{opacity:.7}
+.section-intro h2,.process-head h2,.resume-heading h3,.contact-copy h2{text-wrap:balance}
+
+/* Project work: real artwork stays completely flat and legible */
+.projects-grid{perspective:1200px}
+.project-card{transform-style:preserve-3d;backface-visibility:hidden;box-shadow:0 9px 23px rgba(2,8,19,.13),inset 0 1px rgba(250,252,255,.035)}
+.project-card:hover,.project-card:focus-visible{border-color:rgba(119,180,255,.64);box-shadow:var(--mm-deep-shadow),inset 0 1px rgba(235,246,255,.05)}
+.project-card::before{content:'';position:absolute;inset:0;z-index:4;border-radius:inherit;background:radial-gradient(330px circle at var(--mm-cx,50%) var(--mm-cy,35%),rgba(109,173,255,.105),transparent 62%);opacity:0;pointer-events:none;transition:opacity .28s}
+.project-card:hover::before{opacity:1}
+.project-image{background:radial-gradient(ellipse at 50% 0%,rgba(95,147,220,.075),transparent 80%),linear-gradient(150deg,#152131,#0a101a);isolation:isolate}
+.project-card .project-card-image,.project-card .project-image>img{filter:none;transform-origin:center center;object-fit:contain}
+.project-card .project-info{position:relative;z-index:2;background:linear-gradient(180deg,rgba(15,24,35,.92),rgba(10,16,25,.99))}
+.project-arrow{box-shadow:inset 0 1px rgba(190,215,251,.1)}
+.portfolio-search-wrap,.filters{filter:drop-shadow(0 12px 25px rgba(4,14,31,.09))}
+.filter{transition:transform .24s var(--mm-ease),color .24s,background .24s,border-color .24s}
+.filter:hover{transform:translateY(-2px)}
+.filter:active{transform:translateY(0)}
+
+/* Services and process: editorial layering, not spinning cards */
+.service-card{box-shadow:inset 0 1px rgba(238,247,255,.035),0 12px 34px rgba(4,12,24,.11);transition:transform .38s var(--mm-ease),box-shadow .38s var(--mm-ease),border-color .38s}
+.service-card:hover{box-shadow:0 22px 55px rgba(3,11,25,.26),inset 0 1px rgba(226,242,255,.08)}
+.service-icon{background:linear-gradient(155deg,rgba(87,154,238,.095),rgba(9,24,47,.24));box-shadow:inset 0 1px rgba(195,220,254,.11),0 6px 22px rgba(0,7,20,.16)}
+.service-art{transform:translateZ(0)}
+.process-grid{perspective:1100px}
+.process-card{background:linear-gradient(155deg,rgba(25,39,59,.92),rgba(10,17,29,.98));box-shadow:inset 0 1px rgba(233,245,255,.06),0 15px 36px rgba(5,14,30,.12);transition:border-color .35s,box-shadow .35s,transform .35s var(--mm-ease)}
+.process-card:hover{border-color:rgba(137,190,255,.45);box-shadow:0 20px 48px rgba(5,14,30,.25)}
+.process-shape{filter:drop-shadow(0 0 14px rgba(111,177,255,.15))}
+
+/* About / portfolio identity */
+.about-art{box-shadow:0 26px 65px rgba(3,11,24,.23),inset 0 1px rgba(244,250,255,.06)}
+.about-art-inner{box-shadow:inset 0 0 40px rgba(0,0,0,.25)}
+.about-tags span,.resume-skill-list span{transition:transform .28s var(--mm-ease),border-color .28s,background .28s}
+.about-tags span:hover,.resume-skill-list span:hover{transform:translateY(-2px);border-color:rgba(125,180,245,.45);background:rgba(52,106,174,.08)}
+.about-link{box-shadow:inset 0 1px rgba(246,251,255,.04),0 7px 19px rgba(0,7,17,.12)}
+.about-highlights{perspective:1100px}
+.about-highlight{box-shadow:inset 0 1px rgba(236,246,255,.07),0 14px 31px rgba(1,9,22,.14);transition:box-shadow .35s,transform .35s var(--mm-ease),border-color .35s}
+.about-highlight:hover{border-color:rgba(130,187,252,.43);box-shadow:0 20px 48px rgba(0,8,20,.24)}
+.career-timeline{box-shadow:0 24px 56px rgba(1,8,20,.12),inset 0 1px rgba(234,245,255,.05)}
+.career-card{transition:background .3s,border-color .3s}
+.resume-panel{box-shadow:inset 0 1px rgba(232,245,255,.055),0 16px 40px rgba(3,10,24,.12);transition:border-color .35s,box-shadow .35s,transform .35s var(--mm-ease)}
+.resume-panel:hover{box-shadow:0 20px 50px rgba(3,10,24,.24);transform:translateY(-3px)}
+
+/* Contact: tactile controls without touching data, submission, or upload logic */
+.contact-shell{background:radial-gradient(ellipse at 12% 14%,rgba(65,125,201,.14),transparent 45%),linear-gradient(124deg,#131e2d,#0a111c);border-color:rgba(149,187,239,.2);box-shadow:0 35px 80px rgba(1,10,25,.22),inset 0 1px rgba(231,244,255,.055)}
+.contact-form{background:linear-gradient(155deg,rgba(10,22,38,.91),rgba(6,12,24,.94));border-color:rgba(148,191,249,.27);box-shadow:0 25px 70px rgba(0,6,16,.31),inset 0 1px rgba(230,242,255,.06)}
+.contact-form :is(input,select,textarea):focus-visible{box-shadow:0 0 0 4px rgba(104,168,245,.13);outline:1px solid var(--accent);outline-offset:0}
+.contact-form :is(input,select,textarea){transition:border-color .25s,box-shadow .25s,background .25s}
+.contact-form :is(input,select,textarea):focus{background:#102037}
+.form-submit:hover{transform:translateY(-2px);box-shadow:0 15px 30px rgba(40,116,209,.21)}
+
+/* Project overlay and image lightbox: shadow belongs to frame, never artwork */
+.project-view{background:radial-gradient(ellipse at 85% 5%,rgba(52,115,189,.08),transparent 40%),#080e18}
+.project-view img,.lightbox-stage img{object-fit:contain}
+.lightbox-stage{background:radial-gradient(ellipse at 50% 40%,rgba(49,88,145,.1),transparent 62%)}
+.footer{background:linear-gradient(180deg,#090f19,#050910 75%);border-top-color:rgba(147,192,249,.18)}
+.footer-main{border-bottom-color:rgba(140,186,244,.15)}
+.footer-bottom nav a{transition:color .23s,transform .23s}
+.footer-bottom nav a:hover{transform:translateY(-2px)}
+
+/* User-controlled intensity and accessibility. Only fine pointers get 3D tilting. */
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ html[data-mm-effects="on"] :is(.showcase-card,.project-card,.service-card,.process-card,.about-highlight).mm-tilt{
+   transform:perspective(1100px) rotateX(var(--mm-rx,0deg)) rotateY(var(--mm-ry,0deg)) translateY(var(--mm-lift,0px));
+   transition:transform .22s ease-out,box-shadow .3s,border-color .3s
+ }
+ html[data-mm-effects="on"] :is(.showcase-card,.project-card,.service-card,.process-card,.about-highlight).mm-tilt:hover{--mm-lift:-5px}
+ html[data-mm-effects="on"] .mm-tilt.mm-moving{transition:transform .08s linear,box-shadow .3s,border-color .3s}
+}
+@media(max-width:920px){body{background-attachment:scroll}.mm-orbit{width:75px;height:75px;top:0;inset-inline-end:0}.mm-orbit-core{inset:21px}.mm-orbit-core img{width:35px;height:35px}}
+@media(max-width:690px){
+ .mm-orbit{width:58px;height:58px;top:-8px;inset-inline-end:0}
+ .mm-orbit-rim{inset:5px;border-radius:17px}
+ .mm-orbit-rim::after{inset:8px;border-radius:12px}
+ .mm-orbit-core{inset:15px}
+ .mm-orbit-core img{width:29px;height:29px}
+ .mm-orbit-glint{width:4px;height:4px}
+ .topbar{backdrop-filter:blur(12px)}
+ .project-card:hover,.service-card:hover,.about-highlight:hover,.resume-panel:hover{transform:none}
+ .project-card::before{display:none}
+ .contact-shell{box-shadow:none}
+ .footer{background:#060b13}
+}
+@media(prefers-reduced-motion:reduce){
+ .mm-orbit,.mm-orbit-rim{animation:none!important}
+ :is(.showcase-card,.project-card,.service-card,.process-card,.about-highlight).mm-tilt{transform:none!important}
+ .project-card::before{display:none}
+}
+html[data-mm-effects="off"] .mm-orbit,html[data-mm-effects="off"] .mm-orbit-rim{animation:none!important}
+html[data-mm-effects="off"] :is(.showcase-card,.project-card,.service-card,.process-card,.about-highlight).mm-tilt{transform:none!important}
