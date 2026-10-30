@@ -54,6 +54,6 @@ self.addEventListener('fetch',event=>{
    const online=await fetch(req);
    if(online.ok)await cache.put(req,online.clone());
    return online;
-  }catch{return await cache.match(req)||Response.error()}
+  }catch{return await cache.match(req,{ignoreSearch:true})||Response.error()}
  })());
 });
