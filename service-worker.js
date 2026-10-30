@@ -11,7 +11,7 @@ const SHELL=[
  BASE+'assets/omar-mark.png',BASE+'assets/pen-tool.svg',
  BASE+'assets/omar-icon-192.png',BASE+'assets/omar-icon-512.png',
  BASE+'assets/omar-icon-maskable-512.png',BASE+'assets/omar-apple-touch-180.png',
- BASE+'assets/omar-favicon-32.png',BASE+'manifest.webmanifest
+ BASE+'assets/omar-favicon-32.png',BASE+'manifest.webmanifest'
 ];
 self.addEventListener('install',event=>{
  event.waitUntil((async()=>{
