@@ -51,3 +51,6 @@ input[type=password],.hint b,code,.stats b{font-family:var(--font-en)}
 #cmsFields:empty::after{content:'اختار القسم لعرض العناصر القابلة للتعديل';color:#a5bbd4;padding:15px}
 @media(max-width:780px){.cms-button-form{grid-template-columns:1fr 1fr}.cms-theme{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.cms-field .cms-line{grid-template-columns:1fr}.cms-button-form{grid-template-columns:1fr}.cms-tabs button{flex:1}}
+
+.cms-effect-toggle{display:flex;gap:12px;align-items:center;padding:13px 16px;margin:10px 0;border:1px solid #355470;border-radius:12px;background:#0c1a2b;color:#e3f2ff;font-weight:700;cursor:pointer}
+.cms-effect-toggle input{width:18px;height:18px;accent-color:#6aafff;flex-shrink:0}
