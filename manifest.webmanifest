@@ -1,0 +1,54 @@
+{
+  "id": "/omar-maro-portfolio/",
+  "name": "OMAR MARO | Graphic Design Portfolio",
+  "short_name": "OMAR MARO",
+  "description": "Graphic design, branding, case studies and creative projects by OMAR MARO.",
+  "lang": "ar",
+  "dir": "auto",
+  "start_url": "/omar-maro-portfolio/",
+  "scope": "/omar-maro-portfolio/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#070c16",
+  "theme_color": "#070c16",
+  "categories": [
+    "design",
+    "portfolio",
+    "art"
+  ],
+  "icons": [
+    {
+      "src": "assets/omar-mark.png",
+      "sizes": "572x520",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pen-tool.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "معرض الأعمال | Work",
+      "short_name": "Work",
+      "url": "/omar-maro-portfolio/#work"
+    },
+    {
+      "name": "عني | About",
+      "short_name": "About",
+      "url": "/omar-maro-portfolio/#about"
+    },
+    {
+      "name": "طلب مشروع | Contact",
+      "short_name": "Contact",
+      "url": "/omar-maro-portfolio/#contact"
+    }
+  ]
+}
