@@ -119,6 +119,7 @@ function siteState(){
  if(!settings.siteContent.theme)settings.siteContent.theme={};
  if(!settings.siteContent.hiddenSections)settings.siteContent.hiddenSections=[];
  if(!settings.siteContent.seo)settings.siteContent.seo={};
+ if(!settings.siteContent.visual)settings.siteContent.visual={effects:'on'};
  return settings.siteContent;
 }
 async function loadSiteInventory(){
@@ -141,6 +142,7 @@ function renderSiteEditor(){
  for(const key of ['accent','azure','bg','ink'])$('cms-'+key).value=v.theme[key]||({accent:'#6aafff',azure:'#3ac7ff',bg:'#070c16',ink:'#eef5ff'}[key]);
  $('cmsSeoTitle').value=v.seo.title||'';
  $('cmsSeoDescription').value=v.seo.description||'';
+ $('cmsEffects').checked=v.visual?.effects!=='off';
  renderCMSFields();renderCMSButtons();renderCMSVisibility();
 }
 function makeLabel(text,control){
@@ -275,6 +277,7 @@ $('cmsButtonForm').addEventListener('submit',event=>{
 });
 for(const key of ['accent','azure','bg','ink'])$('cms-'+key).addEventListener('input',e=>{siteState().theme[key]=e.target.value;markDirty()});
 $('cmsResetColors').addEventListener('click',()=>{siteState().theme={};for(const [k,v] of Object.entries({accent:'#6aafff',azure:'#3ac7ff',bg:'#070c16',ink:'#eef5ff'}))$('cms-'+k).value=v;markDirty()});
+$('cmsEffects').addEventListener('change',e=>{siteState().visual.effects=e.target.checked?'on':'off';markDirty()});
 $('cmsSeoTitle').addEventListener('input',e=>{siteState().seo.title=e.target.value;markDirty()});
 $('cmsSeoDescription').addEventListener('input',e=>{siteState().seo.description=e.target.value;markDirty()});
 
