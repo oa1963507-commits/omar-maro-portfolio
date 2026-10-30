@@ -1,14 +1,17 @@
 /* OMAR MARO offline shell; all Behance content and CMS settings stay network-first.
    Scoped to the GitHub Pages project path, with no offline claim for full galleries. */
 const BASE='/omar-maro-portfolio/';
-const CACHE='omar-maro-shell-v20261031';
+const CACHE='omar-maro-shell-v20261031-icon2';
 const SHELL=[
  BASE,BASE+'index.html',
  BASE+'styles.css',BASE+'mobile.css',BASE+'minimal-3d.css',
  BASE+'intro.css',BASE+'intro.js',BASE+'app.js',
  BASE+'controls.js',BASE+'i18n.js',BASE+'lightbox.js',
  BASE+'site-cms.js',BASE+'minimal-3d.js',BASE+'install.js',
- BASE+'assets/omar-mark.png',BASE+'assets/pen-tool.svg'
+ BASE+'assets/omar-mark.png',BASE+'assets/pen-tool.svg',
+ BASE+'assets/omar-icon-192.png',BASE+'assets/omar-icon-512.png',
+ BASE+'assets/omar-icon-maskable-512.png',BASE+'assets/omar-apple-touch-180.png',
+ BASE+'assets/omar-favicon-32.png',BASE+'manifest.webmanifest
 ];
 self.addEventListener('install',event=>{
  event.waitUntil((async()=>{
