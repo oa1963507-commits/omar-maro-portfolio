@@ -124,6 +124,13 @@ h1{font-size:clamp(30px,5vw,66px);line-height:1.2;letter-spacing:-.025em;overflo
 figure{padding:0;margin:0 0 20px;border-radius:15px;border:1px solid #2d425b;overflow:hidden;background:#0e1928;text-align:center}
 figure img{display:block;width:100%;height:auto;object-fit:contain}.button{display:inline-flex;border-radius:99px;padding:11px 19px;background:#6aafff;color:#071523;font-weight:700;margin:10px 10px 10px 0}.button.secondary{border:1px solid #6aafff;background:transparent;color:#b6d7ff}.module-text{padding:20px;border:1px solid #304c6e;border-radius:14px;margin-bottom:18px}
 footer{border-top:1px solid #345477;text-align:center;color:#94a9c3;font-size:12px;padding:30px}
+/* Minimal 3D styling for crawlable standalone project case studies */
+header{background:rgba(9,21,38,.9);border-bottom-color:rgba(151,195,249,.23)}
+.intro{background:linear-gradient(145deg,#14253b,#091624 75%);box-shadow:0 26px 65px rgba(0,6,17,.23),inset 0 1px rgba(238,248,255,.06);border-color:rgba(130,181,247,.32)}
+.fact,.story,.module-text{background:linear-gradient(150deg,#101f34,#0a1524);box-shadow:inset 0 1px rgba(238,247,255,.045),0 10px 28px rgba(2,10,25,.12)}
+figure{box-shadow:0 18px 48px rgba(1,9,20,.25);border-color:rgba(138,185,244,.29)}
+.button{transition:transform .26s ease,box-shadow .26s ease}.button:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(31,103,190,.22)}
+@media(prefers-reduced-motion:reduce){.button{transition:none}.button:hover{transform:none}}
 @media(max-width:650px){main{margin:24px auto 55px}.facts{grid-template-columns:1fr}header{padding:12px 16px}}
 </style></head>
 <body><header><a href="${site}#work"><img src="${site}assets/omar-mark.png" width="36" height="36" alt="OMAR MARO"><strong>OMAR MARO</strong></a><a href="${site}#work">Portfolio ↗</a></header>
