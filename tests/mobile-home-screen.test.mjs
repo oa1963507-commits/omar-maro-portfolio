@@ -16,15 +16,32 @@ test('home screen manifest uses correct GitHub Pages scope and original brand ic
  assert.equal(manifest.display,'standalone');
  assert.equal(manifest.background_color,'#070c16');
  assert.equal(manifest.theme_color,'#070c16');
- assert.equal(manifest.icons.length,1,'only the original brand logo should be offered to home-screen installers');
- assert.ok(manifest.icons.some(icon=>icon.src==='assets/omar-mark.png'&&icon.type==='image/png'));
- assert.ok(!manifest.icons.some(icon=>/pen-tool/.test(icon.src)),'do not reuse decorative Pen Tool as home-screen icon');
- for(const icon of manifest.icons){await fs.access(new URL('../'+icon.src,import.meta.url))}
+ const expectedIcons=[
+  ['assets/omar-icon-192.png',192,'any'],
+  ['assets/omar-icon-512.png',512,'any'],
+  ['assets/omar-icon-maskable-512.png',512,'maskable']
+ ];
+ assert.equal(manifest.icons.length,3,'separate standard and maskable square icons');
+ assert.deepEqual(manifest.icons.map(icon=>[icon.src,Number(icon.sizes.split('x')[0]),icon.purpose]),expectedIcons);
+ assert.ok(!manifest.icons.some(icon=>/pen-tool/.test(icon.src)),'Pen Tool must not be used as home-screen icon');
+ for(const icon of manifest.icons){
+  const bytes=await fs.readFile(new URL('../'+icon.src,import.meta.url));
+  assert.equal(bytes.subarray(1,4).toString('ascii'),'PNG');
+  const expected=Number(icon.sizes.split('x')[0]);
+  assert.equal(bytes.readUInt32BE(16),expected,icon.src+' width');
+  assert.equal(bytes.readUInt32BE(20),expected,icon.src+' height');
+ }
  assert.deepEqual(manifest.shortcuts.map(item=>item.url),[
   '/omar-maro-portfolio/#work','/omar-maro-portfolio/#about','/omar-maro-portfolio/#contact'
  ]);
- assert.match(html,/href="manifest.webmanifest\?v=logo-20261031"/);
- assert.match(html,/rel="apple-touch-icon" href="assets\/omar-mark\.png\?v=logo-20261031"/);
+ assert.match(html,/href="manifest.webmanifest\?v=icons-20261031b"/);
+ assert.match(html,/rel="apple-touch-icon" sizes="180x180" href="assets\/omar-apple-touch-180\.png\?v=icons-20261031b"/);
+ for(const [name,size] of [['omar-apple-touch-180.png',180],['omar-favicon-32.png',32]]){
+  const bytes=await fs.readFile(new URL('../assets/'+name,import.meta.url));
+  assert.equal(bytes.readUInt32BE(16),size);
+  assert.equal(bytes.readUInt32BE(20),size);
+ }
+ assert.ok(html.includes('omar-favicon-32.png?v=icons-20261031b'));
  assert.match(html,/apple-mobile-web-app-title" content="OMAR MARO"/);
  assert.match(html,/viewport-fit=cover/);
 });
