@@ -13,7 +13,7 @@ test('brand intro is loaded before the page body and uses the approved original 
  assert.match(html,/role="dialog" aria-modal="true"/);
  assert.match(html,/id="mm-intro-title"/);
  assert.match(html,/src="assets\/omar-mark\.png" width="100"/);
- assert.match(html,/id="mm-intro-skip"/);
+ assert.doesNotMatch(html,/id="mm-intro-skip"/);
  assert.match(html,/id="mm-intro-caption"/);
  assert.ok(html.indexOf('id="site-intro"')<html.indexOf('id="home"'));
 });
@@ -28,17 +28,19 @@ test('intro never blocks access when script is off and safely dismisses when it 
  assert.match(js,/addEventListener\('pagehide'/);
  assert.match(js,/event\.persisted/);
 });
-test('intro is accessible, skippable, brief and only shown once per tab',()=>{
+test('intro stays for seven seconds, has no skip controls and is only shown once per tab',()=>{
  assert.match(js,/sessionStorage\.getItem\('omar-maro-intro-seen-v1'\)/);
  assert.match(js,/sessionStorage\.setItem\('omar-maro-intro-seen-v1','yes'\)/);
  assert.match(js,/location\.hash/);
  assert.match(js,/prefers-reduced-motion: reduce/);
  assert.match(js,/get\('intro'\)==='1'/);
- assert.match(js,/skip\?\.addEventListener\('click',endIntro/);
- assert.match(js,/event\.key==='Escape'/);
- assert.match(js,/window\.setTimeout\(endIntro,reduced\?350:2300\)/);
+ assert.doesNotMatch(js,/mm-intro-skip/);
+ assert.doesNotMatch(js,/event\.key==='Escape'/);
+ assert.match(js,/window\.setTimeout\(endIntro,reduced\?350:7000\)/);
+ assert.match(js,/window\.setTimeout\(endIntro,11000\)/);
+ assert.match(css,/mmIntroTrack 6\.65s linear/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
- assert.match(css, /:focus-visible/);
+ assert.doesNotMatch(css,/\.mm-intro-skip/);
 });
 test('existing portfolio catalog, full gallery, admin and links remain intact',()=>{
  assert.match(html,/id="projects-grid"/);
