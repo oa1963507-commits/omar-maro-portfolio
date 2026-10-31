@@ -41,7 +41,9 @@ test('home screen manifest uses correct GitHub Pages scope and original brand ic
   assert.equal(bytes.readUInt32BE(16),size);
   assert.equal(bytes.readUInt32BE(20),size);
  }
- assert.ok(html.includes('omar-favicon-32.png?v=icons-20261031b'));
+ assert.ok(html.includes('omar-favicon-32.png?v=transparent-tab-20261031'));
+ assert.match(html,/rel="icon" type="image\/png" sizes="32x32"/);
+ assert.doesNotMatch(html,/<link rel="icon"[^>]*href="data:image\/png;base64,/);
  assert.match(html,/apple-mobile-web-app-title" content="OMAR MARO"/);
  assert.match(html,/viewport-fit=cover/);
 });
