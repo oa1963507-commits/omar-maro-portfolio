@@ -36,6 +36,13 @@ def build():
         max_dimension = round(size * safe_ratio)
         scaled = logo.copy()
         scaled.thumbnail((max_dimension, max_dimension), Image.Resampling.LANCZOS)
+        if name == "omar-favicon-32.png":
+            # If source artwork has black pixels baked into its background,
+            # key those dark pixels out, keeping the exact white logo artwork.
+            corner_colors = [logo.getpixel((x, y)) for x, y in (
+                (0, 0), (logo.width-1, 0), (0, logo.height-1), (logo.width-1, logo.height-1))]
+            if sum(a > 210 and max(r, g, b) < 35 for r, g, b, a in corner_colors) >= 2:
+                scaled.putdata([(r, g, b, round(a * max(r, g, b) / 255)) for r, g, b, a in scaled.getdata()])
         icon = Image.new("RGBA", (size, size), (0, 0, 0, 0) if name == "omar-favicon-32.png" else NAVY)
         pos = ((size - scaled.width)//2, (size - scaled.height)//2)
         icon.alpha_composite(scaled, dest=pos)
@@ -51,6 +58,9 @@ def verify(outputs):
             assert im.format == "PNG", path
             assert im.size == (size, size), path
             assert im.getpixel((0, 0)) == ((0, 0, 0, 0) if path.name == "omar-favicon-32.png" else NAVY), path
+            if path.name == "omar-favicon-32.png":
+                alpha_min, alpha_max = im.getchannel("A").getextrema()
+                assert alpha_min == 0 and alpha_max > 0, "Tab favicon must contain transparent and visible pixels"
         assert logo_size[0] <= .77 * size and logo_size[1] <= .77 * size
         assert pos[0] >= .11 * size and pos[1] >= .11 * size
         print(f"{path.relative_to(ROOT)}: {size}x{size} / logo {logo_size} / centered at {pos}")
