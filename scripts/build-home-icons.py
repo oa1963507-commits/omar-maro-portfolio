@@ -17,7 +17,7 @@ TARGETS = (
     ("omar-icon-512.png", 512, .74),
     ("omar-icon-maskable-512.png", 512, .64),
     ("omar-apple-touch-180.png", 180, .70),
-    ("omar-favicon-32.png", 32, .76),
+    ("omar-favicon-32.png", 32, .87),
 )
 
 def build():
@@ -61,8 +61,11 @@ def verify(outputs):
             if path.name == "omar-favicon-32.png":
                 alpha_min, alpha_max = im.getchannel("A").getextrema()
                 assert alpha_min == 0 and alpha_max > 0, "Tab favicon must contain transparent and visible pixels"
-        assert logo_size[0] <= .77 * size and logo_size[1] <= .77 * size
-        assert pos[0] >= .11 * size and pos[1] >= .11 * size
+        max_ratio, minimum_pad = (.90, .06) if path.name == "omar-favicon-32.png" else (.77, .11)
+        assert logo_size[0] <= max_ratio * size and logo_size[1] <= max_ratio * size
+        assert pos[0] >= minimum_pad * size and pos[1] >= minimum_pad * size
+        if path.name == "omar-favicon-32.png":
+            assert max(logo_size) >= 28, "Favicon artwork should be visibly larger than the previous 24px version"
         print(f"{path.relative_to(ROOT)}: {size}x{size} / logo {logo_size} / centered at {pos}")
 
 if __name__ == "__main__":
