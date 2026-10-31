@@ -36,7 +36,7 @@ def build():
         max_dimension = round(size * safe_ratio)
         scaled = logo.copy()
         scaled.thumbnail((max_dimension, max_dimension), Image.Resampling.LANCZOS)
-        icon = Image.new("RGBA", (size, size), NAVY)
+        icon = Image.new("RGBA", (size, size), (0, 0, 0, 0) if name == "omar-favicon-32.png" else NAVY)
         pos = ((size - scaled.width)//2, (size - scaled.height)//2)
         icon.alpha_composite(scaled, dest=pos)
         output = ROOT / "assets" / name
@@ -50,7 +50,7 @@ def verify(outputs):
             im.load()
             assert im.format == "PNG", path
             assert im.size == (size, size), path
-            assert im.getpixel((0, 0)) == NAVY, path
+            assert im.getpixel((0, 0)) == ((0, 0, 0, 0) if path.name == "omar-favicon-32.png" else NAVY), path
         assert logo_size[0] <= .77 * size and logo_size[1] <= .77 * size
         assert pos[0] >= .11 * size and pos[1] >= .11 * size
         print(f"{path.relative_to(ROOT)}: {size}x{size} / logo {logo_size} / centered at {pos}")
