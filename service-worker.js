@@ -1,7 +1,7 @@
 /* OMAR MARO offline shell; all Behance content and CMS settings stay network-first.
    Scoped to the GitHub Pages project path, with no offline claim for full galleries. */
 const BASE='/omar-maro-portfolio/';
-const CACHE='omar-maro-shell-v20261031-transparent-favicon';
+const CACHE='omar-maro-shell-v20261031-larger-favicon';
 const SHELL=[
  BASE,BASE+'index.html',
  BASE+'styles.css',BASE+'mobile.css',BASE+'minimal-3d.css',
