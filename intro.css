@@ -23,15 +23,8 @@ html.mm-intro-pending .site-intro{
 .mm-intro-top{top:clamp(32px,6vh,70px);color:#a7bede;font-size:10px;letter-spacing:2.4px}
 .mm-intro-top i{display:inline-block;width:6px;height:6px;margin-inline-end:12px;border-radius:50%;background:#73baff;box-shadow:0 0 15px #5aa8ffaa}
 .mm-intro-index{color:rgba(188,215,250,.63)}
-.mm-intro-bottom{bottom:clamp(31px,6vh,68px)}
+.mm-intro-bottom{bottom:clamp(31px,6vh,68px);justify-content:center}
 .mm-intro-footnote{font-size:10px;font-weight:600;letter-spacing:1.7px;color:#738fad}
-.mm-intro-skip{
- border:1px solid rgba(148,193,253,.32);border-radius:999px;padding:11px 21px;background:rgba(32,59,91,.35);
- color:#f1f7ff;font:700 12px/1.3 var(--font-ar),'Cairo',sans-serif;cursor:pointer;
- transition:background .2s,border-color .2s,transform .2s;direction:rtl
-}
-.mm-intro-skip:hover{background:rgba(62,116,189,.28);border-color:#7cbcff;transform:translateY(-2px)}
-.mm-intro-skip:focus-visible{outline:3px solid #9acaff;outline-offset:4px}
 .mm-intro-content{width:min(96%,680px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;transform:translateZ(0)}
 .mm-intro-emblem{width:clamp(116px,17vw,174px);height:clamp(116px,17vw,174px);position:relative;display:grid;place-items:center;margin-bottom:clamp(31px,5vh,58px);perspective:680px}
 .mm-intro-emblem::before{content:'';position:absolute;inset:-15%;border-radius:50%;background:radial-gradient(circle,rgba(75,138,221,.17),transparent 66%);filter:blur(12px)}
@@ -51,7 +44,7 @@ html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-content{animation:mmIntro
 html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-emblem{animation:mmIntroFloat 2.25s ease-in-out both}
 html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-title{animation:mmIntroTitle .78s ease-out .18s both}
 html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-caption{animation:mmIntroTitle .7s ease-out .38s both}
-html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-track span{animation:mmIntroTrack 1.85s cubic-bezier(.1,.6,.5,1) .19s forwards}
+html.mm-intro-pending:not(.mm-intro-leaving) .mm-intro-track span{animation:mmIntroTrack 6.65s linear .15s forwards}
 html.mm-intro-leaving .site-intro{opacity:0;filter:blur(7px);pointer-events:none}
 @keyframes mmIntroAppear{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes mmIntroTitle{from{opacity:0;transform:translateY(12px);filter:blur(4px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
@@ -61,7 +54,6 @@ html.mm-intro-leaving .site-intro{opacity:0;filter:blur(7px);pointer-events:none
  .mm-intro-top,.mm-intro-bottom{inset-inline:24px}
  .mm-intro-top{letter-spacing:1.3px;font-size:8px}
  .mm-intro-footnote{font-size:8px;letter-spacing:.6px}
- .mm-intro-skip{font-size:11px;padding:10px 15px}
  .mm-intro-emblem{margin-bottom:25px}
  .mm-intro-title{font-size:clamp(37px,10.6vw,64px)}
  .mm-intro-kicker{letter-spacing:2px}
