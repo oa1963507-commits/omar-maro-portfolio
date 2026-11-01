@@ -55,8 +55,8 @@ test('sharing uses each project permalink and supports share sheets, clipboard a
  assert.match(app,/document\.addEventListener\('click',async event/);
 });
 test('actions are accessible, bilingual, mobile-ready, and preserve original gallery',()=>{
- assert.match(html,/project-actions\.css\?v=actions-20261101/);
- assert.match(html,/app\.js\?v=project-actions-20261101/);
+ assert.match(html,/project-actions\.css\?v=actions-fixed-20261101/);
+ assert.match(html,/app\.js\?v=project-actions-fixed-20261101/);
  assert.match(html,/id="projects-grid"/);
  assert.match(html,/id="hero-featured"/);
  assert.match(css,/\.project-card-actions\{/);
