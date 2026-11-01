@@ -9,6 +9,33 @@
   let activeFilter = 'all';
   let searchTerm = '';
   let focusBeforeDialog = null;
+  // Likes are private preferences on this device, not fabricated public counts.
+  const likeStorageKey='omar-maro-liked-projects-v1';
+  const likedProjects=new Set();
+  try{
+    const saved=JSON.parse(localStorage.getItem(likeStorageKey)||'[]');
+    if(Array.isArray(saved))saved.forEach(id=>{
+      if(typeof id==='string' && /^[a-z0-9-]{2,120}$/.test(id))likedProjects.add(id);
+    });
+  }catch{}
+  const shareIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.3 11 7.4-4.7M8.3 13l7.4 4.7"/></svg>';
+  const likeIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8 5.5 5.5 0 0 0 0 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
+  let cardNoticeTimer=0;
+  function cardNotice(message){
+    let toast=document.getElementById('project-action-notice');
+    if(!toast){
+      toast=document.createElement('div');
+      toast.id='project-action-notice';
+      toast.className='project-action-notice';
+      toast.setAttribute('role','status');
+      toast.setAttribute('aria-live','polite');
+      document.body.appendChild(toast);
+    }
+    toast.textContent=message;
+    toast.classList.add('is-visible');
+    window.clearTimeout(cardNoticeTimer);
+    cardNoticeTimer=window.setTimeout(()=>toast.classList.remove('is-visible'),3000);
+  }
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => [...document.querySelectorAll(s)];
   const escapeHTML = (s) => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -102,7 +129,22 @@
     const thumbnail=p.cover||p.images?.[0]||'';
     const im=thumbnail?qualityImage(thumbnail,'project-card-image',title,'card'):`<div class="project-image-fallback"><img src="assets/omar-mark.png" alt="" loading="lazy"><span>${escapeHTML(category)}</span></div>`;
     const number=String(index+1).padStart(2,'0');
-    return `<a href="${projectHref(p)}" class="project-card reveal" aria-label="${escapeHTML(t('شاهد مشروع ','View project '))}${escapeHTML(title)}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">${escapeHTML(t('عرض المشروع ↗','View project ↗'))}</span></div><div class="project-info"><div><span class="project-category">${escapeHTML(category)}${p.year?' · '+escapeHTML(p.year):''}</span><h3 class="${isLatinTitle(title)?'is-latin':''}">${escapeHTML(title)}</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>`;
+    const href=projectHref(p);
+    const liked=likedProjects.has(p.id);
+    const viewLabel=escapeHTML(t('عرض مشروع ','View project ')+title);
+    const shareLabel=escapeHTML(t('مشاركة مشروع ','Share project ')+title);
+    const likeLabel=escapeHTML(t(liked?'إلغاء الإعجاب بمشروع ':'إعجاب بمشروع ',liked?'Remove like from ':'Like project ')+title);
+    return `<article class="project-card reveal">
+      <a href="${href}" class="project-card-visual" aria-label="${viewLabel}"><div class="project-image"><span class="project-card-no">${number}</span>${im}<span class="project-view-link">${escapeHTML(t('عرض المشروع ↗','View project ↗'))}</span></div></a>
+      <div class="project-info">
+        <a href="${href}" class="project-info-main" aria-label="${viewLabel}"><span class="project-category">${escapeHTML(category)}${p.year?' · '+escapeHTML(p.year):''}</span><h3 class="${isLatinTitle(title)?'is-latin':''}">${escapeHTML(title)}</h3></a>
+        <div class="project-card-actions" role="group" aria-label="${escapeHTML(t('خيارات مشروع ','Project actions for ')+title)}">
+          <a href="${href}" class="project-arrow" aria-label="${viewLabel}" title="${escapeHTML(t('عرض المشروع','View project'))}">↗</a>
+          <button type="button" class="project-action project-share-action" data-card-share="${escapeHTML(p.id)}" aria-label="${shareLabel}" title="${escapeHTML(t('مشاركة المشروع','Share project'))}">${shareIcon}</button>
+          <button type="button" class="project-action project-like-action${liked?' is-liked':''}" data-card-like="${escapeHTML(p.id)}" aria-pressed="${liked}" aria-label="${likeLabel}" title="${escapeHTML(t(liked?'إلغاء الإعجاب':'إعجاب',liked?'Unlike':'Like'))}">${likeIcon}</button>
+        </div>
+      </div>
+    </article>`;
   }
   function renderFeaturedProjects(){
     const grid=$('#hero-featured');
@@ -140,7 +182,7 @@
   }
   // Preserve full-screen in-page navigation while exposing crawlable public URLs.
   document.addEventListener('click',e=>{
-    const anchor=e.target.closest('a.project-card,a.showcase-card');
+    const anchor=e.target.closest('a.project-card-visual,a.project-info-main,a.project-arrow,a.showcase-card');
     if(!anchor||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||anchor.target)return;
     const path=new URL(anchor.href,location.href).pathname;
     const id=decodeURIComponent(path.match(/\/projects\/([a-z0-9-]+)\/?$/)?.[1]||'');
@@ -148,7 +190,46 @@
     e.preventDefault();
     location.hash='#project/'+encodeURIComponent(id);
   });
-  $$('.filter').forEach(btn=>btn.addEventListener('click',()=>{
+  // Delegated controls survive category filters, Behance sync, and language changes.
+  document.addEventListener('click',async event=>{
+    const likeButton=event.target.closest('button[data-card-like]');
+    if(likeButton){
+      const id=likeButton.dataset.cardLike;
+      const project=projects.find(p=>p.id===id);
+      if(!project)return;
+      const liked=!likedProjects.has(id);
+      if(liked)likedProjects.add(id);else likedProjects.delete(id);
+      try{localStorage.setItem(likeStorageKey,JSON.stringify([...likedProjects]));}catch{}
+      document.querySelectorAll('button[data-card-like]').forEach(button=>{
+        if(button.dataset.cardLike!==id)return;
+        button.classList.toggle('is-liked',liked);
+        button.setAttribute('aria-pressed',String(liked));
+        button.setAttribute('aria-label',t(liked?'إلغاء الإعجاب بمشروع ':'إعجاب بمشروع ',liked?'Remove like from ':'Like project ')+displayTitle(project));
+        button.title=t(liked?'إلغاء الإعجاب':'إعجاب',liked?'Unlike':'Like');
+      });
+      cardNotice(t(liked?'تم حفظ إعجابك على هذا الجهاز ♥':'تم إلغاء الإعجاب',liked?'Liked on this device ♥':'Like removed'));
+      return;
+    }
+    const shareButton=event.target.closest('button[data-card-share]');
+    if(!shareButton)return;
+    const project=projects.find(p=>p.id===shareButton.dataset.cardShare);
+    if(!project)return;
+    const url=new URL(projectHref(project),new URL('./',location.href)).href;
+    if(typeof navigator.share==='function'){
+      try{
+        await navigator.share({title:displayTitle(project),url});
+        return;
+      }catch(err){if(err?.name==='AbortError')return;}
+    }
+    try{
+      if(!navigator.clipboard?.writeText)throw new Error('Clipboard not available');
+      await navigator.clipboard.writeText(url);
+      cardNotice(t('تم نسخ رابط المشروع ✓','Project link copied ✓'));
+    }catch{
+      window.prompt(t('انسخ رابط المشروع:','Copy project link:'),url);
+    }
+  });
+  $('.filter').forEach(btn=>btn.addEventListener('click',()=>{
     activeFilter=btn.dataset.filter;
     $$('.filter').forEach(b=>{const a=b===btn;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));});
     renderProjects();
