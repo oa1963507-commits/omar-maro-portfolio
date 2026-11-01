@@ -70,3 +70,23 @@ test('actions are accessible, bilingual, mobile-ready, and preserve original gal
  assert.match(mobile,/\.project-info\{height:auto/);
  assert.match(workflow,/tests\/project-card-actions\.test\.mjs/);
 });
+
+test('pre-rendered HTML already contains functioning share/like markup before catalog fetch',()=>{
+ const cards=[...html.matchAll(/<article class="project-card" data-project-id="([a-z0-9-]+)">/g)];
+ assert.ok(cards.length>=10,'all portfolio projects should have pre-rendered controls');
+ assert.equal((html.match(/data-card-share="/g)||[]).length,cards.length);
+ assert.equal((html.match(/data-card-like="/g)||[]).length,cards.length);
+ assert.equal((html.match(/class="project-card-actions"/g)||[]).length,cards.length);
+ assert.equal((html.match(/class="project-card-visual"/g)||[]).length,cards.length);
+ assert.doesNotMatch(html,/<a href="projects\/[^"]+\/" class="project-card"/);
+ const grid=html.slice(html.indexOf('id="projects-grid"'),html.indexOf('<div class="work-footer">'));
+ assert.doesNotMatch(grid,/class="project-card reveal"/,'static gallery must remain visible without JS');
+});
+test('filter initialization runs without exception; static action handlers work even when catalog requests fail',()=>{
+ assert.match(app,/document\.querySelectorAll\('\.filter'\)\.forEach\(btn/);
+ assert.doesNotMatch(app,/^\s+\$\('\.filter'\)\.forEach\(btn/m);
+ assert.match(app,/function projectForCard\(id,button\)/);
+ assert.match(app,/projectForCard\(id,likeButton\)/);
+ assert.match(app,/projectForCard\(shareButton\.dataset\.cardShare,shareButton\)/);
+ assert.match(app,/hydrateCardLikes\(\)/);
+});
