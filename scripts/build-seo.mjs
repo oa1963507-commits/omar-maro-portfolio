@@ -45,11 +45,28 @@ let homepage=await fs.readFile(path.join(root,'index.html'),'utf8');
 const galleryBegin=homepage.indexOf('<div id="projects-grid"');
 const galleryEnd=homepage.indexOf('<div class="work-footer">',galleryBegin);
 if(galleryBegin>=0&&galleryEnd>galleryBegin){
+ const shareIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.3 11 7.4-4.7M8.3 13l7.4 4.7"/></svg>';
+ const likeIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8 5.5 5.5 0 0 0 0 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
  const galleryCards=projects.map((p,i)=>{
   const title=htmlEscape(p.title||'Project'),category=htmlEscape(p.category_label||p.category||'');
+  const id=htmlEscape(p.id),href='projects/'+encodeURIComponent(p.id)+'/';
   const cover=safeUrl(p.cover||(p.images||[])[0])||site+'assets/omar-cover.jpg';
   const year=p.year?' · '+htmlEscape(p.year):'';
-  return '<a href="projects/'+encodeURIComponent(p.id)+'/" class="project-card" aria-label="شاهد مشروع '+title+'"><div class="project-image"><span class="project-card-no">'+String(i+1).padStart(2,'0')+'</span><img class="project-card-image" loading="lazy" decoding="async" src="'+htmlEscape(cover)+'" alt="'+title+'"><span class="project-view-link">عرض المشروع ↗</span></div><div class="project-info"><div><span class="project-category">'+category+year+'</span><h3>'+title+'</h3></div><span class="project-arrow" aria-hidden="true">↗</span></div></a>';
+  // Keep the same three independent actions as app.js, even before the
+  // catalog request completes. A static-only render must never revert to
+  // the old one-arrow markup or nest interactive buttons inside anchors.
+  return '<article class="project-card reveal" data-project-id="'+id+'">'+
+   '<a href="'+href+'" class="project-card-visual" aria-label="عرض مشروع '+title+'">'+
+   '<div class="project-image"><span class="project-card-no">'+String(i+1).padStart(2,'0')+'</span>'+
+   '<img class="project-card-image" loading="lazy" decoding="async" src="'+htmlEscape(cover)+'" alt="'+title+'">'+
+   '<span class="project-view-link">عرض المشروع ↗</span></div></a>'+
+   '<div class="project-info"><a href="'+href+'" class="project-info-main" aria-label="عرض مشروع '+title+'">'+
+   '<span class="project-category">'+category+year+'</span><h3>'+title+'</h3></a>'+
+   '<div class="project-card-actions" role="group" aria-label="خيارات مشروع '+title+'">'+
+   '<a href="'+href+'" class="project-arrow" aria-label="عرض مشروع '+title+'" title="عرض المشروع">↗</a>'+
+   '<button type="button" class="project-action project-share-action" data-card-share="'+id+'" aria-label="مشاركة مشروع '+title+'" title="مشاركة المشروع">'+shareIcon+'</button>'+
+   '<button type="button" class="project-action project-like-action" data-card-like="'+id+'" aria-pressed="false" aria-label="إعجاب بمشروع '+title+'" title="إعجاب">'+likeIcon+'</button>'+
+   '</div></div></article>';
  }).join('\n        ');
  homepage=homepage.slice(0,galleryBegin)+'<div id="projects-grid" class="projects-grid" aria-live="polite">\n        '+galleryCards+'\n      </div>\n      '+homepage.slice(galleryEnd);
 }
