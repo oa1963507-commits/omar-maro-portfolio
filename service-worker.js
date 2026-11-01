@@ -1,13 +1,13 @@
 /* OMAR MARO offline shell; all Behance content and CMS settings stay network-first.
    Scoped to the GitHub Pages project path, with no offline claim for full galleries. */
 const BASE='/omar-maro-portfolio/';
-const CACHE='omar-maro-shell-v20261102-overflow-fix';
+const CACHE='omar-maro-shell-v20261102-pinch-off';
 const SHELL=[
  BASE,BASE+'index.html',
  BASE+'styles.css',BASE+'mobile.css',BASE+'mobile-polish.css',BASE+'project-actions.css',BASE+'minimal-3d.css',
  BASE+'intro.css',BASE+'intro.js',BASE+'app.js',
  BASE+'controls.js',BASE+'i18n.js',BASE+'lightbox.js',
- BASE+'site-cms.js',BASE+'minimal-3d.js',BASE+'install.js',
+ BASE+'site-cms.js',BASE+'minimal-3d.js',BASE+'install.js',BASE+'mobile-gestures.js',
  BASE+'assets/omar-mark.png',BASE+'assets/pen-tool.svg',
  BASE+'assets/omar-icon-192.png',BASE+'assets/omar-icon-512.png',
  BASE+'assets/omar-icon-maskable-512.png',BASE+'assets/omar-apple-touch-180.png',
