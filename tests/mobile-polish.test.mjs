@@ -60,7 +60,7 @@ test('seven-second unskippable intro is preserved, adjusted only in mobile CSS',
  assert.match(css,/@media\(max-width:920px\) and \(max-height:460px\) and \(orientation:landscape\)/);
 });
 test('mobile styles are cached for installable site and tested before publish',()=>{
- assert.match(sw,/omar-maro-shell-v20261102-overflow-fix/);
+ assert.match(sw,/omar-maro-shell-v20261102-pinch-off/);
  assert.match(sw,/BASE\+'mobile-polish\.css'/);
  assert.match(workflow,/tests\/mobile-polish\.test\.mjs/);
 });
@@ -78,5 +78,5 @@ test('RTL mobile viewport stays within screen width without breaking horizontal 
  assert.match(guard,/\.filters\{\s*max-inline-size:100%;\s*overflow-x:auto;/);
  assert.doesNotMatch(guard,/\.filters\{[^}]*overflow-x:hidden/);
  assert.match(html,/mobile-polish\.css\?v=overflow-fixed-20261102/);
- assert.match(sw,/omar-maro-shell-v20261102-overflow-fix/);
+ assert.match(sw,/omar-maro-shell-v20261102-pinch-off/);
 });
