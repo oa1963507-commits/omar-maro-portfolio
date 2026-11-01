@@ -248,7 +248,7 @@
   });
   window.OMProjectActionsReady=true;
   hydrateCardLikes();
-  $('.filter').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{
     activeFilter=btn.dataset.filter;
     $$('.filter').forEach(b=>{const a=b===btn;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));});
     renderProjects();
