@@ -64,3 +64,19 @@ test('mobile styles are cached for installable site and tested before publish',(
  assert.match(sw,/BASE\+'mobile-polish\.css'/);
  assert.match(workflow,/tests\/mobile-polish\.test\.mjs/);
 });
+
+test('RTL mobile viewport stays within screen width without breaking horizontal project filters',()=>{
+ assert.match(html,/dir="rtl"/);
+ assert.match(css,/Horizontal viewport guard/);
+ const guard=css.slice(css.indexOf('/* Horizontal viewport guard'));
+ assert.match(guard,/@media\(max-width:920px\)/);
+ assert.match(guard,/html\{\s*inline-size:100%;\s*max-inline-size:100%;\s*overflow-x:hidden;[\s\S]*?overflow-x:clip;/);
+ assert.match(guard,/body\{\s*inline-size:100%;\s*max-inline-size:100%;\s*overflow-x:hidden;[\s\S]*?overflow-x:clip;/);
+ assert.match(guard,/\.hero::before\{\s*inset-inline:0;/);
+ assert.match(guard,/\.hero-showcase \.showcase-halo\{\s*inset-inline:0;/);
+ assert.match(guard,/\.hero-topline \.live-label\{\s*min-inline-size:0;/);
+ assert.match(guard,/\.filters\{\s*max-inline-size:100%;\s*overflow-x:auto;/);
+ assert.doesNotMatch(guard,/\.filters\{[^}]*overflow-x:hidden/);
+ assert.match(html,/mobile-polish\.css\?v=overflow-fixed-20261102/);
+ assert.match(sw,/omar-maro-shell-v20261102-overflow-fix/);
+});
