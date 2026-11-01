@@ -1,0 +1,38 @@
+/* OMAR MARO — per-project view, share & like actions.
+   Keeps the original artwork/thumbnail untouched and the original action row. */
+.project-card-visual{display:block;flex:0 0 auto;min-width:0;width:100%;color:inherit}
+.project-card-visual:focus-visible{outline:2px solid var(--accent);outline-offset:-4px;border-radius:18px 18px 0 0}
+.project-info-main{display:flex;min-width:0;flex:1 1 auto;min-height:64px;flex-direction:column;justify-content:center;color:inherit}
+.project-info-main:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.project-info-main h3{margin-inline-end:3px}
+.project-card-actions{display:flex;align-items:center;justify-content:flex-end;flex:none;gap:8px;direction:rtl}
+.project-card-actions .project-arrow{display:flex;align-items:center;justify-content:center;text-decoration:none;flex:none;line-height:1;width:39px;height:39px}
+.project-card-actions .project-arrow:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.project-action{display:grid;place-items:center;flex:none;width:39px;height:39px;min-width:39px;min-height:39px;border:1px solid #354962;border-radius:50%;background:rgba(19,36,56,.28);color:#a7cbf7;padding:0;cursor:pointer;transition:background .22s,border-color .22s,color .22s,transform .22s}
+.project-action svg{width:18px;height:18px;display:block;pointer-events:none}
+.project-action:hover,.project-action:focus-visible{background:rgba(77,145,227,.2);border-color:var(--accent);color:#eff7ff;transform:translateY(-2px)}
+.project-action:focus-visible{outline:2px solid #97caff;outline-offset:3px}
+.project-action:active{transform:scale(.95)}
+.project-action.is-liked{color:#79b9ff;border-color:rgba(110,174,255,.85);background:rgba(88,155,239,.14)}
+.project-action.is-liked svg{fill:currentColor;stroke:currentColor}
+.project-action.is-liked:hover{background:rgba(91,166,255,.26)}
+.project-action-notice{position:fixed;bottom:calc(30px + env(safe-area-inset-bottom,0px));left:50%;z-index:910;max-width:min(90vw,390px);padding:13px 20px;transform:translate(-50%,12px);border:1px solid rgba(144,196,255,.45);border-radius:14px;background:rgba(12,30,52,.96);box-shadow:0 18px 50px rgba(2,10,22,.45);color:#e9f4ff;font:700 13px/1.6 var(--font-ar);text-align:center;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s}
+.project-action-notice.is-visible{opacity:1;transform:translate(-50%,0)}
+@media(max-width:690px){
+ .project-card-actions{gap:6px}
+ .project-card-actions .project-arrow,.project-action{width:37px;height:37px;min-width:37px;min-height:37px}
+ .project-info-main{min-height:64px}
+ .project-info-main h3{font-size:clamp(14px,4.2vw,18px);line-height:1.35}
+ .project-action-notice{bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-width:365px){
+ .project-info{padding:12px}
+ .project-card-actions{gap:4px}
+ .project-card-actions .project-arrow,.project-action{width:34px;height:34px;min-width:34px;min-height:34px}
+ .project-card-actions svg{width:16px;height:16px}
+ .project-info-main h3{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ .project-action,.project-action-notice{transition:none}
+ .project-action:hover{transform:none}
+}
