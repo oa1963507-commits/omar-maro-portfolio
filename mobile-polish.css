@@ -225,3 +225,53 @@
   .filters{scroll-behavior:auto}
   .project-action:hover,.project-card-actions .project-arrow:hover{transform:none}
 }
+
+/* Horizontal viewport guard — mobile Safari / Chrome in RTL.
+ * Hero ambient layers previously extended 12vw outside the layout.
+ * Clip only the document viewport; category pills keep their own x-scroll.
+ */
+@media(max-width:920px){
+  html{
+    inline-size:100%;
+    max-inline-size:100%;
+    overflow-x:hidden; /* compatibility fallback */
+    overflow-x:clip;
+    overscroll-behavior-x:none;
+  }
+  body{
+    inline-size:100%;
+    max-inline-size:100%;
+    overflow-x:hidden; /* compatibility fallback */
+    overflow-x:clip;
+  }
+  .hero::before{
+    inset-inline:0;
+    max-inline-size:100%;
+  }
+  .hero-showcase .showcase-halo{
+    inset-inline:0;
+  }
+  .topbar,.topbar-inner,.hero,.hero-layout,.hero-copy,
+  .hero-showcase,.proof-band,.section,.work-section,.services-section,
+  .process-section,.about-section,.contact-section,.footer{
+    max-inline-size:100%;
+  }
+  .hero-copy,.hero-topline,.hero-bottom,.hero-signature,
+  .section-intro,.work-footer,.project-info,.contact-grid{
+    min-inline-size:0;
+  }
+  .hero-signature .mono,
+  .hero-topline .live-label{
+    min-inline-size:0;
+    overflow-wrap:anywhere;
+  }
+  .mobile-nav{
+    max-inline-size:100%;
+  }
+  /* Horizontal swiping belongs to the filters, not to the entire document. */
+  .filters{
+    max-inline-size:100%;
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+  }
+}
