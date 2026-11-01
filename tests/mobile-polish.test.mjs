@@ -60,7 +60,7 @@ test('seven-second unskippable intro is preserved, adjusted only in mobile CSS',
  assert.match(css,/@media\(max-width:920px\) and \(max-height:460px\) and \(orientation:landscape\)/);
 });
 test('mobile styles are cached for installable site and tested before publish',()=>{
- assert.match(sw,/omar-maro-shell-v20261101-mobile-polish/);
+ assert.match(sw,/omar-maro-shell-v20261102-overflow-fix/);
  assert.match(sw,/BASE\+'mobile-polish\.css'/);
  assert.match(workflow,/tests\/mobile-polish\.test\.mjs/);
 });
