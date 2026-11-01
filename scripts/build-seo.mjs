@@ -55,7 +55,7 @@ if(galleryBegin>=0&&galleryEnd>galleryBegin){
   // Keep the same three independent actions as app.js, even before the
   // catalog request completes. A static-only render must never revert to
   // the old one-arrow markup or nest interactive buttons inside anchors.
-  return '<article class="project-card reveal" data-project-id="'+id+'">'+
+  return '<article class="project-card" data-project-id="'+id+'">'+
    '<a href="'+href+'" class="project-card-visual" aria-label="عرض مشروع '+title+'">'+
    '<div class="project-image"><span class="project-card-no">'+String(i+1).padStart(2,'0')+'</span>'+
    '<img class="project-card-image" loading="lazy" decoding="async" src="'+htmlEscape(cover)+'" alt="'+title+'">'+
