@@ -11,6 +11,7 @@ on:
       - 'minimal-3d.js'
       - 'intro.css'
       - 'mobile.css'
+      - 'project-actions.css'
       - 'install.js'
       - 'manifest.webmanifest'
       - 'service-worker.js'
@@ -33,6 +34,7 @@ on:
       - 'tests/minimal-3d.test.mjs'
       - 'tests/intro.test.mjs'
       - 'tests/mobile-home-screen.test.mjs'
+      - 'tests/project-card-actions.test.mjs'
       - '.github/workflows/deploy-pages.yml'
 permissions:
   contents: read
@@ -70,7 +72,7 @@ jobs:
           node --check controls.js
           node --check scripts/build-seo.mjs
           node scripts/build-seo.mjs
-          node --test tests/portfolio-ui.test.mjs tests/controls.test.mjs tests/seo.test.mjs tests/site-cms.test.mjs tests/minimal-3d.test.mjs tests/intro.test.mjs tests/mobile-home-screen.test.mjs
+          node --test tests/portfolio-ui.test.mjs tests/controls.test.mjs tests/seo.test.mjs tests/site-cms.test.mjs tests/minimal-3d.test.mjs tests/intro.test.mjs tests/mobile-home-screen.test.mjs tests/project-card-actions.test.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
