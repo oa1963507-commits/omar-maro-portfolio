@@ -48,7 +48,8 @@ test('contact, about and case study remain usable from phone widths',()=>{
  assert.match(css,/\.lightbox-stage\{grid-template-columns:38px minmax\(0,1fr\) 38px/);
  assert.match(css,/env\(safe-area-inset-bottom,0px\)/);
  assert.ok(oldMobile.includes('mm-install-button'));
- assert.ok(actions.includes('project-like-action'));
+ assert.ok(actions.includes('.project-action.is-liked'));
+ assert.ok(html.includes('project-like-action'));
 });
 test('seven-second unskippable intro is preserved, adjusted only in mobile CSS',()=>{
  assert.match(intro,/window\.setTimeout\(endIntro,7000\)/);
