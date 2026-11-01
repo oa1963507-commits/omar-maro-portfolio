@@ -190,12 +190,29 @@
     e.preventDefault();
     location.hash='#project/'+encodeURIComponent(id);
   });
+  function projectForCard(id,button){
+    const fromCatalog=projects.find(p=>p.id===id);
+    if(fromCatalog)return fromCatalog;
+    // Work with crawlable static cards if catalog/settings requests fail.
+    if(!/^[a-z0-9-]{2,120}$/.test(id))return null;
+    const card=button.closest('.project-card');
+    if(!card)return null;
+    const title=card.querySelector('h3')?.textContent?.trim()||'OMAR MARO';
+    return {id,title,title_en:title};
+  }
+  function hydrateCardLikes(scope=document){
+    scope.querySelectorAll('button[data-card-like]').forEach(button=>{
+      const liked=likedProjects.has(button.dataset.cardLike);
+      button.classList.toggle('is-liked',liked);
+      button.setAttribute('aria-pressed',String(liked));
+    });
+  }
   // Delegated controls survive category filters, Behance sync, and language changes.
   document.addEventListener('click',async event=>{
     const likeButton=event.target.closest('button[data-card-like]');
     if(likeButton){
       const id=likeButton.dataset.cardLike;
-      const project=projects.find(p=>p.id===id);
+      const project=projectForCard(id,likeButton);
       if(!project)return;
       const liked=!likedProjects.has(id);
       if(liked)likedProjects.add(id);else likedProjects.delete(id);
@@ -212,7 +229,7 @@
     }
     const shareButton=event.target.closest('button[data-card-share]');
     if(!shareButton)return;
-    const project=projects.find(p=>p.id===shareButton.dataset.cardShare);
+    const project=projectForCard(shareButton.dataset.cardShare,shareButton);
     if(!project)return;
     const url=new URL(projectHref(project),new URL('./',location.href)).href;
     if(typeof navigator.share==='function'){
@@ -229,6 +246,8 @@
       window.prompt(t('انسخ رابط المشروع:','Copy project link:'),url);
     }
   });
+  window.OMProjectActionsReady=true;
+  hydrateCardLikes();
   $('.filter').forEach(btn=>btn.addEventListener('click',()=>{
     activeFilter=btn.dataset.filter;
     $$('.filter').forEach(b=>{const a=b===btn;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));});
