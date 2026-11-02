@@ -13,6 +13,7 @@ on:
       - 'mobile.css'
       - 'mobile-polish.css'
       - 'project-actions.css'
+      - 'request-similar.css'
       - 'install.js'
       - 'manifest.webmanifest'
       - 'service-worker.js'
@@ -39,6 +40,7 @@ on:
       - 'mobile-gestures.js'
       - 'tests/mobile-gestures.test.mjs'
       - 'tests/project-card-actions.test.mjs'
+      - 'tests/request-similar.test.mjs'
       - '.github/workflows/deploy-pages.yml'
 permissions:
   contents: read
@@ -77,7 +79,7 @@ jobs:
           node --check controls.js
           node --check scripts/build-seo.mjs
           node scripts/build-seo.mjs
-          node --test tests/portfolio-ui.test.mjs tests/controls.test.mjs tests/seo.test.mjs tests/site-cms.test.mjs tests/minimal-3d.test.mjs tests/intro.test.mjs tests/mobile-home-screen.test.mjs tests/mobile-polish.test.mjs tests/mobile-gestures.test.mjs tests/project-card-actions.test.mjs
+          node --test tests/portfolio-ui.test.mjs tests/controls.test.mjs tests/seo.test.mjs tests/site-cms.test.mjs tests/minimal-3d.test.mjs tests/intro.test.mjs tests/mobile-home-screen.test.mjs tests/mobile-polish.test.mjs tests/mobile-gestures.test.mjs tests/project-card-actions.test.mjs tests/request-similar.test.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
