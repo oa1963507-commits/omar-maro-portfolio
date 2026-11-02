@@ -66,7 +66,7 @@ if(galleryBegin>=0&&galleryEnd>galleryBegin){
    '<a href="'+href+'" class="project-arrow" aria-label="عرض مشروع '+title+'" title="عرض المشروع">↗</a>'+
    '<button type="button" class="project-action project-share-action" data-card-share="'+id+'" aria-label="مشاركة مشروع '+title+'" title="مشاركة المشروع">'+shareIcon+'</button>'+
    '<button type="button" class="project-action project-like-action" data-card-like="'+id+'" aria-pressed="false" aria-label="إعجاب بمشروع '+title+'" title="إعجاب">'+likeIcon+'</button>'+
-   '</div></div></article>';
+   '</div></div><a class="project-request-similar" href="?inspiration='+encodeURIComponent(p.id)+'#contact" data-request-similar="'+id+'" aria-label="اطلب تصميم مستوحى من '+title+'"><span>عايز تصميم شبه ده</span><span aria-hidden="true">↗</span></a></article>';
  }).join('\n        ');
  homepage=homepage.slice(0,galleryBegin)+'<div id="projects-grid" class="projects-grid" aria-live="polite">\n        '+galleryCards+'\n      </div>\n      '+homepage.slice(galleryEnd);
 }
@@ -152,9 +152,9 @@ figure{box-shadow:0 18px 48px rgba(1,9,20,.25);border-color:rgba(138,185,244,.29
 </style></head>
 <body><header><a href="${site}#work"><img src="${site}assets/omar-mark.png" width="36" height="36" alt="OMAR MARO"><strong>OMAR MARO</strong></a><a href="${site}#work">Portfolio ↗</a></header>
 <main><section class="intro"><span class="tag">${htmlEscape(p.category_label||p.category||'Portfolio')}${p.year?' · '+htmlEscape(p.year):''}</span><h1>${htmlEscape(title)}</h1><p>${htmlEscape(desc)}</p>${facts?'<div class="facts">'+facts+'</div>':''}
-<a class="button" href="${site}#project/${encodeURIComponent(p.id)}">View interactive case study ↗</a>${source}</section>
+<a class="button" href="${site}#project/${encodeURIComponent(p.id)}">View interactive case study ↗</a><a class="button secondary" href="${site}?inspiration=${encodeURIComponent(p.id)}#contact">Request a similar design ↗</a>${source}</section>
 ${sections}${story}${body||'<p>Project gallery is available from the original source link where provided.</p>'}
-<a class="button" href="${site}#work">More projects ↗</a></main>
+<a class="button" href="${site}?inspiration=${encodeURIComponent(p.id)}#contact">Request a similar design ↗</a><a class="button secondary" href="${site}#work">More projects ↗</a></main>
 <footer>© OMAR MARO · Graphic designer · <a href="${site}">Portfolio</a></footer></body></html>`;
  const dirpath=path.join(outDir,p.id);
  await fs.mkdir(dirpath,{recursive:true});
