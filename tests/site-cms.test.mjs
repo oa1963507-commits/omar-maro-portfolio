@@ -5,7 +5,8 @@ await import('../site-cms.js');
 const cms=globalThis.OMSiteCMS;
 const get=path=>fs.readFile(new URL('../'+path,import.meta.url),'utf8');
 test('site editor supports all public sections including header and footer',()=>{
- assert.equal(cms.sections.length,10);
+ assert.equal(cms.sections.length,11);
+ assert.ok(cms.sections.some(x=>x[0]==='testimonials'));
  assert.ok(cms.sections.some(x=>x[0]==='contact'));
  assert.ok(cms.sections.some(x=>x[0]==='header'));
 });
