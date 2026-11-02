@@ -6,6 +6,7 @@
   let projects = [...SEED];
   let featuredIDs=[];
   let caseStudies={};
+  let clientStories=[];
   let activeFilter = 'all';
   let searchTerm = '';
   let focusBeforeDialog = null;
@@ -546,6 +547,29 @@
   function updateProgress(){const d=document.documentElement;let x=(d.scrollTop/(d.scrollHeight-d.clientHeight))*100;$('#progress').style.width=`${Math.max(0,Math.min(100,x||0))}%`;}
   window.addEventListener('scroll',updateProgress,{passive:true});
   $('#year').textContent=new Date().getFullYear();
+  function renderTestimonials(){
+    const section=$('#testimonials'),grid=$('#testimonials-grid');
+    if(!section||!grid)return;
+    const visibleProjectIDs=new Set(projects.map(p=>p.id));
+    const approved=clientStories.filter(item=>item.approved===true&&item.consent===true);
+    if(!approved.length){
+      grid.replaceChildren();
+      section.hidden=true;
+      return;
+    }
+    const rows=approved.map(item=>{
+      const brand=isEnglish()&&item.brand_en?item.brand_en:item.brand;
+      const quote=isEnglish()&&item.quote_en?item.quote_en:item.quote;
+      const linked=item.projectId&&visibleProjectIDs.has(item.projectId)?projects.find(p=>p.id===item.projectId):null;
+      // An image is displayed only after separate explicit image consent.
+      const picture=item.imageConsent===true&&item.image
+        ?'<div class="testimonial-image"><img loading="lazy" decoding="async" src="'+escapeHTML(item.image)+'" alt="'+escapeHTML(t('صورة من مشروع ','Image from project ')+brand)+'"></div>':'';
+      const link=linked?'<a class="testimonial-project" href="'+escapeHTML(projectHref(linked))+'">'+escapeHTML(t('شاهد تجربة المشروع','View the project'))+' <span aria-hidden="true">↗</span></a>':'';
+      return '<article class="testimonial-card">'+picture+'<div class="testimonial-content"><span class="testimonial-quote-mark" aria-hidden="true">“</span><blockquote class="testimonial-quote">'+escapeHTML(quote)+'</blockquote><div class="testimonial-meta"><div><strong class="testimonial-brand">'+escapeHTML(brand)+'</strong><span class="testimonial-caption">'+escapeHTML(t('رأي عميل حقيقي','Genuine client feedback'))+'</span></div></div>'+link+'</div></article>';
+    }).join('');
+    grid.innerHTML=rows;
+    section.hidden=false;
+  }
   async function loadProjects(){
     // Behance catalog and owner-authored presentation settings are separate.
     // Visibility/order/deletion survive all future automatic Behance imports.
@@ -561,6 +585,7 @@
       const normalizedSettings=window.OMPortfolioControls?.normalizeControls(settings)||settings;
       featuredIDs=Array.isArray(normalizedSettings.featured)?normalizedSettings.featured:[];
       caseStudies=normalizedSettings.caseStudies||{};
+      clientStories=Array.isArray(normalizedSettings.testimonials)?normalizedSettings.testimonials:[];
       window.OMARSiteSettings=normalizedSettings.siteContent||{};
       if(Array.isArray(records)){
         const cleaned=records.map(normalize).filter(Boolean);
@@ -574,7 +599,7 @@
       console.error('OMAR MARO: project catalog could not load; retaining the published gallery.',e);
       return;
     }
-    renderFeaturedProjects();renderProjects();route();
+    renderFeaturedProjects();renderProjects();renderTestimonials();route();
     restoreInspirationFromLink();
     if(inspirationSelection){const refreshed=resolveInspiration(inspirationSelection.id,null);if(refreshed){inspirationSelection.title=refreshed.title;displayInspiration();}}
     window.OMSiteCMS?.apply(window.OMARSiteSettings||{});
@@ -584,6 +609,7 @@
     redrawProjectFiles();
     renderFeaturedProjects();
     renderProjects();
+    renderTestimonials();
     const layer=$('#project-view');
     if(layer && !layer.hidden){
       const id=decodeURIComponent(location.hash.replace(/^#project\//,''));
