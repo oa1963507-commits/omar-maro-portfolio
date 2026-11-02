@@ -23,7 +23,7 @@ function textToBase64(text){const bytes=new TextEncoder().encode(text);let binar
 function base64ToText(value){const bin=atob(value.replace(/\s/g,'')),bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes);}
 async function readRepoFile(path){const d=await api('/contents/'+path+'?ref='+BRANCH);return {sha:d.sha,value:JSON.parse(base64ToText(d.content))};}
 async function load(){const [file,projects]=await Promise.all([readRepoFile(CONFIG),readRepoFile('data/projects.json')]);sha=file.sha;settings=controls.normalizeControls(file.value);catalog=projects.value;if(!Array.isArray(catalog))throw Error('ملف المشاريع الرئيسي غير صالح');
- const all=allProjects();order=[...new Set([...settings.order.filter(id=>all.some(p=>p.id===id)),...all.map(p=>p.id)])];dirty=false;render();try{await loadSiteInventory()}catch(error){siteFields=[];inform('المشاريع متاحة، لكن تعذّر تحميل قائمة عناصر الموقع: '+error.message,true)}renderSiteEditor();}
+ const all=allProjects();order=[...new Set([...settings.order.filter(id=>all.some(p=>p.id===id)),...all.map(p=>p.id)])];dirty=false;render();try{await loadSiteInventory()}catch(error){siteFields=[];inform('المشاريع متاحة، لكن تعذّر تحميل قائمة عناصر الموقع: '+error.message,true)}renderSiteEditor();renderTestimonialAdmin();}
 function allProjects(){const m=new Map();for(const p of [...catalog,...settings.customProjects]){if(p?.id&&!m.has(p.id))m.set(p.id,p);}return [...m.values()];}
 function orderedProjects(){const m=new Map(allProjects().map(p=>[p.id,p]));return order.map(id=>m.get(id)).filter(Boolean).concat([...m.values()].filter(p=>!order.includes(p.id)));}
 function markDirty(){dirty=true;$('publishBtn').textContent='نشر التعديلات ●';}
@@ -109,6 +109,151 @@ $('projectForm').addEventListener('submit',async e=>{e.preventDefault();if(busy)
    markDirty();$('projectDialog').close();render();inform('اتحفظ المشروع في لوحة الإدارة. اضغط «نشر التعديلات» عشان يظهر على الموقع.');
  }catch(err){inform('مشكلة أثناء حفظ المشروع: '+err.message,true);}finally{$('saveProject').textContent='حفظ المشروع في اللوحة';lock(false);}
 });
+
+/* Genuine testimonials: draft, edit, reorder, approve or hide via GitHub-backed settings.
+ * No fabricated customer stories, no unauthorised publication, no token storage.
+ */
+function resetTestimonialForm(){
+ const form=$('testimonialForm');
+ form.reset();
+ form.elements.id.value='';
+ $('saveTestimonial').textContent='+ حفظ رأي العميل';
+}
+function refreshTestimonialProjects(){
+ const select=$('testimonialProject');
+ const current=select.value;
+ select.replaceChildren(new Option('بدون ربط بمشروع',''));
+ const published=controls.applyControls(catalog,settings);
+ for(const project of published){
+   const option=new Option(getRecord(project).title||project.id,project.id);
+   select.append(option);
+ }
+ if([...select.options].some(o=>o.value===current))select.value=current;
+}
+function renderTestimonialAdmin(){
+ refreshTestimonialProjects();
+ const host=$('testimonialsAdminList');
+ host.replaceChildren();
+ const records=settings.testimonials||[];
+ if(!records.length){
+   const note=document.createElement('p');
+   note.className='testimonial-admin-empty';
+   note.textContent='لسه مفيش آراء حقيقية مضافة. القسم مخفي من الموقع تلقائيًا حتى اعتماد رأي موثّق بموافقة العميل.';
+   host.append(note);
+   return;
+ }
+ for(const [index,review] of records.entries()){
+   const card=document.createElement('article');
+   card.className='testimonial-admin-item';
+   const copy=document.createElement('div');
+   copy.className='testimonial-admin-copy';
+   const title=document.createElement('strong');
+   title.textContent=review.brand;
+   const body=document.createElement('p');
+   body.textContent=review.quote;
+   const status=document.createElement('small');
+   const on=review.approved&&review.consent;
+   status.textContent=(on?'منشور بعد الموافقة':'مسودة مخفية')+
+     (review.image&&review.imageConsent?' · صورة مصرح بها':' · بدون صورة منشورة')+
+     (review.projectId?' · '+(allProjects().find(p=>p.id===review.projectId)?.title||review.projectId):'');
+   copy.append(title,body,status);
+   const actions=document.createElement('div');
+   actions.className='testimonial-admin-actions-row';
+   for(const [name,action] of [
+     ['تعديل','edit'],[on?'إخفاء':'إظهار','toggle'],
+     ['↑','up'],['↓','down'],['حذف','remove']
+   ]){
+     const button=document.createElement('button');
+     button.type='button';
+     button.textContent=name;
+     button.dataset.reviewAction=action;
+     button.dataset.reviewId=review.id;
+     button.className=action==='remove'?'outline danger':'outline';
+     button.disabled=(action==='up'&&index===0)||(action==='down'&&index===records.length-1);
+     actions.append(button);
+   }
+   card.append(copy,actions);
+   host.append(card);
+ }
+}
+$('testimonialsAdminList').addEventListener('click',event=>{
+ const button=event.target.closest('button[data-review-action]');
+ if(!button)return;
+ const records=settings.testimonials||[];
+ const index=records.findIndex(entry=>entry.id===button.dataset.reviewId);
+ if(index<0)return;
+ const item=records[index];
+ switch(button.dataset.reviewAction){
+   case 'edit':{
+     const f=$('testimonialForm');
+     resetTestimonialForm();
+     f.elements.id.value=item.id;
+     for(const key of ['brand','brand_en','quote','quote_en','image'])
+       f.elements[key].value=item[key]||'';
+     f.elements.projectId.value=item.projectId||'';
+     for(const key of ['consent','imageConsent','approved'])
+       f.elements[key].checked=item[key]===true;
+     $('saveTestimonial').textContent='حفظ تعديل الرأي';
+     f.scrollIntoView({behavior:'smooth',block:'start'});
+     break;
+   }
+   case 'toggle':{
+     if(!item.approved&&!item.consent){inform('لا يمكن نشر رأي بدون تأكيد موافقة العميل من نموذج التعديل.',true);return;}
+     item.approved=!item.approved;
+     markDirty();renderTestimonialAdmin();
+     break;
+   }
+   case 'remove':{
+     if(!confirm('هل تريد حذف رأي هذا العميل من الموقع؟'))return;
+     records.splice(index,1);
+     markDirty();resetTestimonialForm();renderTestimonialAdmin();
+     break;
+   }
+   case 'up':
+   case 'down':{
+     const other=index+(button.dataset.reviewAction==='up'?-1:1);
+     if(other<0||other>=records.length)return;
+     [records[index],records[other]]=[records[other],records[index]];
+     markDirty();renderTestimonialAdmin();
+     break;
+   }
+ }
+});
+$('testimonialForm').addEventListener('submit',event=>{
+ event.preventDefault();
+ const f=event.currentTarget;
+ const brand=f.elements.brand.value.trim(),quote=f.elements.quote.value.trim();
+ if(!brand||!quote){inform('اسم البراند والرأي الحقيقي مطلوبان.',true);return;}
+ const consent=f.elements.consent.checked;
+ const approved=f.elements.approved.checked;
+ const imageConsent=f.elements.imageConsent.checked;
+ if(approved&&!consent){inform('تأكيد موافقة العميل شرط أساسي قبل نشر الرأي.',true);return;}
+ let image=f.elements.image.value.trim();
+ const projectId=f.elements.projectId.value;
+ if(f.elements.useProjectCover.checked){
+   const source=controls.applyControls(catalog,settings).find(p=>p.id===projectId);
+   if(!source){inform('اختار مشروعًا ظاهرًا لاستخدام صورة غلافه.',true);return;}
+   image=controls.cleanMedia(getRecord(source).cover||'');
+   if(!image){inform('المشروع المحدد ما عندوش غلاف صالح للاستخدام.',true);return;}
+ }
+ if(image&&!controls.cleanMedia(image)){inform('رابط الصورة لازم يكون HTTPS أو مسارًا صالحًا من assets.',true);return;}
+ if(image&&!imageConsent){inform('لازم تأكيد موافقة العميل على الصورة أو إزالة رابطها.',true);return;}
+ const id=f.elements.id.value||'review-'+crypto.randomUUID();
+ const item=controls.cleanTestimonial({
+   id,brand,brand_en:f.elements.brand_en.value,quote,quote_en:f.elements.quote_en.value,
+   projectId,image,consent,imageConsent,approved
+ });
+ if(!item){inform('راجع بيانات الرأي وحاول مرة أخرى.',true);return;}
+ if(!Array.isArray(settings.testimonials))settings.testimonials=[];
+ const index=settings.testimonials.findIndex(v=>v.id===id);
+ if(index<0){
+   if(settings.testimonials.length>=80){inform('الحد الأقصى 80 رأيًا.',true);return;}
+   settings.testimonials.push(item);
+ }else settings.testimonials[index]=item;
+ markDirty();resetTestimonialForm();renderTestimonialAdmin();
+ inform('تم حفظ رأي العميل داخل اللوحة. اضغط «نشر التعديلات» لتحديث الموقع.');
+});
+$('resetTestimonial').addEventListener('click',resetTestimonialForm);
 
 /* Entire site control: text, images, links, buttons, appearance and visibility */
 function siteState(){
@@ -286,7 +431,7 @@ async function publish(){if(busy)return;if(!dirty){inform('مفيش تغييرا
   const remote=await readRepoFile(CONFIG);if(remote.sha!==sha)throw Error('حدّث حد تاني إعدادات الموقع. اعمل تحديث للصفحة بدل الكتابة فوق تعديلاته.');
   settings.order=[...order];const clean=controls.normalizeControls(settings);const body={message:'Update Omar Maro project visibility, order and manual additions',content:textToBase64(JSON.stringify(clean,null,2)+'\n'),sha,branch:BRANCH};
   const out=await api('/contents/'+CONFIG,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  sha=out.content.sha;settings=clean;dirty=false;render();inform('تم نشر التغييرات على GitHub ✅ هتظهر على الموقع بعد اكتمال نشر GitHub Pages.');
+  sha=out.content.sha;settings=clean;dirty=false;render();renderTestimonialAdmin();inform('تم نشر التغييرات على GitHub ✅ هتظهر على الموقع بعد اكتمال نشر GitHub Pages.');
  }catch(err){inform('تعذّر نشر التعديلات: '+err.message,true);}finally{lock(false);}
 }
 $('publishBtn').addEventListener('click',publish);
