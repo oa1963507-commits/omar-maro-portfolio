@@ -70,7 +70,7 @@ test('inspired project title and URL are clearly shown, editable, removable and 
 
 test('styles and scripts are cache-busted; protected site configuration stays untouched',()=>{
  assert.match(html,/request-similar\.css\?v=request-similar-20261102/);
- assert.match(html,/app\.js\?v=request-similar-20261102/);
+ assert.match(html,/app\.js\?v=client-stories-20261102/);
  assert.match(workflow,/tests\/request-similar\.test\.mjs/);
  assert.ok(!css.includes('object-fit:cover'));
  assert.ok(html.includes('id="language-toggle"'));
