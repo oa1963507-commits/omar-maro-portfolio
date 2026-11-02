@@ -32,6 +32,23 @@
     }
     return result;
   }
+  // Testimonials are opt-in. Neither the review nor the image becomes
+  // public without separate explicit owner attestations of client consent.
+  function cleanTestimonial(v){
+    if(!v||typeof v!=='object'||Array.isArray(v))return null;
+    const id=cleanText(v.id,100);
+    if(!/^review-[a-z0-9-]{3,93}$/.test(id))return null;
+    const brand=cleanText(v.brand,100),quote=cleanText(v.quote,800);
+    if(!brand||!quote)return null;
+    const consent=v.consent===true,approved=v.approved===true;
+    const imageConsent=v.imageConsent===true;
+    const image=cleanMedia(v.image||'');
+    const projectId=validId(v.projectId)?v.projectId:'';
+    return {id,brand,brand_en:cleanText(v.brand_en,100),
+      quote,quote_en:cleanText(v.quote_en,800),
+      projectId,image:imageConsent?image:'',imageConsent,
+      consent,approved};
+  }
   function normalizeControls(v){
     const raw=v && typeof v==='object' && !Array.isArray(v)?v:{};
     const order=cleanIDs(raw.order), hidden=cleanIDs(raw.hidden), excluded=cleanIDs(raw.excluded);
@@ -59,13 +76,18 @@
         if(Object.keys(clean).length)caseStudies[id]=clean;
       }
     }
+    const testimonials=[],testimonialIDs=new Set();
+    for(const item of (Array.isArray(raw.testimonials)?raw.testimonials:[]).slice(0,80)){
+      const clean=cleanTestimonial(item);
+      if(clean&&!testimonialIDs.has(clean.id)){testimonialIDs.add(clean.id);testimonials.push(clean);}
+    }
     const customProjects=[];
     const seen=new Set();
     for(const p of (Array.isArray(raw.customProjects)?raw.customProjects:[]).slice(0,500)){
       const cleaned=cleanProject(p);
       if(cleaned&&!seen.has(cleaned.id)){seen.add(cleaned.id);customProjects.push(cleaned);}
     }
-    return {version:1,order,hidden,excluded,overrides,customProjects,featured,caseStudies,siteContent:root.OMSiteCMS?root.OMSiteCMS.normalize(raw.siteContent):raw.siteContent||{}};
+    return {version:1,order,hidden,excluded,overrides,customProjects,featured,caseStudies,testimonials,siteContent:root.OMSiteCMS?root.OMSiteCMS.normalize(raw.siteContent):raw.siteContent||{}};
   }
   function applyControls(source, config){
     const c=normalizeControls(config);
@@ -84,7 +106,7 @@
       return aPos===bPos?a.index-b.index:aPos-bPos;
     }).map(x=>x.p);
   }
-  const api={normalizeControls,applyControls,cleanMedia,cleanProject,categoryLabels};
+  const api={normalizeControls,applyControls,cleanMedia,cleanProject,cleanTestimonial,categoryLabels};
   root.OMPortfolioControls=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
