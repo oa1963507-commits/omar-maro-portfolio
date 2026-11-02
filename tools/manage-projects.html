@@ -31,6 +31,28 @@
  <p class="hint" id="featuredSummary" aria-live="polite"></p><p class="hint" id="dragNote">اسحب البطاقة من الرمز ⋮⋮ لترتيبها. أزرار الأسهم مناسبة للموبايل أيضًا.</p><div id="projectList" class="project-list" aria-live="polite"></div></section>
  <section class="panel"><h2>مهم قبل الحذف</h2><p class="hint">«إخفاء» يخفي المشروع مؤقتًا ويمكن إظهاره في أي وقت. «حذف من الموقع» يمنع ظهوره حتى لو أضافته مزامنة Behance مرة تانية، مع إمكانية الاستعادة. <b>الحذف مش بيمسح مشروعك من Behance.</b></p></section>
 
+ <section class="panel" id="testimonials-management" aria-labelledby="testimonials-admin-heading">
+   <div class="panel-heading"><div><h2 id="testimonials-admin-heading">آراء العملاء وتجارب المشاريع</h2>
+     <p>ضيف آراء حقيقية فقط بعد موافقة أصحابها. القسم مخفي من الموقع حتى تعتمد رأيًا مصرحًا بنشره. الصورة لها موافقة منفصلة.</p></div></div>
+   <p class="hint">النشر يتطلب تفعيل «عندي موافقة العميل» و«إظهار الرأي». إضافة صورة اختيارية لا تكفي وحدها؛ لازم موافقة صريحة على عرضها.</p>
+   <form id="testimonialForm" class="testimonial-admin-form">
+     <input name="id" type="hidden">
+     <div class="testimonial-form-grid">
+       <label>اسم العميل أو البراند بالعربي *<input name="brand" required maxlength="100" placeholder="اسم البراند بموافقة صاحبه"></label>
+       <label>اسم البراند بالإنجليزي (اختياري)<input name="brand_en" maxlength="100" placeholder="Brand name"></label>
+       <label class="full">نص رأي العميل الحقيقي بالعربي *<textarea name="quote" required maxlength="800" rows="3" placeholder="انسخ تعليق العميل كما وافق على نشره"></textarea></label>
+       <label class="full">الرأي بالإنجليزي (اختياري)<textarea name="quote_en" maxlength="800" rows="3" placeholder="Approved English translation"></textarea></label>
+       <label>ربط بمشروع موجود (اختياري)<select name="projectId" id="testimonialProject"><option value="">بدون ربط بمشروع</option></select></label>
+       <label>رابط صورة المشروع (اختياري)<input name="image" dir="ltr" placeholder="https://... أو assets/..." maxlength="1000"></label>
+     </div>
+     <label class="testimonial-check"><input name="useProjectCover" type="checkbox"> استخدام غلاف المشروع المختار كصورة للرأي</label>
+     <label class="testimonial-check"><input name="consent" type="checkbox"> أؤكد حصولي على موافقة العميل على نشر الرأي واسمه أو اسم البراند.</label>
+     <label class="testimonial-check"><input name="imageConsent" type="checkbox"> أؤكد حصولي على موافقة منفصلة لعرض صورة المشروع.</label>
+     <label class="testimonial-check"><input name="approved" type="checkbox"> إظهار الرأي على الموقع (بعد التأكد من الموافقات)</label>
+     <div class="testimonial-admin-actions"><button type="submit" class="primary" id="saveTestimonial">+ حفظ رأي العميل</button><button type="button" class="outline" id="resetTestimonial">إلغاء التعديل</button></div>
+   </form>
+   <div id="testimonialsAdminList" class="testimonial-admin-list" aria-live="polite"></div>
+ </section>
 </div>
 <div id="site-management-panel" hidden>
   <section class="panel">
@@ -97,5 +119,5 @@
  <label>صورة غلاف من الجهاز (اختياري)<input name="coverFile" id="coverFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
  <p class="hint">رفع الصور يحتاج مفتاح GitHub اللي دخلته. الملفات بتترفع لمستودع الموقع مباشرة، ومش لأي خدمة خارجية.</p></div></div>
  <div class="dialog-actions"><button class="outline" type="button" id="cancelForm">إلغاء</button><button class="primary" type="submit" id="saveProject">حفظ المشروع في اللوحة</button></div></form></dialog>
-<script src="../site-cms.js?v=site-admin-1"></script><script src="../controls.js"></script><script src="manage-projects.js?v=site-admin-1" defer></script>
+<script src="../site-cms.js?v=site-admin-1"></script><script src="../controls.js?v=testimonials-20261102"></script><script src="manage-projects.js?v=testimonials-20261102" defer></script>
 </body></html>
