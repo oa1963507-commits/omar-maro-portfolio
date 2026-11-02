@@ -27,7 +27,7 @@ test('owner-specific controls load before public app script, and management rema
 });
 
 test('project list and hero are driven by owner-approved visible projects',()=>{
- assert.ok(script.includes('renderFeaturedProjects();renderProjects();route();'));
+ assert.ok(script.includes('renderFeaturedProjects();renderProjects();renderTestimonials();route();'));
  assert.ok(script.includes("const selected=projects.filter"));
  assert.ok(script.includes("projects.filter(p=>(activeFilter==='all'"));
  assert.ok(script.includes('showcase-card'));
