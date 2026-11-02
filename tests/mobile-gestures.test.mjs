@@ -57,6 +57,6 @@ test('viewport and app shell include fresh gesture handling without disturbing g
   assert.match(lightbox,/zoomButton\.addEventListener\('click',toggleZoom\)/);
   assert.match(mobile,/\.filters\{\s*max-inline-size:100%;\s*overflow-x:auto/);
   assert.match(sw,/BASE\+'mobile-gestures\.js'/);
-  assert.match(sw,/omar-maro-shell-v20261102-pinch-off/);
+  assert.match(sw,/omar-maro-shell-v20261102-request-similar/);
   assert.match(workflow,/tests\/mobile-gestures\.test\.mjs/);
 });
