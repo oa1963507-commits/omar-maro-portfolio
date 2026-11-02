@@ -144,6 +144,7 @@
           <button type="button" class="project-action project-like-action${liked?' is-liked':''}" data-card-like="${escapeHTML(p.id)}" aria-pressed="${liked}" aria-label="${likeLabel}" title="${escapeHTML(t(liked?'إلغاء الإعجاب':'إعجاب',liked?'Unlike':'Like'))}">${likeIcon}</button>
         </div>
       </div>
+      <a class="project-request-similar" href="?inspiration=${encodeURIComponent(p.id)}#contact" data-request-similar="${escapeHTML(p.id)}" aria-label="${escapeHTML(t('اطلب تصميم مستوحى من ','Request a design inspired by ')+title)}"><span>${escapeHTML(t('عايز تصميم شبه ده','Request a similar design'))}</span><span aria-hidden="true">↗</span></a>
     </article>`;
   }
   function renderFeaturedProjects(){
