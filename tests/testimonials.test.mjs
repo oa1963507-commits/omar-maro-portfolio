@@ -85,7 +85,7 @@ test('admin lets owner edit, reorder, remove, approve and document separate imag
  assert.match(admin,/موافقة منفصلة/);
  assert.match(css,/@media\(max-width:690px\)/);
 });
-test('testimonials are in bilingual site CMS and loaded as refreshed PWA assets',()=>{
+test('testimonials are in bilingual site CMS and loaded as refreshed PWA assets',async()=>{
  const cms=await read('site-cms.js');
  assert.match(cms,/\['testimonials','آراء العملاء وتجارب المشاريع','#testimonials'\]/);
  assert.match(index,/testimonials\.css\?v=testimonials-20261102/);
