@@ -30,7 +30,7 @@ test('project card contains distinct view, share, and like actions with valid st
  assert.match(card,/data-card-like="sample-branding"/);
  assert.match(card,/aria-pressed="false"/);
  assert.equal((card.match(/<button\b/g)||[]).length,2);
- assert.equal((card.match(/<a\b/g)||[]).length,3);
+ assert.equal((card.match(/<a\b/g)||[]).length,4);
  for(const match of card.matchAll(/<a\b[\s\S]*?<\/a>/g))assert.doesNotMatch(match[0],/<button\b/,'buttons must not be nested inside links');
  assert.match(card,/href="projects\/sample-branding\/"/);
 });
@@ -56,7 +56,7 @@ test('sharing uses each project permalink and supports share sheets, clipboard a
 });
 test('actions are accessible, bilingual, mobile-ready, and preserve original gallery',()=>{
  assert.match(html,/project-actions\.css\?v=actions-fixed-20261101/);
- assert.match(html,/app\.js\?v=project-actions-fixed-20261101/);
+ assert.match(html,/app\.js\?v=request-similar-20261102/);
  assert.match(html,/id="projects-grid"/);
  assert.match(html,/id="hero-featured"/);
  assert.match(css,/\.project-card-actions\{/);
