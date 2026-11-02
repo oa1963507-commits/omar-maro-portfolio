@@ -25,7 +25,7 @@ test('every published homepage project shows Request similar design in its stati
  assert.match(seo,/project-request-similar/);
 });
 
-test('client can request from dynamic gallery and in-project case study in Arabic or English',()=>{
+test('client can request from dynamic gallery and in-project case study in Arabic or English',async()=>{
  const card=app.slice(app.indexOf('  function projectCard('),app.indexOf('  function renderFeaturedProjects('));
  const detail=app.slice(app.indexOf('  function renderDetail('),app.indexOf("  document.addEventListener('click',async e=>"));
  assert.match(card,/data-request-similar="/);
