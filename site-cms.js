@@ -10,10 +10,11 @@ const sections=[
  ['services','الخدمات','#services'],
  ['process','مراحل العمل','#process'],
  ['about','نبذة عني والسيرة','#about'],
+ ['testimonials','آراء العملاء وتجارب المشاريع','#testimonials'],
  ['contact','التواصل وطلب مشروع','#contact'],
  ['footer','الفوتر','.footer']
 ];
-const blocked='#projects-grid,#hero-featured,#project-view,#project-view-content,#image-lightbox,.site-cms-buttons,.mm-orbit,script,style,noscript,svg,[contenteditable]';
+const blocked='#testimonials-grid,#projects-grid,#hero-featured,#project-view,#project-view-content,#image-lightbox,.site-cms-buttons,.mm-orbit,script,style,noscript,svg,[contenteditable]';
 const cleanText=(s,max=2200)=>String(s??'').slice(0,max);
 const validColor=s=>/^#[0-9a-f]{6}$/i.test(String(s||''))?s:'';
 function validURL(value,type){
@@ -32,14 +33,14 @@ function normalize(raw){
  const v=raw&&typeof raw==='object'?raw:{},text={},attrs={},buttons=[],theme={},sectionsHidden=[],seo={};
  if(v.text&&typeof v.text==='object'){
    for(const [key,value] of Object.entries(v.text).slice(0,1800)){
-     if(!/^(header|home|proof|work|statement|services|process|about|contact|footer)\.text\.\d{1,4}$/.test(key))continue;
+     if(!/^(header|home|proof|work|statement|services|process|about|testimonials|contact|footer)\.text\.\d{1,4}$/.test(key))continue;
      const ar=cleanText(value?.ar||''),en=cleanText(value?.en||'');
      if(ar||en)text[key]={ar,en};
    }
  }
  if(v.attrs&&typeof v.attrs==='object'){
    for(const [key,value] of Object.entries(v.attrs).slice(0,500)){
-     if(!/^(header|home|proof|work|statement|services|process|about|contact|footer)\.attr\.\d{1,4}$/.test(key))continue;
+     if(!/^(header|home|proof|work|statement|services|process|about|testimonials|contact|footer)\.attr\.\d{1,4}$/.test(key))continue;
      const type=value?.type;
      const url=validURL(value?.url,type);
      if((type==='src'||type==='href')&&url)attrs[key]={type,url};
@@ -54,7 +55,7 @@ function normalize(raw){
    }
  }
  for(const key of ['accent','azure','bg','ink']){const c=validColor(v.theme?.[key]);if(c)theme[key]=c}
- if(Array.isArray(v.hiddenSections))for(const k of v.hiddenSections)if(['proof','statement','services','process','about','contact'].includes(k)&&!sectionsHidden.includes(k))sectionsHidden.push(k);
+ if(Array.isArray(v.hiddenSections))for(const k of v.hiddenSections)if(['proof','statement','services','process','about','testimonials','contact'].includes(k)&&!sectionsHidden.includes(k))sectionsHidden.push(k);
  if(typeof v.seo?.title==='string')seo.title=cleanText(v.seo.title,90);
  if(typeof v.seo?.description==='string')seo.description=cleanText(v.seo.description,200);
  return {text,attrs,buttons,theme,hiddenSections:sectionsHidden,seo,visual:{effects:v.visual?.effects==='off'?'off':'on'}};
@@ -92,7 +93,7 @@ function apply(raw,doc=document){
  for(const [key,value] of Object.entries(data.theme))doc.documentElement.style.setProperty('--'+key,value);
  for(const [id,,selector] of sections){
   const el=doc.querySelector(selector);
-  if(el&&['proof','statement','services','process','about','contact'].includes(id))el.style.display=data.hiddenSections.includes(id)?'none':'';
+  if(el&&['proof','statement','services','process','about','testimonials','contact'].includes(id))el.style.display=data.hiddenSections.includes(id)?'none':'';
  }
  doc.querySelectorAll('.site-cms-buttons').forEach(e=>e.remove());
  for(const [id,,selector] of sections){
