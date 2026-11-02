@@ -425,6 +425,69 @@
       else attachmentStatus('تعذرت المشاركة المباشرة. أرفق الملفات من داخل واتساب يدويًا.','Direct sharing failed. Please attach the files manually in WhatsApp.',true);
     }
   });
+  // A project request is an ordinary client inquiry with an optional, user-visible
+  // inspiration reference. No customer details are stored by this static site.
+  let inspirationSelection=null;
+  function inspirationURL(id){
+    return new URL(projectHref({id}),new URL('./',location.href)).href;
+  }
+  function displayInspiration(){
+    const banner=$('#inspiration-project');
+    if(!banner)return;
+    banner.hidden=!inspirationSelection;
+    if(!inspirationSelection)return;
+    $('#inspiration-label').textContent=t('تصميم مستوحى من مشروع','Inspired by this project');
+    $('#inspiration-name').textContent=inspirationSelection.title;
+    $('#inspiration-link').href=inspirationSelection.href;
+    $('#inspiration-link').setAttribute('aria-label',t('عرض المشروع المرجعي: ','View inspiration project: ')+inspirationSelection.title);
+    $('#inspiration-clear').textContent=t('إلغاء','Remove');
+    $('#inspiration-clear').setAttribute('aria-label',t('إلغاء اختيار المشروع','Remove inspiration project'));
+  }
+  function resolveInspiration(id,element){
+    if(!/^[a-z0-9-]{2,120}$/.test(id))return null;
+    const record=projects.find(p=>p.id===id);
+    if(record)return {id,title:displayTitle(record)};
+    const source=element?.closest('.project-card,.case-container')
+      || [...document.querySelectorAll('#projects-grid .project-card')].find(card=>card.querySelector('[data-request-similar]')?.dataset.requestSimilar===id);
+    const title=source?.querySelector('h3,.case-title')?.textContent?.trim();
+    return title?{id,title}:null;
+  }
+  function chooseInspiration(project){
+    const href=inspirationURL(project.id);
+    inspirationSelection={id:project.id,title:project.title,href};
+    $('#project-reference').value=href;
+    displayInspiration();
+  }
+  function restoreInspirationFromLink(){
+    const id=new URLSearchParams(location.search).get('inspiration');
+    if(!id||inspirationSelection)return;
+    const project=resolveInspiration(id,null);
+    if(project)chooseInspiration(project);
+  }
+  document.addEventListener('click',event=>{
+    const cta=event.target.closest('a[data-request-similar]');
+    if(!cta)return;
+    const project=resolveInspiration(cta.dataset.requestSimilar,cta);
+    if(!project)return;
+    event.preventDefault();
+    chooseInspiration(project);
+    setBriefStep(1);
+    const url=new URL(location.href);
+    url.searchParams.set('inspiration',project.id);
+    url.hash='contact';
+    history.replaceState(null,'',url.href);
+    closeProject();
+    $('#contact')?.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  $('#inspiration-clear').addEventListener('click',()=>{
+    if(!inspirationSelection)return;
+    if($('#project-reference').value===inspirationSelection.href)$('#project-reference').value='';
+    inspirationSelection=null;
+    displayInspiration();
+    const url=new URL(location.href);
+    url.searchParams.delete('inspiration');
+    history.replaceState(null,'',url.href);
+  });
   const stepOne=$('#brief-step-one'),stepTwo=$('#brief-step-two');
   function setBriefStep(step){
     const isFirst=step===1;
@@ -452,7 +515,13 @@
     const reference=$('#project-reference')?.value.trim()||'';
     const priority=$('#project-priority');
     if(phone)msg+=t('\n\nرقم التواصل: ','\n\nPhone: ')+phone;
-    if(reference)msg+=t('\n\nمرجع المشروع: ','\n\nReference link: ')+reference;
+    if(inspirationSelection){
+      msg+=t('\n\nالمشروع المرجعي: ','\n\nInspired by project: ')+inspirationSelection.title;
+      msg+='\n'+inspirationSelection.href;
+    }
+    if(reference && (!inspirationSelection||reference!==inspirationSelection.href)){
+      msg+=t('\n\nمرجع إضافي: ','\n\nAdditional reference: ')+reference;
+    }
     if(priority?.value)msg+=t('\n\nتوقيت البدء: ','\n\nStart timing: ')+priority.options[priority.selectedIndex].textContent.trim();
     if(budgetLabel)msg+=t('\n\nالميزانية المتوقعة: ','\n\nExpected budget: ')+budgetLabel;
     if(deadline)msg+=t('\n\nالموعد المطلوب: ','\n\nRequested date: ')+deadline;
@@ -506,9 +575,12 @@
       return;
     }
     renderFeaturedProjects();renderProjects();route();
+    restoreInspirationFromLink();
+    if(inspirationSelection){const refreshed=resolveInspiration(inspirationSelection.id,null);if(refreshed){inspirationSelection.title=refreshed.title;displayInspiration();}}
     window.OMSiteCMS?.apply(window.OMARSiteSettings||{});
   }
   window.addEventListener('om-language-change',()=>{
+    if(inspirationSelection){const refreshed=resolveInspiration(inspirationSelection.id,null);if(refreshed)inspirationSelection.title=refreshed.title;displayInspiration();}
     redrawProjectFiles();
     renderFeaturedProjects();
     renderProjects();
@@ -526,5 +598,6 @@
     menuBtn.setAttribute('aria-label',menu.hidden?t('فتح القائمة','Open menu'):t('إغلاق القائمة','Close menu'));
     window.OMSiteCMS?.apply(window.OMARSiteSettings||{});
   });
+  restoreInspirationFromLink();
   updateProgress();watch();loadProjects();
 })();
