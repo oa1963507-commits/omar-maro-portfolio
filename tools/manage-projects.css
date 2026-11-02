@@ -54,3 +54,29 @@ input[type=password],.hint b,code,.stats b{font-family:var(--font-en)}
 
 .cms-effect-toggle{display:flex;gap:12px;align-items:center;padding:13px 16px;margin:10px 0;border:1px solid #355470;border-radius:12px;background:#0c1a2b;color:#e3f2ff;font-weight:700;cursor:pointer}
 .cms-effect-toggle input{width:18px;height:18px;accent-color:#6aafff;flex-shrink:0}
+
+/* Verified client stories editor — completely within owner-only admin */
+.testimonial-admin-form{margin:19px 0 22px;padding:20px;border:1px solid #355778;border-radius:16px;background:#0b1929}
+.testimonial-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.testimonial-form-grid .full{grid-column:1/-1}
+.testimonial-form-grid label{display:flex;flex-direction:column;gap:7px;min-width:0;color:#cce0f5;font-size:12px;font-weight:700}
+.testimonial-form-grid input,.testimonial-form-grid textarea,.testimonial-form-grid select{width:100%;min-height:44px;min-width:0;padding:10px 12px;border:1px solid #3e5975;border-radius:10px;background:#0c1623;color:#eff8ff;font:inherit}
+.testimonial-form-grid textarea{resize:vertical}
+.testimonial-form-grid input:focus-visible,.testimonial-form-grid textarea:focus-visible,.testimonial-form-grid select:focus-visible{outline:2px solid #79baff;outline-offset:2px}
+.testimonial-check{display:flex;align-items:flex-start;gap:10px;margin:13px 0;line-height:1.8;font-size:12px;color:#c9dfff;cursor:pointer}
+.testimonial-check input{flex:none;width:20px;height:20px;margin:3px 0;accent-color:#6aafff}
+.testimonial-admin-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.testimonial-admin-list{display:grid;gap:12px}
+.testimonial-admin-item{display:flex;gap:15px;align-items:flex-start;justify-content:space-between;padding:16px;background:#0f1c2c;border:1px solid #34506f;border-radius:13px}
+.testimonial-admin-copy{min-width:0;flex:1}
+.testimonial-admin-copy strong{display:block;color:#d9edff;font-size:15px}
+.testimonial-admin-copy p{color:#aec5dd;font-size:12px;line-height:1.85;white-space:pre-line;overflow-wrap:anywhere;margin:8px 0}
+.testimonial-admin-copy small{color:#97b8d7;font-size:11px}
+.testimonial-admin-actions-row{display:flex;gap:7px;flex-wrap:wrap}
+.testimonial-admin-actions-row button{min-height:40px;padding:7px 12px;font-size:12px}
+.testimonial-admin-empty{color:#9ab2c9;padding:15px;border:1px dashed #355370;border-radius:12px}
+@media(max-width:690px){.testimonial-form-grid{grid-template-columns:1fr}
+.testimonial-admin-form{padding:15px}
+.testimonial-admin-item{flex-direction:column}
+.testimonial-admin-actions-row{width:100%}
+}
